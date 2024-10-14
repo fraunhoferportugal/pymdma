@@ -123,7 +123,7 @@ setup-prod: # TODO - torch cpu install
 	echo -e "$(HINT) Activate the virtual environment with: source .venv-prod/bin/activate$(TERMINATOR)"
 
 ## Build all virtual environments (development)
-setup-dev-all:
+setup-all:
 	@echo -e "$(INFO) Creating development virtual environment...$(TERMINATOR)" && \
 	python3 -m venv .venv-dev && \
 	source .venv-dev/bin/activate && \
@@ -412,14 +412,13 @@ push-all: push dvc-upload
 .PHONY: mkdocs-build mkdocs-serve mkdocs-clean
 
 ## Generate MKDocs documentation
-mkdocs-build:
+mkdocs-build: setup-docs
 	@echo -e "$(INFO) Building documentation...$(TERMINATOR)" && \
 	source .venv-docs/bin/activate && \
-	cp README.md docs/index.md && \
 	poetry run mkdocs build
 
 ## Serve MKDocs documentation on localhost:8000
-mkdocs-serve: mkdocs-build
+mkdocs-serve: setup-docs
 	@echo -e "$(INFO) Serving documentation...$(TERMINATOR)" && \
 	source .venv-docs/bin/activate && \
 	poetry run mkdocs serve

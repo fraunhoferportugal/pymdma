@@ -1,5 +1,79 @@
 # Developer Notes
 
+This project uses [Conda](https://anaconda.org/anaconda/python) to manage Python virtual environments and [Poetry](https://python-poetry.org/) as the main dependency manager. The project is structured as a Python src package, with the main package located in the `pymdma` folder.
+
+There are three main modalities: `image`, `time_series`, and `tabular`. Each modality has its own folder/submodule in the `pymdma` package. The `general` and `common` modules contain the main classes definitions used in the API and on the package version of the project. 
+
+Each modality dependency is defined as an extra in the [pyproject](pyproject.toml) configuration file. Development dependencies are defined as poetry groups in the same file. More information about packaging and dependencies can be found below. 
+
+> **IMPORTANT:** We are using setuptools as the build system, due to limitations in the current version of Poetry. Because of this, you should use poetry only to manage dependencies during the development stage. Requirements for each modality are defined in the requirements folder with the appropriate version constraints to ensure cross-compatibility between dependencies.
+
+The `scripts` folder contains shell scripts that can be used to automate common tasks. You can find some examples of execution in this folder. Additionally, the `notebooks` folder contains Jupyter notebooks with examples of how to import and use the pa
+
+We also provide a docker image to run a REST API server version of the repository. The docker image is built using the [Dockerfile](Dockerfile) in the root of the repository. 
+
+A coding standard is enforced using [Black](https://github.com/psf/black), [isort](https://pypi.org/project/isort/) and
+[Flake8](https://flake8.pycqa.org/en/latest/). Python 3 type hinting is validated using
+[MyPy](https://pypi.org/project/mypy/).
+
+Unit tests are written using [Pytest](https://docs.pytest.org/en/latest/), documentation is written
+using [Numpy Style Python Docstring](https://numpydoc.readthedocs.io/en/latest/format.html).
+[Pydocstyle](http://pydocstyle.org/) is used as static analysis tool for checking compliance with Python docstring
+conventions.
+
+Additional code security standards are enforced by [Safety](https://github.com/pyupio/safety) and
+[Bandit](https://bandit.readthedocs.io/en/latest/). [Git-secrets](https://github.com/awslabs/git-secrets)
+ensure you're not pushing any passwords or sensitive information into your Bitbucket repository.
+Commits are rejected if the tool matches any of the configured regular expression patterns that indicate that sensitive
+information has been stored improperly.
+
+We use [mkdocs](https://www.mkdocs.org)  with the [Numpydocs](https://numpydoc.readthedocs.io/en/latest/format.html) style for building documentation. More information on how to build the documentation can be found below.
+
+## Prerequisites
+
+Nearly all prerequisites are managed by Conda. All you need to do is make sure that you have a working Python 3
+environment and install miniconda itself. Conda manages `virtualenvs` as well. Typically, on a project that uses virtualenv
+directly you would activate the virtualenv to get all the binaries that you install with pip onto the path.
+Conda works in a similar way but with different commands.
+
+Use miniconda for your python environments (it's usually unnecessary to install full anaconda environment, miniconda
+should be enough). It makes it easier to install some dependencies, like `cudatoolkit` for GPU support. It also allows you
+to access your environments globally.
+
+Example installation:
+
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+
+## Environment Setup
+We recommend you install [Conda](https://docs.conda.io/en/latest/) (or similar) to manage your Python versions in your computer. After which, you can create a new environment with the following commands:
+
+```shell
+conda env create -f environment.yml # create from configuration
+conda activate da_metrics # activate virtual environment
+```
+
+To start developing, you should install the project dependencies and the pre-commit hooks. You can do this by running the following command (poetry and gcc are required):
+
+```shell
+make setup-all # install dependencies
+source .venv-dev/bin/activate # activate the virtual environment
+make install-dev-tools # install development tools
+```
+
+Alternatively, you can install the dependencies manually by running the following commands:
+
+```shell
+(da_metrics) python -m venv .venv # you can use any other name for the venv
+(da_metrics) source activate .venv/bin/activate # activate the venv you just created
+(da_metrics) poetry install --all-extras --with dev # install all dependencies
+(da_metrics) poetry run pre-commit install --install-hooks -t pre-commit -t commit-msg
+```
+
+
+
 ## Packaging and Dependencies
 
 This project uses [Conda](https://anaconda.org/anaconda/python) to manage Python virtual environments and [Poetry](https://python-poetry.org/) as the main packaging and dependency manager.
@@ -10,6 +84,7 @@ Poetry allows to organize the dependencies into groups so you can isolate and op
 poetry add <package>
 ```
 
+### Dependency Groups
 To add a dependency into a specific group, use:
 
 ```
@@ -40,12 +115,29 @@ It's also possible to install a single group isolated with:
 poetry install --only <group>,<group>,...
 ```
 
+### Extra Dependencies
+To add an extra dependency, use:
+
+```
+poetry add <package> --extras <extra>
+```
+
+To install the extra dependencies, use:
+
+```
+poetry install --extras <extra>
+```
+Note that `<extra>` is the name of the extra dependencies group or a space separated list of extra dependencies.
+
+
+A list of all dependencies can be found in the [pyproject.toml](pyproject.toml) configuration file.
+
 A coding standard is enforced using [Black](https://github.com/psf/black), [isort](https://pypi.org/project/isort/) and
 [Flake8](https://flake8.pycqa.org/en/latest/). Python 3 type hinting is validated using
 [MyPy](https://pypi.org/project/mypy/).
 
 Unit tests are written using [Pytest](https://docs.pytest.org/en/latest/), documentation is written
-using [Google Style Python Docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
+using [Numpy Style Python Docstring](https://numpydoc.readthedocs.io/en/latest/format.html).
 [Pydocstyle](http://pydocstyle.org/) is used as static analysis tool for checking compliance with Python docstring
 conventions.
 
@@ -55,7 +147,7 @@ ensure you're not pushing any passwords or sensitive information into your Bitbu
 Commits are rejected if the tool matches any of the configured regular expression patterns that indicate that sensitive
 information has been stored improperly.
 
-We use [sphinx](https://www.sphinx-doc.org) or [mkdocs](https://www.mkdocs.org) for building documentation (we favour usage of `mkdocs` as `sphinx` is currently not fully supported out-of-the-box).
+We use [mkdocs](https://www.mkdocs.org) for building documentation.
 You can call `make build_docs` from the project root, the docs will be built under `docs/_build/html`.
 Detail information about documentation can be found [here](docs/index.md).
 
@@ -111,7 +203,7 @@ enforced in all cases, for example with long hyperlinks.
 ## Testing
 
 \[Tests are written using the `pytest` framework\]\[pytest\], with its configuration in the `pyproject.toml` file.
-Note, only tests in `time_series_metrics/tests` folders folder are run.
+Note, only tests in `pymdma/tests` folders folder are run.
 To run the tests, enter the following command in your terminal:
 
 ```shell
@@ -132,10 +224,37 @@ coverage html
 or use the `make` command:
 
 ```shell
-make coverage_html
+make coverage-html
 ```
 
 The HTML report can be accessed at `htmlcov/index.html`.
+
+## Generating Documentation
+The documentation is written in Markdown and follows the [Numpy Style Python Docstring](https://numpydoc.readthedocs.io/en/latest/format.html) format. All documentation source files is in the `docs` folder. To build the documentation, run the following commands:
+
+```shell
+make mkdocs-build # build the documentation
+make mkdocs-serve # serve the documentation locally
+```
+
+The documentation will be built in the `docs/_build` folder. The default link to access the documentation is `http://localhost:8000`.
+
+## Docker Encapsulation
+We developed a Docker image to encapsulate the REST API server version of the repository, for internal use. The server is built using the [FastAPI](https://fastapi.tiangolo.com/) framework. A list of frozen dependencies can be found in [requirements-prod.txt](requirements/requirements-prod.txt). The image is built from the [Dockerfile](Dockerfile) in the root of the repository.
+
+To build the Docker image, run the following command:
+
+```shell
+docker build -t pymdma .
+```
+
+To run the Docker image, run the following command:
+
+```shell
+docker run -d -p 8080:8000 -v ./data/:/app/data/ pymdma
+```
+This will start the server on port `8080` in the host machine and mount the `data` folder in the container. The server documentation can be accessed at `http://localhost:8080/docs`. Dataset files should be placed in the data folder to be accessed by the server. You should follow the current structure of datasets in the data
+
 
 ## Set private environment variables in .envrc file
 
@@ -151,85 +270,19 @@ MY_VAR=/home/user/my_system_path
 
 All variables from .env are loaded in config.py automatically.
 
-## Version control your data and models with DVC
+If you have [direnv](https://direnv.net/docs/installation.html) correctly configured, when entering the directory of this project through the command line interface the conda environment and the virtual environment should be automatically activated. If this does not work, try running `$ direnv allow`, cd out of the directory and then cd into the directory again; the identification of the two activated environments should appear to the left of the terminal (not always the case when using VS Code).
 
-Use DVC to version control big files, like your data or trained ML models. To initialize the dvc repository:
 
-```
-dvc init
-```
-
-To start tracking a file or directory, use dvc add (e.g. pictures):
-
-```
-dvc add data/raw/*.jpg
-```
-
-DVC stores information about the added file (or a directory) in a special .dvc file named data/raw/\*jpg.dvc, a small text
-file with a human-readable format. This file can be easily versioned like source code with Git, as a placeholder for the
-original data:
-
-```
-git add data/raw/*jpg.dvc
-git commit -m "Add raw data"
-```
-
-We recommend tagging each time you modify the files inside the data folder
-
-```
-git commit -m "Add more images. Model trained with 2000 images."
-git tag -a "v2.0" -m "model v2.0, 2000 images"
-git push --tags
-dvc push  # Upload dataset to S3 Bucket on Minio Server
-```
-
-The regular workflow is to use `git checkout` first to switch a branch, checkout a commit/tag, or a revision of a .dvc file,
-and then run `dvc checkout` to sync data: To switch to a previous version (e.g. with tag v1.0) of our code and data.
-DVC checkout will remove the new files.
-
-```
-git checkout v1.0
-dvc checkout
-```
-
-Read more in the [docs](https://dvc.org/doc/start/data-versioning)!
-
-## Hydra
-
-Hydra is an open-source Python framework that simplifies the development of research and other complex applications.
-The key feature is the ability to dynamically create a hierarchical configuration by composition and override it through
-config files and the command line. The name Hydra comes from its ability to run multiple similar jobs - much like a
-Hydra with multiple heads.
-
-We recommend going through at least the [Basic Tutorial](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli),
-and the docs about [Instantiating objects with Hydra](https://hydra.cc/docs/patterns/instantiate_objects/overview).
-
-## CI
+<!-- ## CI
 
 All PRs trigger a CI job to run linting, type checking, tests, and build docs. The CI script is located [here](Jenkinsfile)
-and should be considered the source of truth for running the various development commands.
+and should be considered the source of truth for running the various development commands. -->
 
 ## Line Endings
 
 The [`.gitattributes`](.gitattributes) file controls line endings for the files in this repository.
 
-## Prerequisites
 
-Nearly all prerequisites are managed by Conda. All you need to do is make sure that you have a working Python 3
-environment and install miniconda itself. Conda manages `virtualenvs` as well. Typically, on a project that uses virtualenv
-directly you would activate the virtualenv to get all the binaries that you install with pip onto the path.
-Conda works in a similar way but with different commands.
-
-Use miniconda for your python environments (it's usually unnecessary to install full anaconda environment, miniconda
-should be enough). It makes it easier to install some dependencies, like `cudatoolkit` for GPU support. It also allows you
-to access your environments globally.
-
-Example installation:
-
-```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh
-```
 
 ## IDE Setup
 
