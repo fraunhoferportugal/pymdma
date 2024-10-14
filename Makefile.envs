@@ -1,0 +1,78 @@
+#
+# Environment Management Makefile
+#
+
+include Makefile.include
+
+ifeq ($(OS_SYSTEM), Darwin)
+  CONDA_INSTALLER = miniconda_macosx-x86_64.sh
+else
+  CONDA_INSTALLER = miniconda_linux-x86_64.sh
+endif
+
+## Installl miniconda
+install_miniconda:
+	@echo 'Downloading latest version of miniconda.'
+	@wget http://repo.continuum.io/miniconda/$(CONDA_INSTALLER) -O $(CONDA_INSTALLER)
+	@bash miniconda_linux-x86_64.sh
+
+$(PROJECT_LOCKFILE): environment.yml
+ifeq (conda, $(VIRTUALENV))
+	$(CONDA_EXE) env update -n $(ENV_NAME) -f $<
+	$(CONDA_EXE) env export -n $(ENV_NAME) -f $@
+	# pip install -e .  # uncomment for conda <= 4.3
+else
+	$(error Unsupported Environment `$(VIRTUALENV)`. Use conda)
+endif
+
+.PHONY: conda_create_environment
+## Set up conda environment for this project.
+conda_create_environment: $(PROJECT_LOCKFILE)
+ifeq (conda,$(VIRTUALENV))
+	@rm -f $(PROJECT_LOCKFILE)
+	@echo
+	@echo "New conda env created. Activate with:"
+	@echo ">>> conda activate $(ENV_NAME)"
+	@echo ">>> make conda_update_environment"
+else
+	$(error Unsupported Environment `$(VIRTUALENV)`. Use conda)
+endif
+
+.PHONY: conda_delete_environment
+## Delete the conda environment for this project.
+conda_delete_environment:
+ifeq (conda,$(VIRTUALENV))
+	@echo "Deleting conda environment."
+	$(CONDA_EXE) env remove -n $(ENV_NAME)
+	rm -f $(PROJECT_LOCKFILE)
+else
+	$(error Unsupported Environment `$(VIRTUALENV)`. Use conda)
+endif
+
+.PHONY: conda_update_environment
+## Install or update Python Dependencies in the conda environment.
+conda_update_environment: conda_environment_enabled $(PROJECT_LOCKFILE)
+
+.PHONY: conda_environment_enabled
+## Checks that the conda environment is active.
+conda_environment_enabled:
+ifeq (conda,$(VIRTUALENV))
+ifneq ($(notdir ${CONDA_DEFAULT_ENV}), $(ENV_NAME))
+	$(error Run "$(VIRTUALENV) activate $(ENV_NAME)" before proceeding...)
+endif
+else
+	$(error Unsupported Environment `$(VIRTUALENV)`. Use conda)
+endif
+
+.PHONY: conda_check_lockfile
+## Test that an environment lockfile exists.
+conda_check_lockfile:
+ifeq (X,X$(wildcard $(PROJECT_LOCKFILE)))
+	$(error Run "make conda_update_environment" before proceeding...)
+endif
+
+.PHONY: conda_check_environment
+## Check if conda environment is enabled and correctly configured.
+conda_check_environment: conda_environment_enabled conda_check_lockfile $(PROJECT_LOCKFILE)
+
+# EOF

@@ -1,0 +1,77 @@
+# Ignore generated files
+**/*.pyc
+
+# JetBrains Pycharm
+.idea/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+**/.vscode
+# Local History for Visual Studio Code
+.history/
+
+# Logs
+logs/
+
+#Ignoring all the markdown and class files
+*.md
+
+# Sphinx documentation
+docs/_build/
+
+# mkdocs documentation
+site/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# C extensions
+*.so
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Virtual environment
+venv/
+.venv/
+.venv-docs/
+.venv-dev/
+.venv-note/
+.venv-dempy/
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Git
+.git/
+.gitignore
+
+# Dempy Cache
+.cache/
+
+# Hydra
+outputs/
+runs/
+
+# Cruft
+.cruft.json
+
+# EOF

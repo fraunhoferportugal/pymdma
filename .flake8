@@ -1,0 +1,41 @@
+# Unfortunately, flake8 does not support pyproject.toml configuration.
+# https://github.com/PyCQA/flake8/issues/234
+[flake8]
+per-file-ignores =
+    __init__.py:F401
+show-source = True
+count= False
+statistics = False
+# https://www.flake8rules.com
+# E203 = Whitespace before ‘:'
+# E265 = comment blocks like @{ section, which it can't handle
+# E266 = too many leading '#' for block comment
+# E731 = do not assign a lambda expression, use a def
+# W293 = Blank line contains whitespace
+# W503 = Line break before binary operator
+# E704 = multiple statements in one line  - used for @override
+# TC002 = move third party import to TYPE_CHECKING
+# ANN = flake8-annotations
+# TC, TC2 = flake8-type-checking
+# B = flake8-bugbear
+# S = flake8-bandit
+# D = flake8-docstrings
+# S = flake8-bandit
+# F are errors reported by pyflakes
+# E and W are warnings and errors reported by pycodestyle
+# C are violations reported by mccabe
+# BLK = flake8-black
+# DAR = darglint
+# SC = flake8-spellcheck
+ignore =  E402, E203, E211, E265, E501, E800, E999, F401, F821, W503, W505, SC100, SC200, C400, C401, C402, B008, VNE001, C408, C901
+max-line-length = 120
+max-doc-length = 120
+import-order-style = google
+docstring-convention = numpy
+inline-quotes = "
+strictness=short
+dictionaries=en_US,python,technical,pandas
+min-python-version = 3.8.10
+exclude = .git,.tox,.nox,venv,.venv,.venv-docs,.venv-dev,.venv-note,.venv-dempy,docs,test
+max-complexity = 11
+#spellcheck-targets=comments

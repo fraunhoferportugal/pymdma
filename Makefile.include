@@ -1,0 +1,73 @@
+#################################################################################
+# Make file tutorials: https://makefiletutorial.com/#getting-started            #
+# Thanks to grihabor for Makefile.version                                       #
+# https://gist.github.com/grihabor/4a750b9d82c9aa55d5276bd5503829be             #
+#################################################################################
+# Variables
+PACKAGE            := data_auditing_metrics
+SHELL              := /bin/bash
+ROOTDIR            := $(shell pwd)
+VERSIONFILE        := $(shell cat VERSION)
+MAKE               := make --no-print-directory
+MAKE_VERSION       := $(shell $(MAKE) --version)
+UNAME               = $(shell uname -m)
+DEBUG_FILE         := debug.txt
+MODULE_NAME        := data_auditing_metrics
+PROJECT_DIR        := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+PROJECT_NAME       := data_auditing_metrics
+PYTHON_INTERPRETER := python3
+ARCH               := $(shell $(PYTHON_INTERPRETER) -c "import platform; print(platform.platform())")
+OS_SYSTEM          := $(shell $(PYTHON_INTERPRETER) -c "import platform; print(platform.system())")
+VIRTUALENV         := conda
+CONDA_HOME          = $(HOME)/miniconda3
+CONDA_BIN_DIR       = $(CONDA_HOME)/bin
+CONDA               = $(CONDA_BIN_DIR)/conda
+CONDA_EXE          := $(shell which conda)
+ENV_NAME            = da_metrics
+ENV_DIR             = $(CONDA_HOME)/envs/$(ENV_NAME)
+ENV_BIN_DIR         = $(ENV_DIR)/bin
+ENV_LIB_DIR         = $(ENV_DIR)/lib
+ENV_PYTHON          = $(ENV_BIN_DIR)/python
+PROJECT_LOCKFILE   := environment.$(ARCH).lock.yml
+DATE                = $(shell date +'%d.%m.%Y')
+TIME                = $(shell date +'%H:%M:%S')
+GIT_VERSION        := $(shell git --version | cut -d' ' -f3)
+COMMIT             := $(shell git rev-parse HEAD)
+GIT_HASH            = $(shell git rev-parse --short HEAD)
+AUTHOR             := $(firstword $(subst @, ,$(shell git show --format="%aE" $(COMMIT))))
+BRANCH_NAME        := $(shell git rev-parse --abbrev-ref HEAD)
+TAG_MESSAGE         = "$(TIME) $(DATE) $(AUTHOR) $(BRANCH_NAME)"
+COMMIT_MESSAGE     := $(shell git log --format=%B -n 1 $(COMMIT))
+PRECOMMIT_VERSION  := "2.19.0"
+DESCRIBE           := $(shell git describe --match "v*" --always --tags)
+DESCRIBE_PARTS     := $(subst -, ,$(DESCRIBE))
+
+VERSION_TAG        := $(word 1,$(DESCRIBE_PARTS))
+COMMITS_SINCE_TAG  := $(word 2,$(DESCRIBE_PARTS))
+
+VERSION            := $(subst v,,$(VERSION_TAG))
+VERSION_PARTS      := $(subst ., ,$(VERSION))
+
+MAJOR              := $(word 1,$(VERSION_PARTS))
+MINOR              := $(word 2,$(VERSION_PARTS))
+MICRO              := $(word 3,$(VERSION_PARTS))
+
+NEXT_MAJOR         := $(shell echo $$(($(MAJOR)+1)))
+NEXT_MINOR         := $(shell echo $$(($(MINOR)+1)))
+NEXT_MICRO          = $(shell echo $$(($(MICRO)+$(COMMITS_SINCE_TAG))))
+
+ifeq ($(strip $(COMMITS_SINCE_TAG)),)
+CURRENT_VERSION_MICRO := $(MAJOR).$(MINOR).$(MICRO)
+CURRENT_VERSION_MINOR := $(CURRENT_VERSION_MICRO)
+CURRENT_VERSION_MAJOR := $(CURRENT_VERSION_MICRO)
+else
+CURRENT_VERSION_MICRO := $(MAJOR).$(MINOR).$(NEXT_MICRO)
+CURRENT_VERSION_MINOR := $(MAJOR).$(NEXT_MINOR).0
+CURRENT_VERSION_MAJOR := $(NEXT_MAJOR).0.0
+endif
+
+CURRENT_TAG_MICRO  := "v$(CURRENT_VERSION_MICRO)"
+CURRENT_TAG_MINOR  := "v$(CURRENT_VERSION_MINOR)"
+CURRENT_TAG_MAJOR  := "v$(CURRENT_VERSION_MAJOR)"
+
+# EOF

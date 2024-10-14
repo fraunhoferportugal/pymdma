@@ -1,0 +1,224 @@
+# pyMDMA - Multimodal Data Metrics for Auditing real and synthetic datasets
+
+[![Python](https://img.shields.io/badge/python-3.9+-informational.svg)](<>)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=black)](https://pycqa.github.io/isort)
+[![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://mkdocstrings.github.io)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![mlflow](https://img.shields.io/badge/tracking-mlflow-blue)](https://mlflow.org)
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+[![pytest](https://img.shields.io/badge/pytest-enabled-brightgreen)](https://github.com/pytest-dev/pytest)
+[![conventional-commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow)](https://github.com/commitizen-tools/commitizen)
+
+Data auditing is essential for ensuring the reliability of machine learning models by maintaining the integrity of the datasets upon which these models rely. As synthetic data use increases to address data scarcity and privacy concerns, there is a growing demand for a robust auditing framework.
+
+Existing repositories often lack comprehensive coverage across various modalities or validation types. This work introduces a dedicated library for data auditing, presenting a comprehensive suite of metrics designed for evaluating synthetic data. Additionally, it extends its focus to the quality assessment of input data, whether synthetic or real, across time series, tabular, and image modalities.
+
+This library aims to serve as a unified and accessible resource for researchers, practitioners, and developers, enabling them to assess the quality and utility of their datasets. This initiative encourages collaborative contributions by open-sourcing the associated code, fostering a community-driven approach to advancing data auditing practices. This work is intended for publication in an open-source journal to facilitate widespread dissemination, adoption, and impact tracking within the scientific and technical community.
+
+## Prerequisites
+
+You will need:
+
+- `python` (see `pyproject.toml` for full version)
+- `anaconda` (optional)
+- `poetry` (optional)
+- `Git`
+- `Make` (optional)
+- load environment variables from `.env`
+
+## 1. Installing
+
+You can either install this package via pip (if you want access to individual modules) or clone the repository (if you want to contribute to the project or change the code in any way).
+
+Its is recommended you install the package in a virtual environment to avoid conflicts with other packages. More information on this [here](https://docs.python.org/3/library/venv.html).
+
+<!-- ### 1.1 Installing via pip (recommended)
+
+The package can be installed with the following command:
+
+```bash
+pip install pymdma
+```
+
+Depending on the data modality you want to use, you may need to install additional dependencies. The following commands will install the dependencies for each modality:
+
+```bash
+pip install pymdma[image] # image dependencies
+pip install pymdma[tabular] # tabular dependencies
+pip install pymdma[time_series] # time series dependencies
+pip install pymdma[all] # dependencies for all modalities
+```
+
+Choose the one(s) that best suit your needs. -->
+
+### 1.2 Installing from source
+
+If you want to clone the repository, you can do so with the following commands:
+
+```bash
+git clone --recursive https://github.com/fraunhoferportugal/pymdma.git
+cd pymdma
+```
+
+(Recommended) Install and activate conda dependencies for python version and package management:
+
+```bash
+conda env create -f environment.yml
+conda activate da_metrics
+```
+
+This repository can evaluate four different modalities: `image`, `tabular` and `time_series`. If you wish to only test one data modality, you can install only the required dependencies. This can be done with the commands defined in the Makefile. We use [poetry](https://python-poetry.org/) as the main python package dependency manager.
+
+> NOTE: make sure you have the da_metrics conda environment activated before running this command.
+
+To install modality specific dependencies, run the following command:
+
+```bash
+(da_metrics) make setup-<data-modality>
+```
+
+This will create a virtual environment with the required dependencies for the data modality.
+Alternatively you can create your own venv with the following commands:
+
+```bash
+(da_metrics) python -m venv .venv # you can use any other name for the venv
+(da_metrics) source activate .venv/bin/activate # activate the venv you just created
+(da_metrics) poetry install --extras <data-modality> # install modality specific dependencies with poetry
+```
+
+In this last command, you can either install a single data-modality or multiple ones at the same time by provinding a list of the modalities you want to install. For example, to install the dependencies for the image and tabular modalities you should run:
+
+```bash
+(da_metrics) poetry install --extras "image tabular"
+```
+
+**(Optional)** For automatic activation of these environments you need to have `direnv`configured in your computer. After this you need to change the following line in the [.envrc](.envrc):
+
+```bash
+source <venv-name>/bin/activate
+```
+
+in which you should replace `<venv-name>`with the name of the virtual environment you've just created.\
+If you have [direnv](https://direnv.net/docs/installation.html) correctly configured, when entering the directory of this project through the command line interface the conda environment and the virtual environment should be automatically activated. If this does not work, try running `$ direnv allow`, cd out of the directory and then cd into the directory again; the identification of the two activated environments should appear to the left of the terminal (not always the case when using VS Code).
+
+## 2. Execution Examples
+
+## 2.1. CLI Execution
+
+Run the install commands from section [1.](#12-installing-from-source)
+After instaling the package you can run the cli by executing the following command.
+
+```bash
+pymdma --help # list available commands
+```
+
+Following is an example of executing the evaluation of a synthetic dataset with regard to a reference dataset:
+
+```bash
+pymdma --modality image \
+    --validation_type synth \
+    --reference_type dataset \
+    --evaluation_level dataset \
+    --reference_data data/test/image/synthesis_val/reference \
+    --target_data data/test/image/synthesis_val/dataset \
+    --batch_size 3 \
+    --metric_group feature \
+    --output_dir reports/image_metrics/
+```
+
+This will evaluate the synthetic dataset in the `data/test/image/synthesis_val/dataset` with regard to the reference dataset in `data/test/image/synthesis_val/reference`. The evaluation will be done at the dataset level and the report will be saved in the `reports/image_metrics/` folder in JSON format. Only feature metrics will be computed for this evaluation.
+
+## 2.2. Importing Modality Metrics
+
+You can also import the metrics for a specific modality and use them in your own code. The following example shows how to import an image metric and use it to evaluate input images in terms of sharpness. Note that this metric only returns the sharpness value for each image (i.e. the instance level value). The dataset level value is none.
+
+```python
+from pymdma.image.measures.input_val import Tenengrad
+import numpy as np
+
+images = np.random.rand(10, 224, 224, 3)  # 10 random RGB images of size 224x224
+
+tenengrad = Tenengrad()  # sharpness metric
+sharpness = tenengrad.compute(images)  # compute on RGB images
+
+_dataset_level, instance_level = sharpness.value
+```
+
+For evaluating synthetic datasets, you also have access to the synthetic metrics. The following example shows the steps necessary to process and evaluate a synthetic dataset in terms of the feature metrics. We load one of the available feature extractors, extract the features from the images and then compute the precision and recall metrics for the synthetic dataset in relation to the reference dataset.
+
+```python
+from pymdma.image.models.features import ExtractorFactory
+
+test_images_ref = Path("./data/test/image/synthesis_val/reference")  # real images
+test_images_synth = Path("./data/test/image/sythesis_val/dataset")  # synthetic images
+
+# Get image filenames
+images_ref = list(test_images_ref.glob("*.jpg"))
+images_synth = list(test_images_synth.glob("*.jpg"))
+
+# Extract features from images
+extractor = ExtractorFactory.model_from_name(name="vit_b_32")
+ref_features = extractor.extract_features_from_files(images_ref)
+synth_features = extractor.extract_features_from_files(images_synth)
+```
+
+Now you can calculate the Improved Precision and Recall of the synthetic dataset in relation to the reference dataset.
+
+```python
+from pymdma.image.measures.synthesis_val import ImprovedPrecision, ImprovedRecall
+
+ip = ImprovedPrecision()
+ir = ImprovedRecall()
+
+ip_result = ip.compute(ref_features, synth_features)
+ir_result = ir.compute(ref_features, synth_features)
+
+precision_dataset, precision_instance = ip_result.value
+recall_dataset, recall_instance = ir_result.value
+
+print(f"Precision: {precision_dataset:.2f} | Recall: {recall_dataset:.2f}")
+print(f"Precision: {precision_instance[:20]} | Recall: {recall_instance[:20]}")
+```
+
+You can find more examples of execution in the [notebooks](notebooks) folder.
+
+## Documentation
+
+Full documentation is available here: [`docs/`](docs).
+
+<!-- ## Dev
+
+See the [Developer](docs/DEVELOPER.md) guidelines for more information. -->
+
+## Contributing
+
+Contributions of any kind are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details and
+the process for submitting pull requests to us.
+
+## Changelog
+
+See the [Changelog](CHANGELOG.md) for more information.
+
+## Security
+
+Thank you for improving the security of the project, please see the [Security Policy](docs/SECURITY.md)
+for more information.
+
+## License
+
+This project is licensed under the terms of the `LGPL-3.0` license.
+See [LICENSE](LICENSE) for more details.
+
+## Citation
+
+If you publish work that uses aisym4med, please cite aisym4med as follows:
+
+```bibtex
+@misc{aisym4med pyMDMA,
+  author = {Fraunhofer AICOS},
+  title = {Multimodal Data Metrics for Auditing real and synthetic datasets},
+  year = {2024},
+}
+```
