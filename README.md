@@ -228,6 +228,8 @@ See the [Developer](docs/DEVELOPER.md) guidelines for more information. -->
 Contributions of any kind are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details and
 the process for submitting pull requests to us.
 
+If you change the code in any way, please follow the developer guidelines in [DEVELOPER.md](DEVELOPER.md).
+
 ## Changelog
 
 See the [Changelog](CHANGELOG.md) for more information.
