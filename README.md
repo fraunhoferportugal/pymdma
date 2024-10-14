@@ -23,9 +23,8 @@ You will need:
 
 - `python` (see `pyproject.toml` for full version)
 - `anaconda` or similar (recommended)
-<!-- - `poetry` (optional) -->
 - `Git`
-<!-- - `Make` (optional) -->
+- `Make` and `poetry` (developers)
 - load environment variables from `.env`
 
 ## 1. Installing
@@ -127,7 +126,7 @@ source <venv-name>/bin/activate
 ```
 
 in which you should replace `<venv-name>`with the name of the virtual environment you've just created.\
-If you have [direnv](https://direnv.net/docs/installation.html) correctly configured, when entering the directory of this project through the command line interface the conda environment and the virtual environment should be automatically activated. If this does not work, try running `$ direnv allow`, cd out of the directory and then cd into the directory again; the identification of the two activated environments should appear to the left of the terminal (not always the case when using VS Code). -->
+ -->
 
 ## 2. Execution Examples
 The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your own code.
