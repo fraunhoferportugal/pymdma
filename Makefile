@@ -129,7 +129,8 @@ setup-dev-all:
 	source .venv-dev/bin/activate && \
 	poetry run pip install --upgrade pip setuptools && \
 	poetry install --with dev --all-extras && \
-	echo -e "$(SUCCESS) Virtual environment created successfully!$(TERMINATOR)"
+	echo -e "$(SUCCESS) Virtual environment created successfully!$(TERMINATOR)" && \
+	echo -e "$(HINT) Activate the virtual environment with: source .venv-dev/bin/activate$(TERMINATOR)"
 
 
 #################################################################################
