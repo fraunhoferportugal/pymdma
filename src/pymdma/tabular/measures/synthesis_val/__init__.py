@@ -3,7 +3,7 @@ from pymdma.tabular.measures.synthesis_val.data.similarity import (
     StatisiticalDivergenceScore,
     StatisticalSimScore,
 )
-from pymdma.tabular.measures.synthesis_val.data.utility import Utility
+# from pymdma.tabular.measures.synthesis_val.data.utility import Utility
 from pymdma.tabular.measures.synthesis_val.feature._shared import (
     Authenticity,
     Coverage,
@@ -24,5 +24,5 @@ __all__ = [
     "StatisticalSimScore",
     "StatisiticalDivergenceScore",
     "CoherenceScore",
-    "Utility",
+    # "Utility",
 ]

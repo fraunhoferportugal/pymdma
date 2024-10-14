@@ -213,7 +213,7 @@ def test_dataset_metric_goal_fail(
         ("time_series", "input_val", ["SNR", "Uniqueness"], "none"),
         ("time_series", "synthesis_val", ["ImprovedPrecision", "WassersteinDistance"], "dataset"),
         ("tabular", "input_val", ["KAnonymityScore"], "none"),
-        ("tabular", "synthesis_val", ["ImprovedPrecision", "Utility"], "dataset"),
+        ("tabular", "synthesis_val", ["ImprovedPrecision", "ImprovedRecall"], "dataset"),
         # ("text", "input_val", ["Identifiability"], "none"),
     ],
 )
