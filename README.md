@@ -22,17 +22,19 @@ This library aims to serve as a unified and accessible resource for researchers,
 You will need:
 
 - `python` (see `pyproject.toml` for full version)
-- `anaconda` (optional)
-- `poetry` (optional)
+- `anaconda` or similar (recommended)
+<!-- - `poetry` (optional) -->
 - `Git`
-- `Make` (optional)
+<!-- - `Make` (optional) -->
 - load environment variables from `.env`
 
 ## 1. Installing
 
-You can either install this package via pip (if you want access to individual modules) or clone the repository (if you want to contribute to the project or change the code in any way).
+<!-- You can either install this package via pip (if you want access to individual modules) or clone the repository (if you want to contribute to the project or change the code in any way). -->
 
-Its is recommended you install the package in a virtual environment to avoid conflicts with other packages. More information on this [here](https://docs.python.org/3/library/venv.html).
+At this moment only the installation from source is available.
+
+Its is recommended you install the package in a virtual environment to avoid conflicts with other packages. Please consult the official [documentation](https://docs.python.org/3/library/venv.html) for developing with virtual environments.
 
 <!-- ### 1.1 Installing via pip (recommended)
 
@@ -53,7 +55,7 @@ pip install pymdma[all] # dependencies for all modalities
 
 Choose the one(s) that best suit your needs. -->
 
-### 1.2 Installing from source
+### 1.1 Installing from source
 
 If you want to clone the repository, you can do so with the following commands:
 
@@ -62,53 +64,79 @@ git clone --recursive https://github.com/fraunhoferportugal/pymdma.git
 cd pymdma
 ```
 
-(Recommended) Install and activate conda dependencies for python version and package management:
+**(Recommended)** Install and activate conda dependencies for python version and package management:
 
 ```bash
 conda env create -f environment.yml
 conda activate da_metrics
 ```
 
-This repository can evaluate four different modalities: `image`, `tabular` and `time_series`. If you wish to only test one data modality, you can install only the required dependencies. This can be done with the commands defined in the Makefile. We use [poetry](https://python-poetry.org/) as the main python package dependency manager.
+This repository can evaluate four different modalities: `image`, `tabular` and `time_series`. If you wish to only test one data modality, you can install only the required dependencies. Before running any commands, make sure you have the latest version of `pip` and `setuptools` installed.
 
-> NOTE: make sure you have the da_metrics conda environment activated before running this command.
+After this you can install the package with the following command:
 
-To install modality specific dependencies, run the following command:
+```bash
+pip install . # install base from source
+```
+
+Depending on the data modality you want to use, you may need to install additional dependencies. The following commands will install the dependencies for each modality:
+
+```bash
+pip install .[image] # image dependencies
+pip install .[tabular] # tabular dependencies
+pip install .[time_series] # time series dependencies
+```
+
+> **Note:** the previous commands install from the base of the repository. If you are in another directory, you should replace `.` with the path to the base of the repository.
+
+For a minimal installation, you can install the package without CUDA support by forcing pip to install torch from the CPU index with the `extra-index-url` command.
+
+
+
+
+
+<!-- We use [poetry](https://python-poetry.org/) as the main python package dependency manager. -->
+
+<!-- > NOTE: make sure you have the da_metrics conda environment activated before running this command. -->
+
+<!-- To install modality specific dependencies, run the following command:
 
 ```bash
 (da_metrics) make setup-<data-modality>
 ```
 
 This will create a virtual environment with the required dependencies for the data modality.
-Alternatively you can create your own venv with the following commands:
-
+Alternatively you can create your own venv with the following commands: -->
+<!-- 
 ```bash
 (da_metrics) python -m venv .venv # you can use any other name for the venv
 (da_metrics) source activate .venv/bin/activate # activate the venv you just created
 (da_metrics) poetry install --extras <data-modality> # install modality specific dependencies with poetry
-```
+``` -->
 
-In this last command, you can either install a single data-modality or multiple ones at the same time by provinding a list of the modalities you want to install. For example, to install the dependencies for the image and tabular modalities you should run:
+<!-- In this last command, you can either install a single data-modality or multiple ones at the same time by provinding a list of the modalities you want to install. For example, to install the dependencies for the image and tabular modalities you should run:
 
 ```bash
 (da_metrics) poetry install --extras "image tabular"
-```
+``` -->
 
-**(Optional)** For automatic activation of these environments you need to have `direnv`configured in your computer. After this you need to change the following line in the [.envrc](.envrc):
+<!-- **(Optional)** For automatic activation of these environments you need to have `direnv`configured in your computer. After this you need to change the following line in the [.envrc](.envrc):
 
 ```bash
 source <venv-name>/bin/activate
 ```
 
 in which you should replace `<venv-name>`with the name of the virtual environment you've just created.\
-If you have [direnv](https://direnv.net/docs/installation.html) correctly configured, when entering the directory of this project through the command line interface the conda environment and the virtual environment should be automatically activated. If this does not work, try running `$ direnv allow`, cd out of the directory and then cd into the directory again; the identification of the two activated environments should appear to the left of the terminal (not always the case when using VS Code).
+If you have [direnv](https://direnv.net/docs/installation.html) correctly configured, when entering the directory of this project through the command line interface the conda environment and the virtual environment should be automatically activated. If this does not work, try running `$ direnv allow`, cd out of the directory and then cd into the directory again; the identification of the two activated environments should appear to the left of the terminal (not always the case when using VS Code). -->
 
 ## 2. Execution Examples
+The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your own code.
+
+Before wunning any commands make sure the package was correctly installed.
 
 ## 2.1. CLI Execution
 
-Run the install commands from section [1.](#12-installing-from-source)
-After instaling the package you can run the cli by executing the following command.
+To evaluate a dataset, you can use the CLI interface. The following command will list the available commands:
 
 ```bash
 pymdma --help # list available commands
@@ -143,6 +171,7 @@ images = np.random.rand(10, 224, 224, 3)  # 10 random RGB images of size 224x224
 tenengrad = Tenengrad()  # sharpness metric
 sharpness = tenengrad.compute(images)  # compute on RGB images
 
+# get the instance level value (dataset level is None)
 _dataset_level, instance_level = sharpness.value
 ```
 
@@ -169,17 +198,20 @@ Now you can calculate the Improved Precision and Recall of the synthetic dataset
 ```python
 from pymdma.image.measures.synthesis_val import ImprovedPrecision, ImprovedRecall
 
-ip = ImprovedPrecision()
-ir = ImprovedRecall()
+ip = ImprovedPrecision() # Improved Precision metric
+ir = ImprovedRecall() # Improved Recall metric
 
+# Compute the metrics
 ip_result = ip.compute(ref_features, synth_features)
 ir_result = ir.compute(ref_features, synth_features)
 
+# Get the dataset and instance level values
 precision_dataset, precision_instance = ip_result.value
 recall_dataset, recall_instance = ir_result.value
 
+# Print the results
 print(f"Precision: {precision_dataset:.2f} | Recall: {recall_dataset:.2f}")
-print(f"Precision: {precision_instance[:20]} | Recall: {recall_instance[:20]}")
+print(f"Precision: {precision_instance} | Recall: {recall_instance}")
 ```
 
 You can find more examples of execution in the [notebooks](notebooks) folder.
