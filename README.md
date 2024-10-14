@@ -33,7 +33,7 @@ You will need:
 
 At this moment only the installation from source is available.
 
-Its is recommended you install the package in a virtual environment to avoid conflicts with other packages. Please consult the official [documentation](https://docs.python.org/3/library/venv.html) for developing with virtual environments.
+You should install the package in a virtual environment to avoid conflicts with other packages. Please consult the official [documentation](https://docs.python.org/3/library/venv.html) for developing with virtual environments.
 
 <!-- ### 1.1 Installing via pip (recommended)
 
@@ -52,7 +52,7 @@ pip install pymdma[time_series] # time series dependencies
 pip install pymdma[all] # dependencies for all modalities
 ```
 
-Choose the one(s) that best suit your needs. -->
+Choose the one(s) that best suits your needs. -->
 
 ### 1.1 Installing from source
 
@@ -70,9 +70,9 @@ conda env create -f environment.yml
 conda activate da_metrics
 ```
 
-This repository can evaluate four different modalities: `image`, `tabular` and `time_series`. If you wish to only test one data modality, you can install only the required dependencies. Before running any commands, make sure you have the latest version of `pip` and `setuptools` installed.
+This repository can evaluate four different modalities: `image`, `tabular`, and `time_series`. If you wish to test only one data modality, you can install only the required dependencies. Before running any commands, make sure you have the latest versions of `pip` and `setuptools` installed.
 
-After this you can install the package with the following command:
+After this, you can install the package with the following command:
 
 ```bash
 pip install . # install base from source
@@ -86,7 +86,7 @@ pip install .[tabular] # tabular dependencies
 pip install .[time_series] # time series dependencies
 ```
 
-> **Note:** the previous commands install from the base of the repository. If you are in another directory, you should replace `.` with the path to the base of the repository.
+> **Note:** The previous commands install the components from the base of the repository. If you are in another directory, you should replace `.` with the path to the repository's base.
 
 For a minimal installation, you can install the package without CUDA support by forcing pip to install torch from the CPU index with the `extra-index-url` command.
 
@@ -98,14 +98,14 @@ For a minimal installation, you can install the package without CUDA support by 
 
 <!-- > NOTE: make sure you have the da_metrics conda environment activated before running this command. -->
 
-<!-- To install modality specific dependencies, run the following command:
+<!-- To install modality-specific dependencies, run the following command:
 
 ```bash
 (da_metrics) make setup-<data-modality>
 ```
 
 This will create a virtual environment with the required dependencies for the data modality.
-Alternatively you can create your own venv with the following commands: -->
+Alternatively, you can create your venv with the following commands: -->
 <!-- 
 ```bash
 (da_metrics) python -m venv .venv # you can use any other name for the venv
@@ -113,7 +113,7 @@ Alternatively you can create your own venv with the following commands: -->
 (da_metrics) poetry install --extras <data-modality> # install modality specific dependencies with poetry
 ``` -->
 
-<!-- In this last command, you can either install a single data-modality or multiple ones at the same time by provinding a list of the modalities you want to install. For example, to install the dependencies for the image and tabular modalities you should run:
+<!-- In this last command, you can either install a single data-modality or multiple ones at the same time by providing a list of the modalities you want to install. For example, to install the dependencies for the image and tabular modalities you should run:
 
 ```bash
 (da_metrics) poetry install --extras "image tabular"
@@ -125,13 +125,13 @@ Alternatively you can create your own venv with the following commands: -->
 source <venv-name>/bin/activate
 ```
 
-in which you should replace `<venv-name>`with the name of the virtual environment you've just created.\
+in which you should replace `<venv-name>` with the name of the virtual environment you've just created.\
  -->
 
 ## 2. Execution Examples
-The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your own code.
+The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your code.
 
-Before wunning any commands make sure the package was correctly installed.
+Before running any commands make sure the package was correctly installed.
 
 ## 2.1. CLI Execution
 
@@ -145,30 +145,30 @@ Following is an example of executing the evaluation of a synthetic dataset with 
 
 ```bash
 pymdma --modality image \
-    --validation_type synth \
-    --reference_type dataset \
-    --evaluation_level dataset \
-    --reference_data data/test/image/synthesis_val/reference \
-    --target_data data/test/image/synthesis_val/dataset \
-    --batch_size 3 \
-    --metric_group feature \
-    --output_dir reports/image_metrics/
+ --validation_type synth \
+    --reference_type dataset \
+ --evaluation_level dataset \
+    --reference_data data/test/image/synthesis_val/reference \
+ --target_data data/test/image/synthesis_val/dataset \
+    --batch_size 3 \
+ --metric_group feature \
+    --output_dir reports/image_metrics/
 ```
 
 This will evaluate the synthetic dataset in the `data/test/image/synthesis_val/dataset` with regard to the reference dataset in `data/test/image/synthesis_val/reference`. The evaluation will be done at the dataset level and the report will be saved in the `reports/image_metrics/` folder in JSON format. Only feature metrics will be computed for this evaluation.
 
 ## 2.2. Importing Modality Metrics
 
-You can also import the metrics for a specific modality and use them in your own code. The following example shows how to import an image metric and use it to evaluate input images in terms of sharpness. Note that this metric only returns the sharpness value for each image (i.e. the instance level value). The dataset level value is none.
+You can also import the metrics for a specific modality and use them in your code. The following example shows how to import an image metric and use it to evaluate input images in terms of sharpness. Note that this metric only returns the sharpness value for each image (i.e. the instance level value). The dataset level value is none.
 
 ```python
 from pymdma.image.measures.input_val import Tenengrad
 import numpy as np
 
-images = np.random.rand(10, 224, 224, 3)  # 10 random RGB images of size 224x224
+images = np.random.rand(10, 224, 224, 3)  # 10 random RGB images of size 224x224
 
-tenengrad = Tenengrad()  # sharpness metric
-sharpness = tenengrad.compute(images)  # compute on RGB images
+tenengrad = Tenengrad()  # sharpness metric
+sharpness = tenengrad.compute(images)  # compute on RGB images
 
 # get the instance level value (dataset level is None)
 _dataset_level, instance_level = sharpness.value
@@ -179,8 +179,8 @@ For evaluating synthetic datasets, you also have access to the synthetic metrics
 ```python
 from pymdma.image.models.features import ExtractorFactory
 
-test_images_ref = Path("./data/test/image/synthesis_val/reference")  # real images
-test_images_synth = Path("./data/test/image/sythesis_val/dataset")  # synthetic images
+test_images_ref = Path("./data/test/image/synthesis_val/reference")  # real images
+test_images_synth = Path("./data/test/image/sythesis_val/dataset")  # synthetic images
 
 # Get image filenames
 images_ref = list(test_images_ref.glob("*.jpg"))
@@ -249,9 +249,11 @@ See [LICENSE](LICENSE) for more details.
 If you publish work that uses aisym4med, please cite aisym4med as follows:
 
 ```bibtex
-@misc{aisym4med pyMDMA,
-  author = {Fraunhofer AICOS},
-  title = {Multimodal Data Metrics for Auditing real and synthetic datasets},
-  year = {2024},
+@misc{pymdma,
+  title = {{pyMDMA}: Multimodal Data Metrics for Auditing real and synthetic datasets},
+  url = {https://github.com/fraunhoferportugal/pymdma},
+  author = {Fraunhofer AICOS},
+  license = {LGPL-3.0},
+  year = {2024},
 }
 ```
