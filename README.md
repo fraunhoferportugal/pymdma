@@ -6,7 +6,6 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=black)](https://pycqa.github.io/isort)
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://mkdocstrings.github.io)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![mlflow](https://img.shields.io/badge/tracking-mlflow-blue)](https://mlflow.org)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/pytest-enabled-brightgreen)](https://github.com/pytest-dev/pytest)
 [![conventional-commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow)](https://github.com/commitizen-tools/commitizen)
@@ -145,13 +144,13 @@ Following is an example of executing the evaluation of a synthetic dataset with 
 
 ```bash
 pymdma --modality image \
- --validation_type synth \
+    --validation_type synth \
     --reference_type dataset \
- --evaluation_level dataset \
+    --evaluation_level dataset \
     --reference_data data/test/image/synthesis_val/reference \
- --target_data data/test/image/synthesis_val/dataset \
+    --target_data data/test/image/synthesis_val/dataset \
     --batch_size 3 \
- --metric_group feature \
+    --metric_group feature \
     --output_dir reports/image_metrics/
 ```
 

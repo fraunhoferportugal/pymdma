@@ -50,10 +50,11 @@ package_dirs = {
 setup(
     name="pymdma",
     version=find_version(),
-    author="Marília Barandas",
-    author_email="marilia.barandas@aicos.fraunhofer.pt",
+    author="Fraunhofer Portugal",
+    # author_email="marilia.barandas@aicos.fraunhofer.pt",
     description="Multimodal Data Metrics for Auditing real and synthetic data",
     long_description=long_description,
+    url="https://github.com/fraunhoferportugal/pymdma",
     long_description_content_type="text/markdown",
     python_requires=">=3.9.0",
     install_requires=base_requires,
@@ -61,4 +62,9 @@ setup(
     packages=packs,
     package_dir=package_dirs,
     license="LGPL-3.0-or-later",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+        "Operating System :: OS Independent",
+    ],
 )
