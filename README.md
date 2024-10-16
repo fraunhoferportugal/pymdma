@@ -69,7 +69,7 @@ conda env create -f environment.yml
 conda activate da_metrics
 ```
 
-This repository can evaluate four different modalities: `image`, `tabular`, and `time_series`. If you wish to test only one data modality, you can install only the required dependencies. Before running any commands, make sure you have the latest versions of `pip` and `setuptools` installed.
+This repository can evaluate three different modalities: `image`, `tabular`, and `time_series`. If you wish to test only one data modality, you can install only the required dependencies. Before running any commands, make sure you have the latest versions of `pip` and `setuptools` installed.
 
 After this, you can install the package with the following command:
 
@@ -88,44 +88,6 @@ pip install .[time_series] # time series dependencies
 > **Note:** The previous commands install the components from the base of the repository. If you are in another directory, you should replace `.` with the path to the repository's base.
 
 For a minimal installation, you can install the package without CUDA support by forcing pip to install torch from the CPU index with the `extra-index-url` command.
-
-
-
-
-
-<!-- We use [poetry](https://python-poetry.org/) as the main python package dependency manager. -->
-
-<!-- > NOTE: make sure you have the da_metrics conda environment activated before running this command. -->
-
-<!-- To install modality-specific dependencies, run the following command:
-
-```bash
-(da_metrics) make setup-<data-modality>
-```
-
-This will create a virtual environment with the required dependencies for the data modality.
-Alternatively, you can create your venv with the following commands: -->
-<!-- 
-```bash
-(da_metrics) python -m venv .venv # you can use any other name for the venv
-(da_metrics) source activate .venv/bin/activate # activate the venv you just created
-(da_metrics) poetry install --extras <data-modality> # install modality specific dependencies with poetry
-``` -->
-
-<!-- In this last command, you can either install a single data-modality or multiple ones at the same time by providing a list of the modalities you want to install. For example, to install the dependencies for the image and tabular modalities you should run:
-
-```bash
-(da_metrics) poetry install --extras "image tabular"
-``` -->
-
-<!-- **(Optional)** For automatic activation of these environments you need to have `direnv`configured in your computer. After this you need to change the following line in the [.envrc](.envrc):
-
-```bash
-source <venv-name>/bin/activate
-```
-
-in which you should replace `<venv-name>` with the name of the virtual environment you've just created.\
- -->
 
 ## 2. Execution Examples
 The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your code.
