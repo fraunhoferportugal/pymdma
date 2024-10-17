@@ -68,7 +68,7 @@ class InputQualityMetrics(str, StrEnum):
     UNIFORMITY = "uniformity"
     UNIQUENESS = "uniqueness"
     CONSISTENCY = "consistency"
-    OTHER = "other"
+    DIMENSIONALITY = "dimensionality"
 
 
 class InputPrivacyMetrics(str, StrEnum):
