@@ -300,7 +300,7 @@ class UniformityScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.UNIQUENESS
+    metric_goal = InputQualityMetrics.UNIFORMITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -633,7 +633,7 @@ class DimCurseScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.OTHER
+    metric_goal = InputQualityMetrics.DIMENSIONALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
