@@ -67,9 +67,8 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         start, end = 0, 0
         for bsize in batch_sizes:
             end = start + bsize
-            images = [Image.open(f).convert("RGB") for f in files[start:end]]
-            batch = np.array([transform(x).numpy() for x in images], dtype=np.float32)
-            batch = torch.from_numpy(batch).to(device)
+            images = [transform(Image.open(f).convert("RGB")).numpy() for f in files[start:end]]
+            batch = torch.from_numpy(np.array(images, dtype=np.float32)).to(device)
             batch = self.extractor(batch).detach().cpu().numpy()
             act_array.append(batch)
             start += bsize
