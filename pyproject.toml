@@ -11,13 +11,18 @@ maintainers = [
   "Joana Rebelo <joana.rebelo@aicos.fraunhofer.pt>",
   "Pedro Matias <pedro.matias@aicos.fraunhofer.pt>"
 ]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+  "Operating System :: OS Independent",
+]
 readme = "README.md"
 license = "LGPL-3.0-or-later"
 package-mode = true
 #homepage = ""
 repository = "https://github.com/fraunhoferportugal/pymdma"
 packages = [
-  { include = "**/*.py", from = "src/pymdma", to = "pymdma" }
+  { include = "pymdma", from = "src"}
 ]
 exclude = ["tests/*", "notebooks/*", "docs/*", "src/**/main.py",
  "src/**/version.py", "src/**/api/*", "__pycache__/*", "src/**/old", "src/**/experiments",
@@ -26,48 +31,55 @@ exclude = ["tests/*", "notebooks/*", "docs/*", "src/**/main.py",
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.13"
-python-dotenv = "^1.0.0"
-numpy = "<2.0.0"
-loguru = "^0.7.2"
-torch = {version = ">=2.0.1"}
-piq = "^0.8.0"
-pot = "^0.9.3"
-gudhi = "^3.9.0"
-pydantic = "^2.8.2"
+loguru = {version = ">=0.7.2, <0.8.0"}
+matplotlib = {version = ">=3.4.3, <4.0.0"}
+numpy = {version = ">=1.22.0, <2.0.0"}
+piq = {version = ">=0.8.0, <1.0.0"}
+pot = {version = ">=0.9.4, <0.10.0"}
+pydantic = {version = ">=2.8.2, <2.9.0"}
+python-dotenv = {version = ">=1.0.0, <2.0.0"}
+torch = {version = ">=2.1.0, <2.5.0"}
+
 # Image dependencies
-umap-learn = {version = "^0.5.5", optional = true}
-pydom = {git = "https://github.com/umang-singhal/pydom.git", optional = true}
+pydom = {git = "https://github.com/umang-singhal/pydom.git", rev = "2554af8d0", optional = true}
 torchvision = {version = ">=0.15.2, <0.19.0", optional = true}
-torchmetrics = {version = ">=1.3.2, <1.4.0",  optional = true}
-pycocotools = {version = "2.0.7", optional = true}
-opencv-python = {version = "^4.10.0.84", optional = true}
+torchmetrics = {version = ">=1.3.2, <1.4.0", extras = ["image"], optional = true}
+pycocotools = {version = ">=2.0.8", optional = true}
+opencv-python = {version = ">=4.10.0.84, <4.11.0.0", optional = true}
+torch-fidelity = {version = ">=0.3.0, <0.4.0", optional = true}
+
 # Time Series dependencies
 tsfel = {version = ">0.1.7", optional = true}
-wfdb = {version = "^4.1.2", optional = true}
-transformers = {version = "^4.39.1", optional = true}
-# Text Dependencies
+wfdb = {version = ">=4.1.2, <5.0.0", optional = true}
+statsmodels = {version = ">=0.14.4, <0.15.0", optional = true}
+# Text Dependencies TODO
 # accelerate = {version = "^0.24.0", optional = true}
 # datasets = {version = "^2.14.6", optional = true}
 # nltk = {version = "^3.8.1", optional = true}
 # sentence-transformers = {version = "^2.2.2", optional = true}
 # python-multipart = {version = "0.0.6", optional = true}
 # Tabular Dependencies
-spacy = {version = "^3.7.4", optional = true}
-word2number = {version = "^1.1", optional = true}
-pycaret = {version = "^3.3.1", optional = true}
-kaleido = {version = "0.2.1", optional = true}
+gudhi = {version = ">=3.9.0, <=4.0.0", optional = true}
+numba = {version = ">=0.60.0, <0.80.0", optional = true}
+pandas = {version = ">=2.0.0, <3.0.0", optional = true}
 pycanon = {version = "1.0.1.post2", optional = true}
+scikit-learn = {version = ">1.4.0", optional = true}
+scipy = {version = ">=1.6.0, <2.0.0", optional = true}
+spacy = {version = ">=3.7.4, <4.0.0", optional = true}
+transformers = {version = ">=4.43.2, <5.0.0", optional = true}
+umap-learn = {version = ">=0.5.5, <0.6.0", optional = true}
+word2number = {version = ">=1.1.0, <1.5.0", optional = true}
 
 
 [tool.poetry.extras]
-image = ["umap-learn", "pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python"]
-tabular = ["spacy", "word2number", "pycaret", "kaleido", "pycanon", "transformers"]
-time_series = ["tsfel", "wfdb"]
+image = ["pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity"]
+tabular = ["gudhi", "numba", "pandas", "pycanon", "scikit-learn", "scipy", "spacy", "transformers", "umap-learn", "word2number", "statsmodels"]
+time_series = ["tsfel", "wfdb", "statsmodels"]
 # text = ["accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"]
 all = [
-  "umap-learn", "pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python",
-  "spacy", "word2number", "pycaret", "kaleido", "pycanon", "transformers",
-  "tsfel", "wfdb",
+  "pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity",
+  "gudhi", "numba", "pandas", "pycanon", "scikit-learn", "scipy", "spacy", "transformers", "umap-learn", "word2number",
+  "tsfel", "wfdb", "statsmodels"
   # "accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"
 ]
 
@@ -273,7 +285,7 @@ exclude = ["*_test.py", "test_*.py"]
 skip = [".git"]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-# requires = ["poetry-core>=1.0.0"]
-# build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+# requires = ["setuptools"]
+# build-backend = "setuptools.build_meta"

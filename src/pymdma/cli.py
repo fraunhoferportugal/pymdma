@@ -197,7 +197,7 @@ def main() -> None:
     reference_data = infer_data_source(args.modality, args.reference_data)
     target_data = infer_data_source(args.modality, args.target_data)
     assert (
-        reference_type != ReferenceType.NONE or reference_data is not None
+        reference_type != ReferenceType.NONE and reference_data is not None or reference_type == ReferenceType.NONE
     ), "Reference data is required for this evaluation."
     data_input_layer = select_modality_input_layer(
         data_modality,

@@ -109,6 +109,7 @@ class ComputationManager:
 
         def _compute_task(metric, metric_args):
             metric_name = metric.__class__.__name__
+            logger.info(f"Extractor: {metric.extractor_model_name} | Metric: {metric_name}")
             new_result = metric.compute(*metric_args, context=self.global_context)
 
             # merge metric with already compute one (batch calculation)
