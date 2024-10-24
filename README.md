@@ -87,7 +87,7 @@ pip install .[time_series] # time series dependencies
 
 > **Note:** The previous commands install the components from the base of the repository. If you are in another directory, you should replace `.` with the path to the repository's base.
 
-For a minimal installation, you can install the package without CUDA support by forcing pip to install torch from the CPU index with the `extra-index-url` command.
+For a minimal installation, you can install the package without CUDA support by forcing pip to install torch from the CPU index with the `--find-url` command.
 
 ## 2. Execution Examples
 The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your code.

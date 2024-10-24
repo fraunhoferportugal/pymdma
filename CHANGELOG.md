@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2024-10-24
+### Fixed
+ - Fixed project configuration conflict between setup.py and pyproject.toml by reverting to poetry as main build engine
+ - Updated dependencies in `pyproject.toml` and ignoring versions in requirements folder
+ - Fixed error in validation type for the cli
+ - Fixed example `tabular` and `time-series` scripts to use cli application
+
+### Removed
+ - Removed `setup.py` file as it is deprecated in favor of `pyproject.toml`
+ - Removed `cookiecutter` template files as they are not needed for the project
+
+### Changed
+ - Changed default image extractor model from `dino_vits8` to `vit_b_32`
+
+
 ## [0.1.0] - 2024-10-16
  - Bumped version to 0.1.0 to indicate the first stable release of the package
 
