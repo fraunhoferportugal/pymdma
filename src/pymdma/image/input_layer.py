@@ -202,8 +202,10 @@ class ImageInputLayer(InputLayer):
             elif model_name == "default" and ExtractorFactory.default in model_instances:
                 extractor = model_instances[ExtractorFactory.default]
 
-        model_name = ExtractorFactory.default if model_name == "default" else model_name
-        extractor = ExtractorFactory.model_from_name(model_name) if extractor is None else extractor
+        if extractor is None:
+            offload_model = True # unload model when finished
+            model_name = ExtractorFactory.default if model_name == "default" else model_name
+            extractor = ExtractorFactory.model_from_name(model_name) if extractor is None else extractor
 
         # extractor = model_instance if model_instance is not None else FeatureExtractor(model_name, device=self.device)
         reference_feats, _labels, _reference_ids = extractor.extract_features_dataloader(
@@ -219,7 +221,7 @@ class ImageInputLayer(InputLayer):
             self.instance_ids = synthetic_ids.tolist()
 
         if offload_model:
-            extractor._model = extractor._model.to("cpu")
+            extractor._model = extractor.to("cpu")
             del extractor
 
         return reference_feats, synthetic_feats

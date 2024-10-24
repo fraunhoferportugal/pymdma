@@ -76,7 +76,7 @@ def select_modality_input_layer(
         The input layer
     """
     if data_modality == "image":
-        from image.input_layer import ImageInputLayer
+        from pymdma.image.input_layer import ImageInputLayer
 
         # allow for repeat reference in  full reference input validation
         repeat_reference = validation_type == ValidationTypes.INPUT and reference_type == ReferenceType.INSTANCE
@@ -92,7 +92,8 @@ def select_modality_input_layer(
             annot_file=annotation_file,
         )
     elif data_modality == "time_series":
-        from time_series.input_layer import TimeSeriesInputLayer
+        from pymdma.time_series.input_layer import TimeSeriesInputLayer
+        
 
         return TimeSeriesInputLayer(
             validation_type,
@@ -102,7 +103,7 @@ def select_modality_input_layer(
             batch_size=batch_size,
         )
     elif data_modality == "tabular":
-        from tabular.input_layer import TabularInputLayer
+        from pymdma.tabular.input_layer import TabularInputLayer
 
         return TabularInputLayer(
             validation_type,
@@ -111,7 +112,7 @@ def select_modality_input_layer(
             reference_data,
         )
     elif data_modality == "text":
-        from text.input_layer import TextInputLayer
+        from pymdma.text.input_layer import TextInputLayer
 
         return TextInputLayer(
             validation_type,
@@ -156,7 +157,6 @@ def select_metric_classes(
     # script names
     module_root = ".".join((data_modality, METRICS_PACKAGE_NAME, validation_type))
     # fetch all modules when None # TODO review for current structure
-    print("MODULE ROOT", package_base_dir)
 
     # fetch all metric groups in a module
     if metric_groups is None:
@@ -169,8 +169,6 @@ def select_metric_classes(
         group_root = Path(f"{package_base_dir}/{group_root}")
 
         group_modules = import_module_or_folder(group_root, metric_group)
-
-        print(group_modules)
 
         if len(group_modules) < 1 and not ignore_missing:
             logger.error(
