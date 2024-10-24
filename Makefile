@@ -282,21 +282,21 @@ test:
 	poetry run pytest -vvv tests/
 
 ## Verify formatting style
-format-check: setup-dev-all
+format-check: setup-all
 	@echo -e "$(INFO) Checking code formatting...$(TERMINATOR)" && \
 	source .venv-dev/bin/activate && \
 	poetry run isort --check-only src/ && \
 	poetry run black --check src/ && \
 
 ## Fix formatting style. This updates files
-format-fix: setup-dev-all
+format-fix: setup-all
 	@echo -e "$(INFO) Fixing code formatting...$(TERMINATOR)" && \
 	source .venv-dev/bin/activate && \
 	poetry run isort src/ && \
 	poetry run black src/ && \
 
 ## Generate test coverage reports
-coverage: setup-dev-all
+coverage: setup-all
 	@echo -e "$(INFO) Running coverage...$(TERMINATOR)" && \
 	source .venv-dev/bin/activate && \
 	poetry run pytest --cov=src/pymdma tests/ && \
@@ -309,14 +309,14 @@ coverage-html: coverage
 	poetry run coverage html
 
 ## Check code for lint errors
-lint: setup-dev-all
+lint: setup-all
 	@echo -e "$(INFO) Running linters...$(TERMINATOR)" && \
 	source .venv-dev/bin/activate && \
 	poetry run flake8 src/ && \
 	poetry run mypy src/
 
 ## Check for package vulnerabilities
-check-safety: setup-dev-all
+check-safety: setup-all
 	@echo -e "$(INFO) Checking dependencies for security vulnerabilities...$(TERMINATOR)" && \
 	source .venv-dev/bin/activate && \
 	poetry run safety check -r requirements/requirements.txt && \
