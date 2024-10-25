@@ -123,6 +123,12 @@ def parse_args():
         default=1,
         help="Number of workers to be used in the computation. Defaults to 1.",
     )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default="cpu",
+        help="Device to be used for computation. Defaults to 'cpu'.",
+    )
     return parser.parse_args()
 
 
@@ -138,7 +144,7 @@ def infer_data_source(data_modality: str, data_path: Path):
         return data_path
 
     # modality custom data parsers
-    module = import_module(f"{data_modality}.data.parsers")
+    module = import_module(f"pymdma.{data_modality}.data.parsers")
     if data_path.suffix == ".jsonl":
         return module.jsonl_files(data_path)
 
@@ -208,6 +214,7 @@ def main() -> None:
         args.batch_size,
         args.output_dir if args.allow_feature_cache else None,
         annotation_file=args.annotation_file,
+        device=args.device,
     )
 
     logger.info(
@@ -253,7 +260,11 @@ def main() -> None:
     with open(args.output_dir / "output.json", "w") as f:
         f.write(json.dumps(output, indent=2))
 
-    logger.info(f"Results saved to {args.output_dir / 'output.json'}")
+    with open(args.output_dir / "config.json", "w") as f:
+        args_vals = {key: str(val) for key, val in dict(vars(args)).items()}
+        json.dump(args_vals, f, indent=2)
+
+    logger.info(f"Results saved to {args.output_dir}")
 
 
 if __name__ == "__main__":
