@@ -2,7 +2,7 @@ from .imagenet import DinoExtractor, InceptionExtractor, VGGExtractor, ViTExtrac
 
 
 class ExtractorFactory:
-    default = "dino_vits8"
+    default = "vit_b_32"
 
     @staticmethod
     def model_from_name(
@@ -19,7 +19,7 @@ class ExtractorFactory:
         if name == "inception_v3":
             extractor = InceptionExtractor()
         elif "vgg" in name:
-            extractor = VGGExtractor(model_name=name)
+            extractor = VGGExtractor(name)
         elif "dino" in name:
             extractor = DinoExtractor(name)
         elif "vit" in name:

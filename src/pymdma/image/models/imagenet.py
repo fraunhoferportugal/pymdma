@@ -1,49 +1,9 @@
-
 import torch
 import torch.multiprocessing
 import torchvision.models as tvmodels
 from PIL import Image
 
-from pymdma.common.definitions import EmbedderInterface
-
 from .extractor import BaseExtractor
-
-
-class ExtractorFactory(EmbedderInterface):
-    default = "vit_b_32"
-
-    def model_from_name(
-        self,
-        name: str,
-        device: str = "cpu",
-        **kwargs,
-    ):
-        """Initializes the feature extractor with the given parameters.
-
-        Args:
-            name (str): identifier of the extractor to be used.
-            device (str): model device. Defaults to "cpu".
-        """
-        name = self.default if name == "default" else name
-        super().__init__(name)
-        self.device = device
-
-        if name == "inception_v3":
-            self.extractor = InceptionExtractor(**kwargs)
-        elif "vgg" in name:
-            self.extractor = VGGExtractor(model_name=name)
-        elif "dino" in name:
-            self.extractor = DinoExtractor(name)
-        elif "vit" in name:
-            self.extractor = ViTExtractor(name)
-        else:
-            raise ValueError(f"Model {name} not available.")
-
-        self.extractor.eval()
-
-    def get_transform(self):
-        return self.extractor.transform
-
 
 
 class InceptionExtractor(BaseExtractor):

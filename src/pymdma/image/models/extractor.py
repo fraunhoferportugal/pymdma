@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Tuple
+from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -15,12 +15,19 @@ torch.multiprocessing.set_sharing_strategy("file_system")
 
 
 class StandardTransform:
-    def __init__(self, image_size: Tuple[int], interp: Image.Resampling = Image.Resampling.BILINEAR) -> None:
+    def __init__(
+        self,
+        image_size: Tuple[int],
+        interpolation: Image.Resampling = Image.Resampling.BILINEAR,
+        preprocess_transform: Optional[Callable] = None,
+    ) -> None:
         assert isinstance(image_size, tuple), "Image size must be a tuple."
         self.img_size = image_size
-        self.interp = interp
+        self.interp = interpolation
+        self.preprocess_transform = preprocess_transform
 
     def __call__(self, image: Image.Image) -> torch.Tensor:
+        image = self.preprocess_transform(image) if self.preprocess_transform is not None else image
         image = image.resize(self.img_size, self.interp)
         # bring image to the range [0, 1] and normalize to [-1, 1]
         image = np.array(image).astype(np.float32) / 255.0
@@ -79,6 +86,7 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         self,
         dataloader: DataLoader,
         device: str = "cpu",
+        preprocess_transform: Optional[Callable] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """Use selected model to extract features from all images in
         dataloader.
@@ -94,7 +102,7 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         ids_array = []
 
         self.extractor = self.extractor.to(device)
-        dataloader.dataset.transform = StandardTransform(self.input_size, self.interpolation)
+        dataloader.dataset.transform = StandardTransform(self.input_size, self.interpolation, preprocess_transform)
         for batch, labels, img_ids in tqdm(dataloader, total=len(dataloader)):
             batch = batch.to(device)
             batch = self.extractor(batch).detach().cpu().numpy()

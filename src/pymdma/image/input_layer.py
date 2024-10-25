@@ -13,6 +13,8 @@ from .data.simple_dataset import SimpleDataset
 from .models.features import ExtractorFactory
 from .utils.processing import batch_downsample_to_largest
 
+from pymdma.image.data.transforms import RetinaCenterCrop
+
 SUPPORTED_FILES = {".png", ".jpg", ".jpeg"}  # TODO might want to add others
 
 
@@ -208,9 +210,11 @@ class ImageInputLayer(InputLayer):
             extractor = ExtractorFactory.model_from_name(model_name) if extractor is None else extractor
 
         # extractor = model_instance if model_instance is not None else FeatureExtractor(model_name, device=self.device)
+        retina_center_crop = RetinaCenterCrop()
         reference_feats, _labels, _reference_ids = extractor.extract_features_dataloader(
             self.reference_loader,
             device=self.device,
+            preprocess_transform=retina_center_crop,
         )
         synthetic_feats, _labels, synthetic_ids = extractor.extract_features_dataloader(
             self.target_loader,
@@ -221,7 +225,7 @@ class ImageInputLayer(InputLayer):
             self.instance_ids = synthetic_ids.tolist()
 
         if offload_model:
-            extractor._model = extractor.to("cpu")
+            extractor = extractor.to("cpu")
             del extractor
 
         return reference_feats, synthetic_feats
