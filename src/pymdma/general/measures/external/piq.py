@@ -8,7 +8,7 @@ from torch import Tensor
 
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, OutputsTypes, ReferenceType, SyntheticFeatureMetrics
+from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
 from ...functional.ratio import dispersion_ratio, distance_ratio
 from ...utils.util import features_splitting, to_tensor
@@ -54,7 +54,7 @@ class FrechetDistance(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = [SyntheticFeatureMetrics.DIVERSITY, SyntheticFeatureMetrics.FIDELITY]
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -185,7 +185,7 @@ class GeometryScore(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = [SyntheticFeatureMetrics.DIVERSITY, SyntheticFeatureMetrics.FIDELITY]
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -280,7 +280,7 @@ class MultiScaleIntrinsicDistance(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = [SyntheticFeatureMetrics.DIVERSITY, SyntheticFeatureMetrics.FIDELITY]
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0

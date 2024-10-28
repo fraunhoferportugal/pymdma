@@ -5,7 +5,7 @@ import pandas as pd
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, OutputsTypes, ReferenceType, SyntheticFeatureMetrics
+from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
 from ...utils_syn import _get_js_divergence, _get_kl_divergence, _get_ks_similarity, _get_nn_pdf, _get_tv_similarity
 
@@ -77,7 +77,7 @@ class StatisticalSimScore(Metric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = SyntheticFeatureMetrics.FIDELITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -239,7 +239,7 @@ class StatisiticalDivergenceScore(Metric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = SyntheticFeatureMetrics.FIDELITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = -np.inf
@@ -422,7 +422,7 @@ class CoherenceScore(Metric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = SyntheticFeatureMetrics.FIDELITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0

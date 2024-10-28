@@ -10,7 +10,7 @@ from piq.clip_iqa import CLIPIQA as _clip_iqa
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import DistributionResult, MetricResult
-from pymdma.constants import EvaluationLevel, InputQualityMetrics, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
 from ....utils.processing import image_resize
 
@@ -50,7 +50,7 @@ class DOM(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.SHARPNESS
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -126,7 +126,7 @@ class Tenengrad(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.SHARPNESS
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -214,7 +214,7 @@ class TenengradRelative(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.SHARPNESS
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -303,7 +303,7 @@ class EME(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.CONTRAST
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -387,7 +387,7 @@ class ExposureBrightness(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.BRIGHTNESS
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -454,7 +454,7 @@ class Brightness(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.BRIGHTNESS
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -527,7 +527,7 @@ class Colorfulness(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.BRIGHTNESS
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -612,7 +612,7 @@ class CLIPIQA(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.PERCEPTUAL_QUALITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -714,7 +714,7 @@ class BRISQUE(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = InputQualityMetrics.PERCEPTUAL_QUALITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
