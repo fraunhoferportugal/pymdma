@@ -16,6 +16,7 @@ from pymdma.constants import (
     DataModalities,
     EvaluationLevel,
     InputMetricGroups,
+    MetricGoal,
     ReferenceType,
     SyntheticMetricGroups,
     ValidationTypes,
@@ -57,7 +58,7 @@ def parse_args():
         type=str,
         nargs="+",
         default=None,
-        help="Metrics to be evaluated. E.g. feature, quality etc.",
+        help="Metrics to be evaluated. E.g. privacy, quality etc.",
     )
     parser.add_argument(
         "--metric_goals",
@@ -188,6 +189,9 @@ def main() -> None:
             metric_group,
             metric_goals=None,
         )
+
+    if args.annotation_file is None:
+        s_func.pop("annotation", None)
 
     for eval_group in list(s_func.keys()):
         funcs = s_func[eval_group]

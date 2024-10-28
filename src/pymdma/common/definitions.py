@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from pymdma.constants import METRIC_GOALS as MetricGoals
-from pymdma.constants import EvaluationLevel, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGoal, ReferenceType
 
 
 class MetricClass:
@@ -40,7 +39,7 @@ class InputLayer(ABC):
 class Metric(ABC):
     # evaluation params
     evaluation_level: EvaluationLevel = EvaluationLevel.DATASET
-    metric_goal: MetricGoals
+    metric_goal: MetricGoal
     reference_type: ReferenceType = ReferenceType.NONE
 
     # metric specific

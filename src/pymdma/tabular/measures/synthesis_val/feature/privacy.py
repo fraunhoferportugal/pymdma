@@ -2,7 +2,7 @@ import numpy as np
 
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, OutputsTypes, ReferenceType, SyntheticFeatureMetrics
+from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
 from ...utils_syn import _get_nn_distances, _get_nn_pdf, _get_pp_metrics
 
@@ -37,7 +37,7 @@ class NNDRPrivacy(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = SyntheticFeatureMetrics.PRIVACY
+    metric_goal = MetricGoal.PRIVACY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -136,7 +136,7 @@ class DCRPrivacy(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = SyntheticFeatureMetrics.PRIVACY
+    metric_goal = MetricGoal.PRIVACY
 
     higher_is_better: bool = True
     min_value: float = 0.0

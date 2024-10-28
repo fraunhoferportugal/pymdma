@@ -12,9 +12,8 @@ from pymdma.constants import (
     DataModalities,
     EvaluationLevel,
     InputMetricGroups,
-    InputQualityMetrics,
+    MetricGoal,
     ReferenceType,
-    SyntheticFeatureMetrics,
     SyntheticMetricGroups,
     ValidationTypes,
 )
@@ -93,7 +92,6 @@ def select_modality_input_layer(
         )
     elif data_modality == "time_series":
         from pymdma.time_series.input_layer import TimeSeriesInputLayer
-        
 
         return TimeSeriesInputLayer(
             validation_type,
@@ -204,7 +202,7 @@ def select_metric_functions(
     reference_type: ReferenceType,
     evaluation_level: Optional[EvaluationLevel] = None,
     metric_group: Optional[Union[SyntheticMetricGroups, InputMetricGroups]] = None,
-    metric_goals: Optional[List[Union[SyntheticFeatureMetrics, InputQualityMetrics]]] = None,
+    metric_goals: Optional[List[MetricGoal]] = None,
 ) -> Dict[str, List[Metric]]:
     """Helper function for selecting specific subset of measures.
 

@@ -4,9 +4,9 @@ import numpy as np
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, InputPrivacyMetrics, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
-from ..utils_inp import compute_k_anonymity
+from ...utils_inp import compute_k_anonymity
 
 
 class KAnonymityScore(Metric):
@@ -61,7 +61,7 @@ class KAnonymityScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputPrivacyMetrics.ANONYMITY
+    metric_goal = MetricGoal.PRIVACY
 
     higher_is_better: bool = True
     min_value: float = 0.0
