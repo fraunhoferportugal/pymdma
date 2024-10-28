@@ -6,7 +6,7 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.1.2] - 2024-10-28
 ### Added
- - CLIP device specification
+ - CLI device specification
  - CLI compute arguments in reports dir
  - Preprocessing transform in image datasets when using the API
 
@@ -16,7 +16,7 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
  - Default image feature extractor is now `vit_b_32`
  - Confusing synthetic and input metric goals where aggregated to `quality`, `privacy`, `annotation` and `utility` categories
-
+ - Moved metrics to sepecific folders based on `metric_group` (feature-based, data-based)
 
 
 ## [0.1.1] - 2024-10-24
