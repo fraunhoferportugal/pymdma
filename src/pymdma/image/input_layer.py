@@ -221,7 +221,7 @@ class ImageInputLayer(InputLayer):
             self.instance_ids = synthetic_ids.tolist()
 
         if offload_model:
-            extractor._model = extractor.to("cpu")
+            extractor = extractor.to("cpu")
             del extractor
 
         return reference_feats, synthetic_feats

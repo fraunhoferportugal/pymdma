@@ -5,7 +5,7 @@ from sklearn.mixture import GaussianMixture
 
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, OutputsTypes, ReferenceType, SyntheticFeatureMetrics
+from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 from pymdma.general.utils.util import min_max_scaling
 
 
@@ -44,7 +44,7 @@ class GIQA(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = SyntheticFeatureMetrics.QUALITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0

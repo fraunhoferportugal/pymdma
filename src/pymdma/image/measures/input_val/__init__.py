@@ -1,4 +1,4 @@
-from pymdma.image.measures.input_val.quality.no_reference import (
+from pymdma.image.measures.input_val.data.no_reference import (
     BRISQUE,
     CLIPIQA,
     DOM,
@@ -9,7 +9,7 @@ from pymdma.image.measures.input_val.quality.no_reference import (
     Tenengrad,
     TenengradRelative,
 )
-from pymdma.image.measures.input_val.quality.reference import MSSIM, PSNR, SSIM
+from pymdma.image.measures.input_val.data.reference import MSSIM, PSNR, SSIM
 
 __all__ = [
     "BRISQUE",

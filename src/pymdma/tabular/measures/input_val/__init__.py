@@ -1,5 +1,5 @@
-from pymdma.tabular.measures.input_val.privacy import KAnonymityScore
-from pymdma.tabular.measures.input_val.quality import (
+from pymdma.tabular.measures.input_val.data.privacy import KAnonymityScore
+from pymdma.tabular.measures.input_val.data.quality import (
     CorrelationScore,
     DimCurseScore,
     MissingScore,

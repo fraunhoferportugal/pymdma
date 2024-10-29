@@ -4,9 +4,9 @@ import numpy as np
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, InputQualityMetrics, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
-from ..utils_inp import (  # proximity_score,
+from ...utils_inp import (  # proximity_score,
     compute_vif,
     corr_matrix,
     corr_strong,
@@ -56,7 +56,7 @@ class CorrelationScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.SIMILARITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -158,7 +158,7 @@ class UniquenessScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.UNIQUENESS
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -300,7 +300,7 @@ class UniformityScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.UNIFORMITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -429,7 +429,7 @@ class OutlierScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.UNIFORMITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -547,7 +547,7 @@ class MissingScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.CONSISTENCY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -633,7 +633,7 @@ class DimCurseScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.DIMENSIONALITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -709,7 +709,7 @@ class VIFactorScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = InputQualityMetrics.SIMILARITY
+    metric_goal = MetricGoal.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
