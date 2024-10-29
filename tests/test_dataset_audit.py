@@ -6,8 +6,8 @@ from tests._utils import prune_params
 @pytest.mark.parametrize(
     "modality, validation_type, reference_type, metric_group",
     [
-        ("image", "input_val", "none", ["quality"]),
-        ("time_series", "input_val", "none", ["quality"]),
+        ("image", "input_val", "none", ["data"]),
+        ("time_series", "input_val", "none", ["data"]),
     ],
 )
 def test_empty_eval_level(test_client, modality, validation_type, reference_type, metric_group):
@@ -27,10 +27,10 @@ def test_empty_eval_level(test_client, modality, validation_type, reference_type
 @pytest.mark.parametrize(
     "modality, validation_type, reference_type, metric_group, code",
     [
-        ("image", "input_val", "dataset", ["quality"], 501),
-        ("image", "input_val", "dataset", ["quality", "privacy"], 501),
-        ("time_series", "input_val", "", ["quality"], 422),
-        ("tabular", "input_val", "dat", ["quality"], 422),
+        ("image", "input_val", "dataset", ["data"], 501),
+        ("image", "input_val", "dataset", ["data"], 501),
+        ("time_series", "input_val", "", ["data"], 422),
+        ("tabular", "input_val", "dat", ["data"], 422),
         # ("text", "input_val", "dataset", [""], 422),
         # ("text", "synth", "dataset", ["feature"], 422),
         # ("text", "input_val", "dataset", ["quality"], 501),
@@ -54,8 +54,8 @@ def test_dataset_eval_fail(test_client, modality, validation_type, reference_typ
 @pytest.mark.parametrize(
     "validation_type, evaluation_level, reference_type, metric_group",
     [
-        ("input_val", "instance", "none", ["quality"]),
-        ("input_val", "instance", "instance", ["quality"]),
+        ("input_val", "instance", "none", ["data"]),
+        ("input_val", "instance", "instance", ["data"]),
         ("synthesis_val", "dataset", "dataset", ["feature"]),
     ],
 )
@@ -87,7 +87,7 @@ def test_dataset_image_ann_pass(test_client, validation_type, evaluation_level, 
             "validation_type": validation_type,
             "reference_type": "none",
             "evaluation_level": evaluation_level,
-            "metric_group": ["annotation", "quality"],
+            "metric_group": ["annotation", "data"],
             "annotation_file": ann_file,
         },
     )
@@ -106,7 +106,7 @@ def test_dataset_image_ann_pass(test_client, validation_type, evaluation_level, 
 @pytest.mark.parametrize(
     "validation_type, evaluation_level, reference_type, metric_group",
     [
-        ("input_val", "instance", "none", ["quality"]),
+        ("input_val", "instance", "none", ["data"]),
         ("synthesis_val", "dataset", "dataset", ["feature"]),
     ],
 )
@@ -128,8 +128,8 @@ def test_dataset_time_series_pass(test_client, validation_type, evaluation_level
 @pytest.mark.parametrize(
     "validation_type, evaluation_level, reference_type, metric_group",
     [
-        ("input_val", "dataset", "none", ["quality", "privacy"]),
-        ("synthesis_val", "dataset", "dataset", ["feature", "data"]),
+        ("input_val", "dataset", "none", ["data"]),
+        ("synthesis_val", "dataset", "dataset", ["data"]),
     ],
 )
 def test_dataset_tabular_pass(test_client, validation_type, evaluation_level, reference_type, metric_group):
@@ -150,9 +150,9 @@ def test_dataset_tabular_pass(test_client, validation_type, evaluation_level, re
 @pytest.mark.parametrize(
     "modality, validation_type, reference_type, metric_group, metric_goal",
     [
-        ("image", "input_val", "none", ["quality"], ["contrast"]),
-        ("image", "synthesis_val", "dataset", ["feature"], ["fidelity", "diversity"]),
-        ("tabular", "input_val", "none", ["quality"], ["uniformity", "uniqueness"]),
+        ("image", "input_val", "none", ["data"], ["quality"]),
+        ("image", "synthesis_val", "dataset", ["feature"], ["quality", "privacy"]),
+        ("tabular", "input_val", "none", ["data"], ["quality", "privacy"]),
     ],
 )
 def test_dataset_metric_goal_pass(test_client, modality, validation_type, reference_type, metric_group, metric_goal):
@@ -173,9 +173,9 @@ def test_dataset_metric_goal_pass(test_client, modality, validation_type, refere
 @pytest.mark.parametrize(
     "modality, validation_type, reference_type, metric_group, metric_goal, code",
     [
-        ("image", "input_val", "none", ["quality"], ["fidelity"], 422),
-        ("tabular", "synthesis_val", "dataset", ["data"], ["fidelity", "diversity"], 422),
-        ("tabular", "input_val", "none", ["privacy"], ["uniformity", "uniqueness"], 422),
+        ("image", "input_val", "none", ["data"], ["privacy"], 501),
+        ("time_series", "synthesis_val", "dataset", ["data"], ["privacy"], 501),
+        ("tabular", "input_val", "none", ["feature"], ["privacy", "quality"], 422),
     ],
 )
 def test_dataset_metric_goal_fail(

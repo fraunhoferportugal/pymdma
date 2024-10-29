@@ -9,8 +9,8 @@ from sklearn.datasets import make_classification, make_regression
 from pymdma import config as cfg
 from pymdma.tabular.data import load as load
 from pymdma.tabular.embeddings import embed, scale
-from pymdma.tabular.measures.input_val import privacy as priv_inp
-from pymdma.tabular.measures.input_val import quality as qual_inp
+from pymdma.tabular.measures.input_val.data import privacy as priv_inp
+from pymdma.tabular.measures.input_val.data import quality as qual_inp
 from pymdma.tabular.measures.synthesis_val.data import similarity as sim_syn
 # from pymdma.tabular.measures.synthesis_val.data import utility as util_syn
 from pymdma.tabular.measures.synthesis_val.feature import privacy as priv_syn

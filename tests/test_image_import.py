@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 
 from pymdma.image.measures.input_val.annotation import coco as ann
-from pymdma.image.measures.input_val.quality import no_reference as no_ref_quality
-from pymdma.image.measures.input_val.quality import reference as ref_quality
+from pymdma.image.measures.input_val.data import no_reference as no_ref_quality
+from pymdma.image.measures.input_val.data import reference as ref_quality
 from pymdma.image.measures.synthesis_val import ImprovedPrecision
 
 

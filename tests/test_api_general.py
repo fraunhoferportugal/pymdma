@@ -17,12 +17,12 @@ def test_healthcheck(test_client):
     "data_modalities, validation_types, metric_groups",
     [
         (["image"], ["input_val", "synthesis_val"], []),
-        (["image"], ["input_val"], ["quality", "annotation"]),
+        (["image"], ["input_val"], ["data", "annotation"]),
         (["image"], ["synthesis_val"], ["feature"]),
         (["tabular"], ["input_val", "synthesis_val"], []),
-        (["tabular"], ["input_val", "synthesis_val"], ["quality", "feature"]),
+        (["tabular"], ["input_val", "synthesis_val"], ["data", "feature"]),
         (["time_series"], ["input_val", "synthesis_val"], []),
-        (["time_series"], ["input_val", "synthesis_val"], ["quality"]),
+        (["time_series"], ["input_val", "synthesis_val"], ["data"]),
         (["time_series"], ["input_val", "synthesis_val"], ["feature"]),
         (["image", "tabular", "time_series"], ["input_val", "synthesis_val"], []),
     ],
@@ -54,7 +54,7 @@ def test_metric_info_pass(test_client, data_modalities, validation_types, metric
         ([""], [], [], 422),
         (["imag"], ["input_val", "synthesis_val"], [], 422),
         (["image"], ["input", "synth"], [], 422),
-        (["image"], ["input_val"], ["privacy"], 404),
+        (["image"], ["synthesis_val"], ["data"], 404),
     ],
 )
 def test_metric_info_fail(test_client, data_modalities, validation_types, metric_groups, code):
