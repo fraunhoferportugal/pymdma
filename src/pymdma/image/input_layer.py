@@ -13,6 +13,7 @@ from .data.simple_dataset import SimpleDataset
 from .models.features import ExtractorFactory
 from .utils.processing import batch_downsample_to_largest
 
+
 SUPPORTED_FILES = {".png", ".jpg", ".jpeg"}  # TODO might want to add others
 
 
@@ -211,6 +212,7 @@ class ImageInputLayer(InputLayer):
         reference_feats, _labels, _reference_ids = extractor.extract_features_dataloader(
             self.reference_loader,
             device=self.device,
+            preprocess_transform=RetinaCenterCrop(),
         )
         synthetic_feats, _labels, synthetic_ids = extractor.extract_features_dataloader(
             self.target_loader,

@@ -1,4 +1,4 @@
-from .imagenet import DinoExtractor, InceptionExtractor, VGGExtractor, ViTExtractor
+from .imagenet import DinoExtractor, InceptionFID, VGGExtractor, ViTExtractor
 
 
 class ExtractorFactory:
@@ -16,8 +16,8 @@ class ExtractorFactory:
         """
         # name = self.default if name == "default" else name
 
-        if name == "inception_v3":
-            extractor = InceptionExtractor()
+        if name == "inception_fid":
+            extractor = InceptionFID()
         elif "vgg" in name:
             extractor = VGGExtractor(name)
         elif "dino" in name:

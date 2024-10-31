@@ -2,34 +2,24 @@ import torch
 import torch.multiprocessing
 import torchvision.models as tvmodels
 from PIL import Image
+from piq.feature_extractors import InceptionV3
 
 from .extractor import BaseExtractor
 
 
-class InceptionExtractor(BaseExtractor):
+class InceptionFID(BaseExtractor):
     def __init__(self):
         super().__init__(
             input_size=(299, 299),
             interpolation=Image.Resampling.BILINEAR,
         )
-
-        self.extractor = tvmodels.inception_v3(weights=tvmodels.Inception_V3_Weights.DEFAULT)
-        print(self.extractor)
-
-        self.activation = {}
-
-        def get_activation(name):
-            def hook(model, inp, output):
-                self.activation[name] = output.detach()
-
-            return hook
-
-        # register hook to obtain activations at avgpool layer
-        self.extractor.avgpool.register_forward_hook(get_activation("avgpool"))
+        
+        self.extractor = InceptionV3(normalize_input=False)
 
     def forward(self, x):
-        self.extractor(x)
-        return self.activation["avgpool"][:, :, 0, 0]
+        N = len(x)
+        x =  self.extractor(x)
+        return x[0].view(N, -1)
 
 
 class VGGExtractor(BaseExtractor):
