@@ -9,26 +9,13 @@ from ..common.output import EvalLevelOutput
 from ..constants import (
     DataModalities,
     EvaluationLevel,
-    InputAnnotationMetrics,
     InputMetricGroups,
-    InputPrivacyMetrics,
-    InputQualityMetrics,
     ReferenceType,
-    SyntheticFeatureMetrics,
     SyntheticMetricGroups,
     ValidationTypes,
-    valid_subclass,
+    MetricGoal
 )
 
-_METRIC_GOALS = Union[
-    InputQualityMetrics,
-    InputPrivacyMetrics,
-    SyntheticFeatureMetrics,
-    InputAnnotationMetrics,
-    None,
-]
-
-_METRIC_GOAL_TYPES = Union[InputQualityMetrics, InputAnnotationMetrics, InputPrivacyMetrics, SyntheticFeatureMetrics]
 
 
 class DatasetParams(BaseModel):
@@ -55,7 +42,7 @@ class DatasetParams(BaseModel):
         Query(
             ...,
             title="Metric Group",
-            description="Main evaluation group(s) of the metrics (e.g. quality, annotation, privacy, feature). Mandatory field.",
+            description="Group of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
         ),
     )
     evaluation_level: Optional[EvaluationLevel] = Field(
@@ -65,11 +52,11 @@ class DatasetParams(BaseModel):
             description="Compute metrics on a dataset or instance level (e.g. dataset_level, instance_level)",
         ),
     )
-    metric_goal: Annotated[List[_METRIC_GOALS], Query()] = Field(
+    metric_goal: Annotated[List[Union[MetricGoal, None]], Query()] = Field(
         Query(
             [],
             title="Metric Goals",
-            description="Metric specific goal(s) (e.g. contrast, brightness, completeness, etc.). Defaults to None - evaluate on all goals of the main goal.",
+            description="Metric specific goal(s) (e.g. quality, privacy, utility, etc.). Defaults to None - evaluate on all goals of the main goal.",
         ),
     )
     annotation_file: Optional[str] = Field(
@@ -88,19 +75,6 @@ class DatasetParams(BaseModel):
 
     @model_validator(mode="after")
     def check_model_dependencies(self):
-        # check if metric specific goal is part of the specfied metric group
-        if self.metric_goal:
-            if not all(any(valid_subclass(group, goal) for group in self.metric_group) for goal in self.metric_goal):
-                raise RequestValidationError(
-                    errors=[
-                        {
-                            "loc": ("query", "metric_goal"),
-                            "msg": "Some metric_goals are not a part of any metric_group.",
-                            "type": "error",
-                        },
-                    ],
-                )
-
         # check if metric groups are in line with the specified validation type
         if self.metric_group:
             expected = InputMetricGroups if self.validation_type == ValidationTypes.INPUT else SyntheticMetricGroups
@@ -142,7 +116,7 @@ class MetricInfoParams(BaseModel):
         Query(
             [],
             title="Metric Groups",
-            description="Metric groups of the functions (e.g. quality, annotation, privacy, feature). Defaults to None - fetch all modality groups.",
+            description="Group of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
         ),
     )
 
@@ -272,12 +246,12 @@ class MetricInfo(BaseModel):
     )
     metric_group: Union[SyntheticMetricGroups, InputMetricGroups] = Field(
         title="Metric Group",
-        description="Evaluation group for the gieven metric (e.g. quality, annotation, privacy, feature).",
+        description="Group of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
     )
-    metric_goal: Optional[Union[_METRIC_GOAL_TYPES, List[_METRIC_GOAL_TYPES]]] = Field(
+    metric_goal: Optional[Union[MetricGoal, List[MetricGoal]]] = Field(
         None,
         title="Metric Goal",
-        description="Metric specific goal (e.g. contrast, brightness, colorfulness, sharpness, perceptual_quality, noise, similarity, uniformity, uniqueness, consistency, completeness, correctness, uniqueness, etc.).",
+        description="Metric specific goal (e.g. quality, privacy, validity, etc.).",
     )
 
     description: Optional[str] = Field(None, title="Description", description="Docstring description of the metric.")

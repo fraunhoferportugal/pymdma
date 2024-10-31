@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from pymdma.constants import OutputsTypes
-from pymdma.time_series.measures.input_val import quality as input_metrics
+from pymdma.time_series.measures.input_val.data import quality as input_metrics
 from pymdma.time_series.measures.synthesis_val.feature import _shared as synth_shared_metrics
 from pymdma.time_series.measures.synthesis_val.feature import distance as synth_distance_metrics
 
