@@ -13,6 +13,8 @@ from pymdma.general.utils.util import features_splitting
 class WassersteinDistance(FeatureMetric):
     """Calculate the Wasserstein distance between two sets of samples.
 
+    **Objective**: Fidelity, Diversity
+
     Parameters
     ----------
     compute_ratios : bool, optional, default=True
@@ -129,6 +131,8 @@ class MMD(FeatureMetric):
     """Calculate the Maximum Mean Discrepancy (MMD) using a specified kernel
     function. If the chosen kernel is "multi_gaussian", the multi-kernel MMD
     using gaussian kernels will be computed.
+
+    **Objective**: Fidelity, Diversity
 
     Parameters
     ----------
@@ -283,6 +287,8 @@ class MMD(FeatureMetric):
 
 class CosineSimilarity(FeatureMetric):
     """Calculate the cosine similarity between two sets of feature vectors.
+
+    **Objective**: Fidelity, Diversity
 
     Parameters
     ----------

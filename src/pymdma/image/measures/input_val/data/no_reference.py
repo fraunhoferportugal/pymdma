@@ -21,6 +21,8 @@ class DOM(Metric):
     """Computes DOM sharpness score for an image. It is effective in detecting
     motion-blur, de-focused images or inherent properties of imaging system.
 
+    **Objective**: Sharpness
+
     Parameters
     ----------
     width : int, optional, default=2
@@ -98,6 +100,8 @@ class DOM(Metric):
 class Tenengrad(Metric):
     """Computes Tenengrad score for an image. Sharpness measure based on the
     gradient magnitude.
+
+    **Objective**: Sharpness
 
     Parameters
     ----------
@@ -181,6 +185,8 @@ class Tenengrad(Metric):
 class TenengradRelative(Metric):
     """Computes Tenengrad score for an image in relation to a blurred instance
     of itself. Sharpness measure based on the gradient magnitude.
+
+    **Objective**: Sharpness
 
     Parameters
     ----------
@@ -282,6 +288,8 @@ class EME(Metric):
     Quantifies the enhancement of an image by measuring the contrast ratio of the image.
     Adapted from: https://www.researchgate.net/publication/244268659_A_New_Measure_of_Image_Enhancement
 
+    **Objective**: Contrast
+
     Parameters
     ----------
     blocks_size : tuple of int, optional, default=(100, 100)
@@ -373,6 +381,8 @@ class EME(Metric):
 class ExposureBrightness(Metric):
     """Computes Exposure and Brightness level Metric.
 
+    **Objective**: Exposure and Brightness
+
     Parameters
     ----------
     **kwargs : dict, optional
@@ -431,6 +441,8 @@ class ExposureBrightness(Metric):
 
 class Brightness(Metric):
     """Computes brightness level of an image.
+
+    **Objective**: Brightness
 
     Parameters
     ----------
@@ -503,6 +515,8 @@ class Brightness(Metric):
 
 class Colorfulness(Metric):
     """Computes colorfulness level of an image.
+
+    **Objective**: Colorfulness
 
     Parameters
     ----------
@@ -581,6 +595,8 @@ class Colorfulness(Metric):
 class CLIPIQA(Metric):
     """Compute the CLIP-based IQA score. Wrapper of the PIQ CLIP-IQA metric.
     Evaluates perceptual quality of an image using a CLIP model.
+
+    **Objective**: General Image Quality
 
     Parameters
     ----------
@@ -680,6 +696,8 @@ class CLIPIQA(Metric):
 class BRISQUE(Metric):
     """Computes  Blind/referenceless Image Spatial Quality Evaluator (BRISQUE)
     score. Wrapper of the PIQ BRISQUE metric implementation.
+
+    **Objective**: General Image Quality
 
     Parameters
     ----------

@@ -35,7 +35,7 @@ To send a pull request, please:
 ## Tips for Modifying the Source Code
 
 - We recommend developing on Linux as this is the only OS where all features are currently 100% functional.
-- Use **Python >= 3.8.16** for development.
+- Use **Python >= 3.9.0** for development.
 - Please try to avoid introducing additional dependencies on 3rd party packages.
 - We encourage you to add your own unit tests, but please ensure they run quickly (unit tests should train models on
   small data-subsample with the lowest values of training iterations and time-limits that suffice to evaluate the intended

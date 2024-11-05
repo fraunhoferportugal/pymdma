@@ -16,6 +16,8 @@ from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, Referenc
 class PSNR(Metric):
     """Computes Peak Signal to Noise Ratio (PSNR) between two images.
 
+    **Objective**: Signal-to-noise ratio
+
     Parameters
     ----------
     **kwargs : dict, optional
@@ -93,6 +95,8 @@ class PSNR(Metric):
 class SSIM(Metric):
     """Computes the Structural Similarity Index (SSIM) between two images.
     Wrapper of the torchmetrics.image.StructuralSimilarityIndexMeasure.
+
+    **Objective**: Similarity
 
     Parameters
     ----------
@@ -188,6 +192,8 @@ class MSSIM(Metric):
     """Computes the Multiscale Structural Similarity Index (MSSIM) between two
     images. Wrapper of the
     torchmetrics.image.MultiScaleStructuralSimilarityIndexMeasure.
+
+    **Objective**: Similarity
 
     Parameters
     ----------

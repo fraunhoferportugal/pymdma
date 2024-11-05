@@ -10,6 +10,8 @@ from ..utils.util import compute_nearest_neighbour_distances, compute_pairwise_d
 class ImprovedPrecision(FeatureMetric):
     """Improved Precision Metric for accessing fidelity of generative models.
 
+    **Objective**: Fidelity
+
     Parameters
     ----------
     k : int, optional
@@ -102,6 +104,8 @@ class ImprovedPrecision(FeatureMetric):
 
 class ImprovedRecall(FeatureMetric):
     """Improved Recall Metric for accessing diversity of generative models.
+
+    **Objective**: Diversity
 
     Parameters
     ----------
@@ -201,6 +205,8 @@ class Density(FeatureMetric):
     Improved Precision, it is robust towards outliers in the real/reference
     data.
 
+    **Objective**: Fidelity
+
     Parameters
     ----------
     k : int, optional
@@ -290,6 +296,8 @@ class Density(FeatureMetric):
 class Coverage(FeatureMetric):
     """Coverage Metric for accessing diversity of the generated samples. Unlike
     Improved Recall, it is robust towards outliers in the real/reference data.
+
+    **Objective**: Diversity
 
     Parameters
     ----------
@@ -384,6 +392,8 @@ class Authenticity(FeatureMetric):
     """Authenticity Metric for assessing the authenticity of the generated
     samples. A synthetic sample is considered authentic if it is signficantly
     distinct from any real sample.
+
+    **Objective**: Privacy
 
     Parameters
     ----------

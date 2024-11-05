@@ -12,6 +12,8 @@ class NNDRPrivacy(FeatureMetric):
     negative score indicates better privacy assurance, while a less negative
     score suggests higher risk.
 
+    **Objective**: Authenticity
+
     Parameters
     ----------
     distance_type : str, optional, default="euclidean"
@@ -110,6 +112,8 @@ class DCRPrivacy(FeatureMetric):
     """Compute the DCR (Distance to Closest Record) privacy score. A more
     negative score indicates better privacy assurance, while a less negative
     score suggests higher risk.
+
+    **Objective**: Authenticity
 
     Parameters
     ----------

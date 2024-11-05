@@ -2,15 +2,13 @@
 
 This project uses [Conda](https://anaconda.org/anaconda/python) to manage Python virtual environments and [Poetry](https://python-poetry.org/) as the main dependency manager. The project is structured as a Python src package, with the main package located in the `pymdma` folder.
 
-There are three main modalities: `image`, `time_series`, and `tabular`. Each modality has its own folder/submodule in the `pymdma` package. The `general` and `common` modules contain the main classes definitions used in the API and on the package version of the project. 
+There are three main modalities: `image`, `time_series`, and `tabular`. Each modality has its own folder/submodule in the `pymdma` package. The `general` and `common` modules contain the main classes definitions used in the API and on the package version of the project.
 
-Each modality dependency is defined as an extra in the [pyproject](pyproject.toml) configuration file. Development dependencies are defined as poetry groups in the same file. More information about packaging and dependencies can be found below. 
+Each modality dependency is defined as an extra in the [pyproject](pyproject.toml) configuration file. Development dependencies are defined as poetry groups in the same file. More information about packaging and dependencies can be found below.
 
-> **IMPORTANT:** We are using setuptools as the build system, due to limitations in the current version of Poetry. Because of this, you should use poetry only to manage dependencies during the development stage. Requirements for each modality are defined in the requirements folder with the appropriate version constraints to ensure cross-compatibility between dependencies.
+The `scripts` folder contains shell scripts that can be used to automate common tasks. You can find some examples of execution in this folder. Additionally, the `notebooks` folder contains Jupyter notebooks with examples of how to import and use the package.
 
-The `scripts` folder contains shell scripts that can be used to automate common tasks. You can find some examples of execution in this folder. Additionally, the `notebooks` folder contains Jupyter notebooks with examples of how to import and use the pa
-
-We also provide a docker image to run a REST API server version of the repository. The docker image is built using the [Dockerfile](Dockerfile) in the root of the repository. 
+We also provide a docker image to run a REST API version of the repository. The docker image is built using the [Dockerfile](Dockerfile) in the root of the repository.
 
 A coding standard is enforced using [Black](https://github.com/psf/black), [isort](https://pypi.org/project/isort/) and
 [Flake8](https://flake8.pycqa.org/en/latest/). Python 3 type hinting is validated using
@@ -60,7 +58,7 @@ To start developing, you should install the project dependencies and the pre-com
 ```shell
 make setup-all # install dependencies
 source .venv-dev/bin/activate # activate the virtual environment
-make install-dev-tools # install development tools
+make install-dev-all # install development tools
 ```
 
 Alternatively, you can install the dependencies manually by running the following commands:
@@ -117,13 +115,11 @@ poetry install --only <group>,<group>,...
 
 ### Extra Dependencies
 To add an extra dependency, use:
-
 ```
 poetry add <package> --extras <extra>
 ```
 
 To install the extra dependencies, use:
-
 ```
 poetry install --extras <extra>
 ```
@@ -132,24 +128,6 @@ Note that `<extra>` is the name of the extra dependencies group or a space separ
 
 A list of all dependencies can be found in the [pyproject.toml](pyproject.toml) configuration file.
 
-A coding standard is enforced using [Black](https://github.com/psf/black), [isort](https://pypi.org/project/isort/) and
-[Flake8](https://flake8.pycqa.org/en/latest/). Python 3 type hinting is validated using
-[MyPy](https://pypi.org/project/mypy/).
-
-Unit tests are written using [Pytest](https://docs.pytest.org/en/latest/), documentation is written
-using [Numpy Style Python Docstring](https://numpydoc.readthedocs.io/en/latest/format.html).
-[Pydocstyle](http://pydocstyle.org/) is used as static analysis tool for checking compliance with Python docstring
-conventions.
-
-Additional code security standards are enforced by [Safety](https://github.com/pyupio/safety) and
-[Bandit](https://bandit.readthedocs.io/en/latest/). [Git-secrets](https://github.com/awslabs/git-secrets)
-ensure you're not pushing any passwords or sensitive information into your Bitbucket repository.
-Commits are rejected if the tool matches any of the configured regular expression patterns that indicate that sensitive
-information has been stored improperly.
-
-We use [mkdocs](https://www.mkdocs.org) for building documentation.
-You can call `make build_docs` from the project root, the docs will be built under `docs/_build/html`.
-Detail information about documentation can be found [here](docs/index.md).
 
 ## Git Hooks
 
@@ -167,7 +145,7 @@ that the linting and type checking is correct. If there are errors, the commit w
 that need to be made. Alternatively, you can run pre-commit
 
 ```
-pre-commit run --all-files  
+pre-commit run  
 ```
 
 If necessary, you can temporarily disable a hook using Git's `--no-verify` switch. However, keep in mind that the CI

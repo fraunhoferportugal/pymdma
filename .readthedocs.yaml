@@ -1,0 +1,15 @@
+# Read the Docs configuration file for Sphinx projects
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Set the OS, Python version and other tools you might need
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.10"
+  commands:
+    - pip install poetry==1.8.3
+    - poetry install --only docs
+    - poetry run mkdocs build --site-dir $READTHEDOCS_OUTPUT/html
