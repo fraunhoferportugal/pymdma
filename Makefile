@@ -57,7 +57,7 @@ setup-docs:
 	python3 -m venv .venv-docs && \
 	source .venv-docs/bin/activate && \
 	poetry run pip install --upgrade pip setuptools && \
-	poetry install --all-extras --with dev,docs && \
+	poetry install --only docs && \
 	echo -e "$(SUCCESS) Virtual environment created successfully!$(TERMINATOR)" && \
 	echo -e "$(HINT) Activate the virtual environment with: source .venv-docs/bin/activate$(TERMINATOR)"
 
@@ -415,7 +415,7 @@ push-all: push dvc-upload
 mkdocs-build: setup-docs
 	@echo -e "$(INFO) Building documentation...$(TERMINATOR)" && \
 	source .venv-docs/bin/activate && \
-	poetry run mkdocs build
+	poetry run mkdocs build --site-dir html/
 
 ## Serve MKDocs documentation on localhost:8000
 mkdocs-serve: setup-docs

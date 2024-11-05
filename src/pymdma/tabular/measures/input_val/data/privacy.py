@@ -14,6 +14,8 @@ class KAnonymityScore(Metric):
     record is less unique, meaning it is more difficult to re-identify
     individuals within the dataset.
 
+    **Objective**: Privacy
+
     Parameters
     ----------
     column_names : list

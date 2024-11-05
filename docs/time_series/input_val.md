@@ -1,6 +1,6 @@
 # Input Validation
 
-## Data Quality
-
+## Data-based
+### Quality (No-reference)
 ::: pymdma.time_series.measures.input_val.Uniqueness
 ::: pymdma.time_series.measures.input_val.SNR

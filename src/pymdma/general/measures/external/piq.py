@@ -19,6 +19,8 @@ class FrechetDistance(FeatureMetric):
     Allows the computation of the dispersion and distance ratios for the
     metric.
 
+    **Objective**: Fidelity, Diversity
+
     Parameters
     ----------
     compute_ratios : bool, optional
@@ -152,6 +154,8 @@ class FrechetDistance(FeatureMetric):
 class GeometryScore(FeatureMetric):
     """Geometry Score (GS) metric wrapper from the PIQ implementation of GS.
 
+    **Objective**: Fidelity, Diversity
+
     Parameters
     ----------
     sample_size : int, optional
@@ -248,6 +252,8 @@ class GeometryScore(FeatureMetric):
 class MultiScaleIntrinsicDistance(FeatureMetric):
     """Multi-Scale Intrinsic Distance (MSID) metric wrapper from the PIQ
     implementation of MSID.
+
+    **Objective**: Fidelity, Diversity
 
     Parameters
     ----------

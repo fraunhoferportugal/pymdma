@@ -37,7 +37,7 @@ plugins:
                     show_docstring_functions: false
                     show_docstring_classes: false
                     show_root_heading: true
-                    heading_level: 3
+                    heading_level: 4
                     show_source: true
                     members: false
                     show_bases: false
@@ -50,7 +50,7 @@ nav:
     - Getting Started:
         - Home: index.md
         - Installation: installation.md
-        - Tutorials: tutorials.md
+        # - Tutorials: tutorials.md
         - Contributting: contributing.md
         - Developing: developer.md
     - Image Metrics:

@@ -142,6 +142,8 @@ class PrecisionRecallDistribution(FeatureMetric):
     Whereas, the max_f_beta_inv score over all pairs of precision/recall values compresses
     the PRD plot into a single value that correlates with precision.
 
+    **Objective**: Fidelity, Diversity
+
     Parameters
     ----------
     num_clusters: int, optional
