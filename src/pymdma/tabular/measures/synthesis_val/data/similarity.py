@@ -1,4 +1,4 @@
-from typing import Dict, Literal, Optional, List
+from typing import Dict, List, Literal, Optional
 
 import numpy as np
 import pandas as pd
@@ -7,8 +7,8 @@ from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
-from ...utils_syn import _get_js_divergence, _get_kl_divergence, _get_ks_similarity, _get_nn_pdf, _get_tv_similarity
 from ....data.utils import is_categorical
+from ...utils_syn import _get_js_divergence, _get_kl_divergence, _get_ks_similarity, _get_nn_pdf, _get_tv_similarity
 
 
 class StatisticalSimScore(Metric):
@@ -17,6 +17,8 @@ class StatisticalSimScore(Metric):
 
     This metric assesses how closely the statistical properties of the synthetic dataset
     resemble those of the real dataset, providing a fidelity measure for synthetic data generation.
+
+    **Objective**: Similarity
 
     Parameters
     ----------
@@ -202,6 +204,8 @@ class StatisiticalDivergenceScore(Metric):
     """Computes a statistical divergence score for each column, specifically
     the Jensen-Shannon (JS) and Kullback-Leibler (KL) divergence scores.
 
+    **Objective**: Similarity
+
     Parameters
     ----------
     column_names : list of str, optional, default=None
@@ -347,7 +351,11 @@ class StatisiticalDivergenceScore(Metric):
         assert real_data.shape[1] == syn_data.shape[1], "Mismatched columns. Please fix before computing metrics."
 
         # columns
-        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(real_data.shape[1])]
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(real_data.shape[1])]
+        )
 
         # divergence map
         div_score = {}
@@ -391,6 +399,8 @@ class CoherenceScore(Metric):
     """Computes the coherence score between the correlation matrices of the
     target and synthetic datasets. A higher coherence score indicates better
     fidelity between the datasets in terms of their correlation structures.
+
+    **Objective**: Similarity
 
     Parameters
     ----------
@@ -492,7 +502,7 @@ class CoherenceScore(Metric):
         MetricResult
             A MetricResult object containing the coherence score.
         """
-        
+
         # compute correlation matrices
         real_corr = pd.DataFrame(real_data).corr(self.corr).replace(np.nan, 1).to_numpy()
         syn_corr = pd.DataFrame(syn_data).corr(self.corr).replace(np.nan, 1).to_numpy()

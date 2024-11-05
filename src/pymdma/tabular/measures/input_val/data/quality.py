@@ -6,6 +6,7 @@ from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
+from ....data.utils import is_categorical
 from ...utils_inp import (  # proximity_score,
     compute_vif,
     corr_matrix,
@@ -14,13 +15,14 @@ from ...utils_inp import (  # proximity_score,
     uniformity_score_per_column,
     z_score_outliers,
 )
-from ....data.utils import is_categorical
 
 
 class CorrelationScore(Metric):
     """Computes linear correlations between attributes in a dataset and returns
     the average percentage of attributes that are moderately or strongly
     correlated with each attribute.
+
+    **Objective**: Correlation
 
     Parameters
     ----------
@@ -99,7 +101,11 @@ class CorrelationScore(Metric):
         )
 
         # columns
-        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(data.shape[-1])]
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
 
         # Moderate/highly correlated attributes per attribute
         stats_d = corr_strong(
@@ -134,6 +140,8 @@ class UniquenessScore(Metric):
 
     The uniqueness score is calculated by determining the proportion of duplicate rows in the dataset. A higher
     percentage indicates more duplicates, while a lower percentage indicates higher uniqueness.
+
+    **Objective**: Uniqueness
 
     Parameters
     ----------
@@ -222,6 +230,8 @@ class UniformityScore(Metric):
     provide insights into the overall distribution of values. Discrete columns are scored based on categories,
     while continuous columns are assessed based on the spread of values.
 
+    **Objective**: Uniformity
+
     Parameters
     ----------
     column_names : list of str, optional, default=None
@@ -299,8 +309,12 @@ class UniformityScore(Metric):
         score_d = {}
 
         # columns
-        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(data.shape[-1])]
-        
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
+
         # column map
         col_map_exists = isinstance(self.col_map, dict)
 
@@ -315,7 +329,7 @@ class UniformityScore(Metric):
             else:
                 vtag = "discrete" if is_categorical(data) else "continuous"
                 vnum = None
-            
+
             # compute scores
             if vtag == "discrete":
                 stat, ent, imb = uniformity_score_per_column(
@@ -366,6 +380,8 @@ class OutlierScore(Metric):
     For each column, the function detects outliers using both z-score and interquartile range (IQR) methods,
     calculates the percentage of outliers, and averages the results of both methods. It also computes summary
     statistics (mean and standard deviation) of the outlier percentages across all columns.
+
+    **Objective**: Out of Distribution Detection
 
     Parameters
     ----------
@@ -444,7 +460,11 @@ class OutlierScore(Metric):
         data_ = data[~np.isnan(data).sum(axis=1, dtype=bool)]
 
         # columns
-        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(data.shape[-1])]
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
 
         perc_out_d = {}
         for idx, col in enumerate(cols):
@@ -486,6 +506,8 @@ class OutlierScore(Metric):
 class MissingScore(Metric):
     """Computes the percentage of missing values per column in the dataset and
     provides summary statistics for missing rates across samples and columns.
+
+    **Objective**: Missing Values
 
     Parameters
     ----------
@@ -550,7 +572,11 @@ class MissingScore(Metric):
         """
 
         # columns
-        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(data.shape[-1])]
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
 
         # missing values
         miss_samp = np.round(100 * np.isnan(data).sum(axis=1) / data.shape[1], 3)
@@ -580,6 +606,8 @@ class DimCurseScore(Metric):
     samples (instances) in the dataset to evaluate the curse of dimensionality.
     A higher ratio indicates that the dataset may suffer from high
     dimensionality relative to the number of samples.
+
+    **Objective**: Dimensionality
 
     Parameters
     ----------
@@ -654,6 +682,8 @@ class VIFactorScore(Metric):
     how much the variance of an estimated regression coefficient increases if
     your predictors are correlated.
 
+    **Objective**: Multicollinearity
+
     Parameters
     ----------
     column_names : list of str, optional, default=None
@@ -713,7 +743,11 @@ class VIFactorScore(Metric):
         """
 
         # columns
-        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(data.shape[-1])]
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
 
         # compute VIF for each column
         vif_p, _ = compute_vif(
