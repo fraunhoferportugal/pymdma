@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2024-11-05
+Documentation and API updates.
+
+### Added
+ - Objective field in the class docstrings for specifying the objective of the metric
+ - Added .readthedocs.yml file for readthedocs configuration
+ - General description of the package in the Getting Started section of the documentation
+
+### Fixed
+ - Updated unit tests for the API to reflect the new changes in the metric categorization
+ - Updated developer guidelines for pre-commit hooks
+ - Updated Makefile hook for documentation generation with output directory
+ - Reorganized the documentation structure to the new `metric_group` categorization
+ - Removed any reference to the previous categorizations from the API models
+
+### Changed
+ - mkdocs heading from 3 to 4 for better organization
+ - `FrechetDistance` metric now uses `InceptionFID` from piq as a default feature extractor
+
+
 
 ## [0.1.2] - 2024-10-28
 ### Added

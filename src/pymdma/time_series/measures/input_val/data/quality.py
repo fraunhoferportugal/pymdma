@@ -12,6 +12,8 @@ class Uniqueness(Metric):
     signals. For multidimensional input signals, it considers the average of
     the consecutive values across the signal dimensions (e.g., leads).
 
+    **Objective**: Uniqueness
+
     Parameters
     ----------
     tolerance : float, optional, default=0.0001

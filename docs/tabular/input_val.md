@@ -1,7 +1,7 @@
 # Input Validation
 
-## Data Quality
-
+## Data-based
+### Quality
 ::: pymdma.tabular.measures.input_val.CorrelationScore
 ::: pymdma.tabular.measures.input_val.UniquenessScore
 ::: pymdma.tabular.measures.input_val.UniformityScore
@@ -12,6 +12,6 @@
 
 ______________________________________________________________________
 
-## Privacy
+### Privacy
 
 ::: pymdma.tabular.measures.input_val.KAnonymityScore

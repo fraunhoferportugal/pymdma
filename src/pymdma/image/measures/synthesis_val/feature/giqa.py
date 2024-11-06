@@ -13,6 +13,8 @@ class GIQA(FeatureMetric):
     """Generated Image Quality Assessment (GIQA) metric based on Gaussian
     Mixture Model (GMM).
 
+    **Objective**: General Quality
+
     Parameters
     ----------
     n_components : int, optional

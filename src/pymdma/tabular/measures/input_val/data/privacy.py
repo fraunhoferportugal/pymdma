@@ -14,6 +14,8 @@ class KAnonymityScore(Metric):
     record is less unique, meaning it is more difficult to re-identify
     individuals within the dataset.
 
+    **Objective**: Privacy
+
     Parameters
     ----------
     column_names : list
@@ -67,7 +69,7 @@ class KAnonymityScore(Metric):
     min_value: float = 0.0
     max_value: float = 100.0
 
-    def __init__(self, column_names: List[str], qi_names: Optional[List[str]] = None, **kwargs):
+    def __init__(self, column_names: Optional[List[str]] = None, qi_names: Optional[List[str]] = None, **kwargs):
         super().__init__(**kwargs)
         self.column_names = column_names
         self.qi_names = qi_names
@@ -90,11 +92,17 @@ class KAnonymityScore(Metric):
             A MetricResult object containing the k-anonymity score.
         """
 
+        # columns
+        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(data.shape[-1])]
+
+        # qi names
+        qi_names = self.qi_names if isinstance(self.qi_names, list) else cols[-1:]
+
         # k anonimity
         k_anom = compute_k_anonymity(
             data=data,
-            column_names=self.column_names,
-            qi_names=self.qi_names,
+            column_names=cols,
+            qi_names=qi_names,
         )
 
         return MetricResult(

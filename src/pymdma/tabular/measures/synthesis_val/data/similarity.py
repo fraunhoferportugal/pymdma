@@ -1,4 +1,4 @@
-from typing import Dict, Literal, Optional
+from typing import Dict, List, Literal, Optional
 
 import numpy as np
 import pandas as pd
@@ -7,6 +7,7 @@ from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
+from ....data.utils import is_categorical
 from ...utils_syn import _get_js_divergence, _get_kl_divergence, _get_ks_similarity, _get_nn_pdf, _get_tv_similarity
 
 
@@ -17,9 +18,11 @@ class StatisticalSimScore(Metric):
     This metric assesses how closely the statistical properties of the synthetic dataset
     resemble those of the real dataset, providing a fidelity measure for synthetic data generation.
 
+    **Objective**: Similarity
+
     Parameters
     ----------
-    col_map : dict
+    col_map : dict, optional, default=None
         A mapping of column names to their types and properties. This is used to determine
         how to compute similarity for each column.
     **kwargs : dict
@@ -85,7 +88,7 @@ class StatisticalSimScore(Metric):
 
     def __init__(
         self,
-        col_map: Dict[str, Dict[str, str]],
+        col_map: Optional[Dict[str, Dict[str, str]]] = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -154,13 +157,22 @@ class StatisticalSimScore(Metric):
         # checkpoint
         assert real_data.shape[1] == syn_data.shape[1], "Mismatched columns. Please fix before computing metrics."
 
+        # column map
+        col_map_exists = isinstance(self.col_map, dict)
+        cols = self.col_map.keys() if col_map_exists else [f"att_{idx}" for idx in range(real_data.shape[1])]
+
         # similarity map
         sim_score = {}
 
         # column similarity
-        for idx, col in enumerate(self.col_map.keys()):
-            # dtype
-            vtype = self.col_map.get(col).get("type").get("tag")
+        for idx, col in enumerate(cols):
+            # continuous OR discrete
+            if col_map_exists:
+                # dtype
+                vtype = self.col_map.get(col).get("type").get("tag")
+            else:
+                # dtype
+                vtype = "discrete" if is_categorical(real_data[:, idx]) else "continuous"
 
             # compute similarity
             sim_ = self._stat_sim_1d(
@@ -174,8 +186,8 @@ class StatisticalSimScore(Metric):
 
         # global scores
         global_d = {
-            "mean": np.mean(list(sim_score.values())),
-            "std": np.std(list(sim_score.values())),
+            "mean": np.mean(list(sim_score.values())).round(2),
+            "std": np.std(list(sim_score.values())).round(2),
         }
 
         return MetricResult(
@@ -192,11 +204,13 @@ class StatisiticalDivergenceScore(Metric):
     """Computes a statistical divergence score for each column, specifically
     the Jensen-Shannon (JS) and Kullback-Leibler (KL) divergence scores.
 
+    **Objective**: Similarity
+
     Parameters
     ----------
-    col_map : dict
-        A mapping of column names to their types and properties.
-    score : str, optional
+    column_names : list of str, optional, default=None
+        List of the names of the columns (features) in the dataset.
+    score : str, optional, default='kl'
         Specifies the divergence score to compute ('js' for Jensen-Shannon, 'kl' for Kullback-Leibler, 'all' for both).
         By default, it is set to 'kl'.
     **kwargs : dict
@@ -247,7 +261,7 @@ class StatisiticalDivergenceScore(Metric):
 
     def __init__(
         self,
-        col_map: Dict[str, Dict[str, str]],
+        column_names: Optional[List[str]] = None,
         score: Literal["js", "kl", "all"] = "kl",
         **kwargs,
     ):
@@ -257,9 +271,9 @@ class StatisiticalDivergenceScore(Metric):
 
         Parameters
         ----------
-        col_map : dict
-            A mapping of column names to their types and properties.
-        score : str, optional
+        column_names : list of str, optional, default=None
+            List of the names of the columns (features) in the dataset.
+        score : str, optional, default='kl'
             Specifies the divergence score to compute ('js' for Jensen-Shannon,
             'kl' for Kullback-Leibler). Default is 'kl'.
         **kwargs : dict
@@ -268,8 +282,8 @@ class StatisiticalDivergenceScore(Metric):
 
         super().__init__(**kwargs)
 
-        # column map
-        self.col_map = col_map
+        # column names
+        self.column_names = column_names
 
         # score type
         self.score = score
@@ -336,11 +350,18 @@ class StatisiticalDivergenceScore(Metric):
         # checkpoint
         assert real_data.shape[1] == syn_data.shape[1], "Mismatched columns. Please fix before computing metrics."
 
+        # columns
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(real_data.shape[1])]
+        )
+
         # divergence map
         div_score = {}
 
         # column-wise
-        for idx, col in enumerate(self.col_map.keys()):
+        for idx, col in enumerate(cols):
             # compute scores
             sim_ = self._diverg_score_1d(
                 real_data[:, idx],
@@ -378,6 +399,8 @@ class CoherenceScore(Metric):
     """Computes the coherence score between the correlation matrices of the
     target and synthetic datasets. A higher coherence score indicates better
     fidelity between the datasets in terms of their correlation structures.
+
+    **Objective**: Similarity
 
     Parameters
     ----------
@@ -439,10 +462,10 @@ class CoherenceScore(Metric):
 
         Parameters
         ----------
-        weights : np.ndarray, optional
+        weights : np.ndarray, optional, default=None
             Weights for the correlations, allowing for weighted contributions
             to the coherence score. If None, uniform weights are applied.
-        corr_type : str, optional
+        corr_type : str, optional, default=None
             The type of correlation to compute ('pearson' by default).
         **kwargs : dict
             Additional keyword arguments passed to the parent class.
@@ -479,6 +502,7 @@ class CoherenceScore(Metric):
         MetricResult
             A MetricResult object containing the coherence score.
         """
+
         # compute correlation matrices
         real_corr = pd.DataFrame(real_data).corr(self.corr).replace(np.nan, 1).to_numpy()
         syn_corr = pd.DataFrame(syn_data).corr(self.corr).replace(np.nan, 1).to_numpy()

@@ -30,10 +30,9 @@ class StandardTransform:
         image = self.preprocess_transform(image) if self.preprocess_transform is not None else image
         image = image.resize(self.img_size, self.interp)
         # bring image to the range [0, 1] and normalize to [-1, 1]
-        image = (np.array(image) - 128) / 128
-        # image = np.array(image).astype(np.float32) / 255.0
-        # image = image * 2.0 - 1.0
-        return torch.from_numpy(image).permute(2, 0, 1).to(torch.float32)
+        image = np.array(image).astype(np.float32) / 255.0
+        image = image * 2.0 - 1.0
+        return torch.from_numpy(image).permute(2, 0, 1).float()
 
 
 class BaseExtractor(torch.nn.Module, EmbedderInterface):
@@ -79,7 +78,7 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
             end = start + bsize
             images = [transform(Image.open(f).convert("RGB")).numpy() for f in files[start:end]]
             batch = torch.from_numpy(np.array(images, dtype=np.float32)).to(device)
-            batch = self.extractor(batch).detach().cpu().numpy()
+            batch = self(batch).detach().cpu().numpy()
             act_array.append(batch)
             start += bsize
         return np.concatenate(act_array, axis=0)
@@ -103,12 +102,12 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         act_array = []
         labels_array = []
         ids_array = []
-
+        
         self.extractor = self.extractor.to(device, dtype=torch.float32)
         dataloader.dataset.transform = StandardTransform(self.input_size, self.interpolation, preprocess_transform)
         for batch, labels, img_ids in tqdm(dataloader, total=len(dataloader)):
             batch = batch.to(device, dtype=torch.float32)
-            batch = self.extractor(batch).detach().cpu().numpy()
+            batch = self(batch).detach().cpu().numpy()
             act_array.append(batch)
             labels_array.append(labels)
             ids_array.append(img_ids)

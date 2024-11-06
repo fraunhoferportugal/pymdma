@@ -24,10 +24,11 @@ Or alternatively, you can install all modalities by running the following comman
 $ pip install pymdma[all]
 ```
 
-## Torch CPU version
+
+## Minimal Version (CPU)
 
 For a minimal installation (without GPU support), you can install the package with CPU version of torch, which will skip the installation of CUDA dependencies. To do so, run the following command:
 
 ```bash
-$ pip install pymdma[...] --extra-index-url=https://download.pytorch.org/whl/cpu/torch_stable.html
+$ pip install pymdma[...] --find-url=https://download.pytorch.org/whl/cpu/torch_stable.html
 ```

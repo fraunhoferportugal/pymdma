@@ -6,6 +6,7 @@ from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
 
+from ....data.utils import is_categorical
 from ...utils_inp import (  # proximity_score,
     compute_vif,
     corr_matrix,
@@ -21,9 +22,11 @@ class CorrelationScore(Metric):
     the average percentage of attributes that are moderately or strongly
     correlated with each attribute.
 
+    **Objective**: Correlation
+
     Parameters
     ----------
-    column_names : List[str]
+    column_names : list of str, optional, default=None
         List of column names corresponding to the attributes in the dataset.
     correlation_thresh : float, optional, default=0.5
         The correlation threshold to consider an attribute as moderately or strongly correlated.
@@ -64,8 +67,8 @@ class CorrelationScore(Metric):
 
     def __init__(
         self,
-        column_names: List[str],
-        correlation_thresh: float = 0.5,
+        column_names: Optional[List[str]] = None,
+        correlation_thresh: Optional[float] = 0.5,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -97,10 +100,17 @@ class CorrelationScore(Metric):
             **kwargs,
         )
 
-        # moderate/Highly correlated attributes per attribute
+        # columns
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
+
+        # Moderate/highly correlated attributes per attribute
         stats_d = corr_strong(
             corr_matrix=corr_m,
-            cols=self.column_names,
+            cols=cols,
             c_thresh=self.c_thresh,
             **kwargs,
         )
@@ -130,6 +140,8 @@ class UniquenessScore(Metric):
 
     The uniqueness score is calculated by determining the proportion of duplicate rows in the dataset. A higher
     percentage indicates more duplicates, while a lower percentage indicates higher uniqueness.
+
+    **Objective**: Uniqueness
 
     Parameters
     ----------
@@ -210,51 +222,6 @@ class UniquenessScore(Metric):
         )
 
 
-# class SparsityScore(Metric):  # TODO feature
-#     """
-#     Computes a sparsity score based in the proximity of the clusters found
-#     by DBSCAN. Higher scores (close to 1) indicate sparse clusters (overlapped)
-#     whereas lower scores (close to -1) suggest less sparsed clusters (well-
-#     separated).
-
-#     Parameters
-#     ----------
-#     emb : np.ndarray
-#         _description_
-
-#     Returns
-#     -------
-#     sparcity_score : float
-#         _description_
-#     """
-
-#     reference_type = ReferenceType.NONE
-#     evaluation_level = EvaluationLevel.DATASET
-#     metric_goal = InputQualityMetrics.UNIFORMITY
-
-#     higher_is_better: bool = False
-#     min_value: float = 0.0
-#     max_value: float = np.inf
-
-#     def __init__(
-#         self,
-#         **kwargs,
-#     ):
-#         super().__init__(**kwargs)
-
-#     def compute(self, emb: np.ndarray, **kwargs) -> MetricResult:
-#         # sparsity score
-#         spars = proximity_score(emb, **kwargs) * -1
-
-#         return MetricResult(
-#             dataset_level={
-#                 "dtype": OutputsTypes.NUMERIC,
-#                 "subtype": "float",
-#                 "value": spars
-#             },
-#         )
-
-
 class UniformityScore(Metric):
     """Computes a uniformity score for each attribute in the dataset,
     evaluating both discrete and continuous columns.
@@ -262,6 +229,8 @@ class UniformityScore(Metric):
     For each column, the score assesses its uniformity, entropy, and imbalance level, which can be aggregated to
     provide insights into the overall distribution of values. Discrete columns are scored based on categories,
     while continuous columns are assessed based on the spread of values.
+
+    **Objective**: Uniformity
 
     Parameters
     ----------
@@ -339,15 +308,29 @@ class UniformityScore(Metric):
         # score dictionary
         score_d = {}
 
+        # columns
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
+
+        # column map
+        col_map_exists = isinstance(self.col_map, dict)
+
         # loop over columns
-        for idx, col in enumerate(self.column_names):
-            # get column key
-            vtype = self.col_map.get(col).get("type")
-
+        for idx, col in enumerate(cols):
             # type and number of tag (discrete/continuous)
-            vtag = vtype.get("tag")
-            vnum = len(vtype.get("opt"))
+            if col_map_exists:
+                # get column key
+                vtype = self.col_map.get(col, {}).get("type", {})
+                vtag = vtype.get("tag")
+                vnum = len(vtype.get("opt"))
+            else:
+                vtag = "discrete" if is_categorical(data) else "continuous"
+                vnum = None
 
+            # compute scores
             if vtag == "discrete":
                 stat, ent, imb = uniformity_score_per_column(
                     data_col=data[:, idx],
@@ -398,9 +381,11 @@ class OutlierScore(Metric):
     calculates the percentage of outliers, and averages the results of both methods. It also computes summary
     statistics (mean and standard deviation) of the outlier percentages across all columns.
 
+    **Objective**: Out of Distribution Detection
+
     Parameters
     ----------
-    column_names : list of str, optional
+    column_names : list of str, optional, default=None
         List of column names in the dataset, by default None.
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
@@ -474,8 +459,15 @@ class OutlierScore(Metric):
         # curate data
         data_ = data[~np.isnan(data).sum(axis=1, dtype=bool)]
 
+        # columns
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
+
         perc_out_d = {}
-        for idx, col in enumerate(self.column_names):
+        for idx, col in enumerate(cols):
             # number of samples
             n_samples = len(data_[:, idx])
 
@@ -514,6 +506,8 @@ class OutlierScore(Metric):
 class MissingScore(Metric):
     """Computes the percentage of missing values per column in the dataset and
     provides summary statistics for missing rates across samples and columns.
+
+    **Objective**: Missing Values
 
     Parameters
     ----------
@@ -577,12 +571,19 @@ class MissingScore(Metric):
             A MetricResult object containing the missing value percentages for each column and summary statistics.
         """
 
+        # columns
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
+
         # missing values
         miss_samp = np.round(100 * np.isnan(data).sum(axis=1) / data.shape[1], 3)
         miss_col = np.round(100 * np.isnan(data).sum(axis=0) / data.shape[0], 3)
 
         # missing rates per column
-        miss_col_d = {col: miss for col, miss in zip(self.column_names, miss_col)}
+        miss_col_d = {col: miss for col, miss in zip(cols, miss_col)}
 
         # aggregated missing rates
         miss_agg_d = {
@@ -605,6 +606,8 @@ class DimCurseScore(Metric):
     samples (instances) in the dataset to evaluate the curse of dimensionality.
     A higher ratio indicates that the dataset may suffer from high
     dimensionality relative to the number of samples.
+
+    **Objective**: Dimensionality
 
     Parameters
     ----------
@@ -679,9 +682,11 @@ class VIFactorScore(Metric):
     how much the variance of an estimated regression coefficient increases if
     your predictors are correlated.
 
+    **Objective**: Multicollinearity
+
     Parameters
     ----------
-    column_names : list
+    column_names : list of str, optional, default=None
         List of the names of the columns (features) in the dataset.
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
@@ -715,7 +720,7 @@ class VIFactorScore(Metric):
     min_value: float = 0.0
     max_value: float = np.inf
 
-    def __init__(self, column_names: List[str], **kwargs):
+    def __init__(self, column_names: Optional[List[str]] = None, **kwargs):
         super().__init__(**kwargs)
         self.column_names = column_names
 
@@ -737,10 +742,17 @@ class VIFactorScore(Metric):
             A MetricResult object containing the VIF scores for each feature.
         """
 
+        # columns
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
+
         # compute VIF for each column
         vif_p, _ = compute_vif(
             data=data,
-            column_names=self.column_names,
+            column_names=cols,
             **kwargs,
         )
 
@@ -756,7 +768,6 @@ class VIFactorScore(Metric):
 __all__ = [
     "CorrelationScore",
     "UniquenessScore",
-    # "SparsityScore",
     "UniformityScore",
     "OutlierScore",
     "MissingScore",
