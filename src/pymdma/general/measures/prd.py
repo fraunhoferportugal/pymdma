@@ -2,7 +2,7 @@ import numpy as np
 
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 from ..utils.util import cluster_into_bins
 
@@ -183,7 +183,7 @@ class PrecisionRecallDistribution(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     def __init__(
         self,

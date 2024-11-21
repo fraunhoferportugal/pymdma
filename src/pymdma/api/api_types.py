@@ -9,23 +9,22 @@ from ..common.output import EvalLevelOutput
 from ..constants import (
     DataModalities,
     EvaluationLevel,
-    InputMetricGroups,
+    InputCategories,
+    MetricGroup,
     ReferenceType,
-    SyntheticMetricGroups,
-    ValidationTypes,
-    MetricGoal
+    SyntheticCategories,
+    ValidationDomain,
 )
-
 
 
 class DatasetParams(BaseModel):
     """Parameters for the Data Evaluation endpoint."""
 
-    validation_type: ValidationTypes = Field(
+    validation_domain: ValidationDomain = Field(
         Query(
             ...,
-            title="Validation Types",
-            description="Type of validation (e.g. input_val, synthesis_val)",
+            title="Validation Domain",
+            description="Domain of validation (e.g. input_val, synthesis_val)",
         ),
     )
     reference_type: ReferenceType = Field(
@@ -35,14 +34,14 @@ class DatasetParams(BaseModel):
             description="Type of reference to use (e.g. instance, dataset, none)",
         ),
     )
-    metric_group: Annotated[
-        List[Union[SyntheticMetricGroups, InputMetricGroups]],
+    metric_category: Annotated[
+        List[Union[SyntheticCategories, InputCategories]],
         Query(),
     ] = Field(
         Query(
             ...,
-            title="Metric Group",
-            description="Group of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
+            title="Metric Category",
+            description="Category of the metric in the taxonomy (e.g. data-based, feature-based, annotation-based). Mandatory field.",
         ),
     )
     evaluation_level: Optional[EvaluationLevel] = Field(
@@ -52,11 +51,11 @@ class DatasetParams(BaseModel):
             description="Compute metrics on a dataset or instance level (e.g. dataset_level, instance_level)",
         ),
     )
-    metric_goal: Annotated[List[Union[MetricGoal, None]], Query()] = Field(
+    metric_group: Annotated[List[Union[MetricGroup, None]], Query()] = Field(
         Query(
             [],
-            title="Metric Goals",
-            description="Metric specific goal(s) (e.g. quality, privacy, utility, etc.). Defaults to None - evaluate on all goals of the main goal.",
+            title="Metric Group",
+            description="Metric specific group(s) (e.g. quality, privacy, utility, etc.). Defaults to None - evaluate on all groups within the domain.",
         ),
     )
     annotation_file: Optional[str] = Field(
@@ -67,7 +66,7 @@ class DatasetParams(BaseModel):
         ),
     )
 
-    @field_validator("metric_goal", "metric_group")
+    @field_validator("metric_group", "metric_category")
     def process_goals(cls, v):
         if isinstance(v, list) and len(v) == 0:
             return None
@@ -76,21 +75,21 @@ class DatasetParams(BaseModel):
     @model_validator(mode="after")
     def check_model_dependencies(self):
         # check if metric groups are in line with the specified validation type
-        if self.metric_group:
-            expected = InputMetricGroups if self.validation_type == ValidationTypes.INPUT else SyntheticMetricGroups
+        if self.metric_category:
+            expected = InputCategories if self.validation_domain == ValidationDomain.INPUT else SyntheticCategories
             valid = False
-            if self.validation_type == ValidationTypes.INPUT:
-                valid = all(InputMetricGroups.has_value(group) for group in self.metric_group)
-            elif self.validation_type == ValidationTypes.SYNTH:
-                valid = all(SyntheticMetricGroups.has_value(group) for group in self.metric_group)
+            if self.validation_domain == ValidationDomain.INPUT:
+                valid = all(InputCategories.has_value(group) for group in self.metric_category)
+            elif self.validation_domain == ValidationDomain.SYNTH:
+                valid = all(SyntheticCategories.has_value(group) for group in self.metric_category)
             if not valid:
                 raise RequestValidationError(
                     errors=[
                         {
-                            "loc": ("query", "metric_goal"),
-                            "msg": f"Metric group(s) {self.metric_group} not valid for validation type {self.validation_type}",
+                            "loc": ("query", "metric_group"),
+                            "msg": f"Metric group(s) {self.metric_category} not valid for validation type {self.validation_domain}",
                             "type": "string",
-                            "input": self.metric_group,
+                            "input": self.metric_category,
                             "ctx": {"expected": ", ".join([group for group in expected])},
                         },
                     ],
@@ -105,22 +104,22 @@ class MetricInfoParams(BaseModel):
             description="Select metrics for specific data modalities (e.g. time_series, image, tabular, text). Defaults to None - fetch all data modalities.",
         ),
     )
-    validation_types: Annotated[List[Union[ValidationTypes, None]], Query()] = Field(
+    validation_domains: Annotated[List[Union[ValidationDomain, None]], Query()] = Field(
         Query(
             [],
-            title="Validation Types",
-            description="Select metrics for input or synthesis validation. (e.g. input_val, synthesis_val). Defaults to None - fetch all validation types.",
+            title="Validation Domain",
+            description="Select metrics for input or synthesis validation. (e.g. input_val, synthesis_val). Defaults to None - fetch all validation domains.",
         ),
     )
-    metric_groups: Annotated[List[Union[InputMetricGroups, SyntheticMetricGroups, None]], Query()] = Field(
+    metric_categorys: Annotated[List[Union[InputCategories, SyntheticCategories, None]], Query()] = Field(
         Query(
             [],
-            title="Metric Groups",
-            description="Group of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
+            title="Metric Categories",
+            description="Cateogry of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
         ),
     )
 
-    @field_validator("data_modalities", "validation_types", "metric_groups")
+    @field_validator("data_modalities", "validation_domains", "metric_categorys")
     def process_goals(cls, v):
         if isinstance(v, list) and len(v) == 0:
             return None
@@ -130,11 +129,11 @@ class MetricInfoParams(BaseModel):
 class SpecificFunctionParams(BaseModel):
     """Parameters for the Data Evaluation endpoint."""
 
-    validation_type: ValidationTypes = Field(
+    validation_domain: ValidationDomain = Field(
         Query(
             ...,
-            title="Validation Types",
-            description="Type of validation (e.g. input_val, synthesis_val)",
+            title="Validation Domain",
+            description="Domain of validation (e.g. input_val, synthesis_val)",
         ),
     )
     metric_names: List[str] = Field(
@@ -235,7 +234,9 @@ class MetricInfo(BaseModel):
 
     name: str = Field(title="Name", description="Metric name.")
     data_modality: DataModalities = Field(title="Data Modality", description="Data modality of the metric.")
-    validation_type: ValidationTypes = Field(title="Validation Type", description="Data validation type of the metric.")
+    validation_domain: ValidationDomain = Field(
+        title="Validation Domain", description="Data validation domain of the metric."
+    )
     evaluation_level: Union[EvaluationLevel, List[EvaluationLevel]] = Field(
         title="Evaluation Level",
         description="Evaluation level of the metric (e.g. dataset_wise, instance_wise).",
@@ -244,14 +245,14 @@ class MetricInfo(BaseModel):
         title="Reference Type",
         description="Reference type of the metric (e.g. dataset, instance, none).",
     )
-    metric_group: Union[SyntheticMetricGroups, InputMetricGroups] = Field(
-        title="Metric Group",
-        description="Group of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
+    metric_category: Union[SyntheticCategories, InputCategories] = Field(
+        title="Metric Category",
+        description="Category of the metric in the categorization (e.g. data-based, feature-based, annotation-based). Mandatory field.",
     )
-    metric_goal: Optional[Union[MetricGoal, List[MetricGoal]]] = Field(
+    metric_group: Optional[Union[MetricGroup, List[MetricGroup]]] = Field(
         None,
-        title="Metric Goal",
-        description="Metric specific goal (e.g. quality, privacy, validity, etc.).",
+        title="Metric Group",
+        description="Metric specific group (e.g. quality, privacy, validity, etc.).",
     )
 
     description: Optional[str] = Field(None, title="Description", description="Docstring description of the metric.")

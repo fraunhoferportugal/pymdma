@@ -4,18 +4,18 @@ from tests._utils import prune_params
 
 
 @pytest.mark.parametrize(
-    "modality, validation_type, reference_type, metric_group",
+    "modality, validation_domain, reference_type, metric_category",
     [
         ("image", "input_val", "none", ["data"]),
         ("time_series", "input_val", "none", ["data"]),
     ],
 )
-def test_empty_eval_level(test_client, modality, validation_type, reference_type, metric_group):
+def test_empty_eval_level(test_client, modality, validation_domain, reference_type, metric_category):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
-            "metric_group": metric_group,
+            "metric_category": metric_category,
         },
     )
     response = test_client.get(f"/metrics/{modality}", params=params)
@@ -25,7 +25,7 @@ def test_empty_eval_level(test_client, modality, validation_type, reference_type
 
 
 @pytest.mark.parametrize(
-    "modality, validation_type, reference_type, metric_group, code",
+    "modality, validation_domain, reference_type, metric_category, code",
     [
         ("image", "input_val", "dataset", ["data"], 501),
         ("image", "input_val", "dataset", ["data"], 501),
@@ -37,12 +37,12 @@ def test_empty_eval_level(test_client, modality, validation_type, reference_type
         ("image", "input_val", "none", ["annotation"], 400),
     ],
 )
-def test_dataset_eval_fail(test_client, modality, validation_type, reference_type, metric_group, code):
+def test_dataset_eval_fail(test_client, modality, validation_domain, reference_type, metric_category, code):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
-            "metric_group": metric_group,
+            "metric_category": metric_category,
         },
     )
     response = test_client.get(f"/metrics/{modality}", params=params)
@@ -52,20 +52,20 @@ def test_dataset_eval_fail(test_client, modality, validation_type, reference_typ
 
 
 @pytest.mark.parametrize(
-    "validation_type, evaluation_level, reference_type, metric_group",
+    "validation_domain, evaluation_level, reference_type, metric_category",
     [
         ("input_val", "instance", "none", ["data"]),
         ("input_val", "instance", "instance", ["data"]),
         ("synthesis_val", "dataset", "dataset", ["feature"]),
     ],
 )
-def test_dataset_image_pass(test_client, validation_type, evaluation_level, reference_type, metric_group):
+def test_dataset_image_pass(test_client, validation_domain, evaluation_level, reference_type, metric_category):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
             "evaluation_level": evaluation_level,
-            "metric_group": metric_group,
+            "metric_category": metric_category,
         },
     )
     response = test_client.get("/metrics/image", params=params)
@@ -75,19 +75,19 @@ def test_dataset_image_pass(test_client, validation_type, evaluation_level, refe
 
 
 @pytest.mark.parametrize(
-    "validation_type, evaluation_level, ann_file",
+    "validation_domain, evaluation_level, ann_file",
     [
         ("input_val", "instance", "COCO_annotation_example_bb_exp.json"),
         ("input_val", "instance", "COCO_annotation_example_mask_exp.json"),
     ],
 )
-def test_dataset_image_ann_pass(test_client, validation_type, evaluation_level, ann_file):
+def test_dataset_image_ann_pass(test_client, validation_domain, evaluation_level, ann_file):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": "none",
             "evaluation_level": evaluation_level,
-            "metric_group": ["annotation", "data"],
+            "metric_category": ["annotation", "data"],
             "annotation_file": ann_file,
         },
     )
@@ -104,19 +104,19 @@ def test_dataset_image_ann_pass(test_client, validation_type, evaluation_level, 
 
 
 @pytest.mark.parametrize(
-    "validation_type, evaluation_level, reference_type, metric_group",
+    "validation_domain, evaluation_level, reference_type, metric_category",
     [
         ("input_val", "instance", "none", ["data"]),
         ("synthesis_val", "dataset", "dataset", ["feature"]),
     ],
 )
-def test_dataset_time_series_pass(test_client, validation_type, evaluation_level, reference_type, metric_group):
+def test_dataset_time_series_pass(test_client, validation_domain, evaluation_level, reference_type, metric_category):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
             "evaluation_level": evaluation_level,
-            "metric_group": metric_group,
+            "metric_category": metric_category,
         },
     )
     response = test_client.get("/metrics/time_series", params=params)
@@ -126,19 +126,19 @@ def test_dataset_time_series_pass(test_client, validation_type, evaluation_level
 
 
 @pytest.mark.parametrize(
-    "validation_type, evaluation_level, reference_type, metric_group",
+    "validation_domain, evaluation_level, reference_type, metric_category",
     [
         ("input_val", "dataset", "none", ["data"]),
         ("synthesis_val", "dataset", "dataset", ["data"]),
     ],
 )
-def test_dataset_tabular_pass(test_client, validation_type, evaluation_level, reference_type, metric_group):
+def test_dataset_tabular_pass(test_client, validation_domain, evaluation_level, reference_type, metric_category):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
             "evaluation_level": evaluation_level,
-            "metric_group": metric_group,
+            "metric_category": metric_category,
         },
     )
     response = test_client.get("/metrics/tabular", params=params)
@@ -148,20 +148,22 @@ def test_dataset_tabular_pass(test_client, validation_type, evaluation_level, re
 
 
 @pytest.mark.parametrize(
-    "modality, validation_type, reference_type, metric_group, metric_goal",
+    "modality, validation_domain, reference_type, metric_category, metric_group",
     [
         ("image", "input_val", "none", ["data"], ["quality"]),
         ("image", "synthesis_val", "dataset", ["feature"], ["quality", "privacy"]),
         ("tabular", "input_val", "none", ["data"], ["quality", "privacy"]),
     ],
 )
-def test_dataset_metric_goal_pass(test_client, modality, validation_type, reference_type, metric_group, metric_goal):
+def test_dataset_metric_group_pass(
+    test_client, modality, validation_domain, reference_type, metric_category, metric_group
+):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
+            "metric_category": metric_category,
             "metric_group": metric_group,
-            "metric_goal": metric_goal,
         },
     )
     response = test_client.get(f"/metrics/{modality}", params=params)
@@ -171,28 +173,28 @@ def test_dataset_metric_goal_pass(test_client, modality, validation_type, refere
 
 
 @pytest.mark.parametrize(
-    "modality, validation_type, reference_type, metric_group, metric_goal, code",
+    "modality, validation_domain, reference_type, metric_category, metric_group, code",
     [
         ("image", "input_val", "none", ["data"], ["privacy"], 501),
         ("time_series", "synthesis_val", "dataset", ["data"], ["privacy"], 501),
         ("tabular", "input_val", "none", ["feature"], ["privacy", "quality"], 422),
     ],
 )
-def test_dataset_metric_goal_fail(
+def test_dataset_metric_group_fail(
     test_client,
     modality,
-    validation_type,
+    validation_domain,
     reference_type,
+    metric_category,
     metric_group,
-    metric_goal,
     code,
 ):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
+            "metric_category": metric_category,
             "metric_group": metric_group,
-            "metric_goal": metric_goal,
         },
     )
     response = test_client.get(f"/metrics/{modality}", params=params)
@@ -205,7 +207,7 @@ def test_dataset_metric_goal_fail(
 ################################### TEST SPECIFIC METRICS #####################################################
 ###############################################################################################################
 @pytest.mark.parametrize(
-    "modality, validation_type, metric_names, reference_type",
+    "modality, validation_domain, metric_names, reference_type",
     [
         ("image", "input_val", ["Tenengrad", "DOM"], "none"),
         ("image", "input_val", ["PSNR", "SSIM"], "instance"),
@@ -217,10 +219,10 @@ def test_dataset_metric_goal_fail(
         # ("text", "input_val", ["Identifiability"], "none"),
     ],
 )
-def test_specific_metric_pass(test_client, modality, validation_type, metric_names, reference_type):
+def test_specific_metric_pass(test_client, modality, validation_domain, metric_names, reference_type):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
             "metric_names": metric_names,
         },
@@ -232,7 +234,7 @@ def test_specific_metric_pass(test_client, modality, validation_type, metric_nam
 
 
 @pytest.mark.parametrize(
-    "modality, validation_type, metric_names, reference_type, code",
+    "modality, validation_domain, metric_names, reference_type, code",
     [
         ("image", "input_val", ["Tene", "DOM"], "none", 404),
         ("image", "inpu", ["PSNR", "SSIM"], "instance", 422),
@@ -240,10 +242,10 @@ def test_specific_metric_pass(test_client, modality, validation_type, metric_nam
         ("time_series", "synthesis_val", ["WassersteinDist"], "dataset", 404),
     ],
 )
-def test_specific_metric_fail(test_client, modality, validation_type, metric_names, reference_type, code):
+def test_specific_metric_fail(test_client, modality, validation_domain, metric_names, reference_type, code):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
             "metric_names": metric_names,
         },
@@ -255,7 +257,7 @@ def test_specific_metric_fail(test_client, modality, validation_type, metric_nam
 
 
 @pytest.mark.parametrize(
-    "validation_type, metric_names, reference_type, ann_file, code",
+    "validation_domain, metric_names, reference_type, ann_file, code",
     [
         ("input_val", ["AnnotationCorrectness", "AnnotationUniqueness"], "none", None, 400),
         (
@@ -267,10 +269,10 @@ def test_specific_metric_fail(test_client, modality, validation_type, metric_nam
         ),
     ],
 )
-def test_specific_metric_ann_fail(test_client, validation_type, metric_names, reference_type, ann_file, code):
+def test_specific_metric_ann_fail(test_client, validation_domain, metric_names, reference_type, ann_file, code):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
             "metric_names": metric_names,
             "annotation_file": ann_file,
@@ -283,7 +285,7 @@ def test_specific_metric_ann_fail(test_client, validation_type, metric_names, re
 
 
 @pytest.mark.parametrize(
-    "validation_type, metric_names, reference_type, ann_file",
+    "validation_domain, metric_names, reference_type, ann_file",
     [
         (
             "input_val",
@@ -299,10 +301,10 @@ def test_specific_metric_ann_fail(test_client, validation_type, metric_names, re
         ),
     ],
 )
-def test_specific_metric_ann_pass(test_client, validation_type, metric_names, reference_type, ann_file):
+def test_specific_metric_ann_pass(test_client, validation_domain, metric_names, reference_type, ann_file):
     params = prune_params(
         {
-            "validation_type": validation_type,
+            "validation_domain": validation_domain,
             "reference_type": reference_type,
             "metric_names": metric_names,
             "annotation_file": ann_file,

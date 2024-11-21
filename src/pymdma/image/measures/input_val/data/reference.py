@@ -8,7 +8,7 @@ from torchmetrics.image import MultiScaleStructuralSimilarityIndexMeasure, Struc
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 # TODO review documentations and attributes
 
@@ -38,7 +38,7 @@ class PSNR(Metric):
 
     reference_type = ReferenceType.INSTANCE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -126,7 +126,7 @@ class SSIM(Metric):
 
     reference_type = ReferenceType.INSTANCE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -223,7 +223,7 @@ class MSSIM(Metric):
 
     reference_type = ReferenceType.INSTANCE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0

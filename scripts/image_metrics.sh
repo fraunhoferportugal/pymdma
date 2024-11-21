@@ -2,7 +2,7 @@
 
 pymdma \
         --modality image \
-        --validation_type input \
+        --validation_domain input \
         --reference_type none \
         --evaluation_level instance \
         --target_data data/test/image/input_val/dataset \
@@ -13,7 +13,7 @@ pymdma \
 
 pymdma \
         --modality image \
-        --validation_type synth \
+        --validation_domain synth \
         --reference_type dataset \
         --evaluation_level dataset \
         --target_data data/test/image/synthesis_val/dataset \

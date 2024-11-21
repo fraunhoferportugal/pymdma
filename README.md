@@ -9,12 +9,17 @@
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/pytest-enabled-brightgreen)](https://github.com/pytest-dev/pytest)
 [![conventional-commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow)](https://github.com/commitizen-tools/commitizen)
+[![Read The Docs](https://readthedocs.org/projects/pymdma/badge/?version=latest)](https://pymdma.readthedocs.io/en/latest/installation/)
+
+<!-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fraunhoferportugal/pymdma.git/main?labpath=notebooks%2Fimage_examples.ipynb) -->
 
 Data auditing is essential for ensuring the reliability of machine learning models by maintaining the integrity of the datasets upon which these models rely. As synthetic data use increases to address data scarcity and privacy concerns, there is a growing demand for a robust auditing framework.
 
 Existing repositories often lack comprehensive coverage across various modalities or validation types. This work introduces a dedicated library for data auditing, presenting a comprehensive suite of metrics designed for evaluating synthetic data. Additionally, it extends its focus to the quality assessment of input data, whether synthetic or real, across time series, tabular, and image modalities.
 
 This library aims to serve as a unified and accessible resource for researchers, practitioners, and developers, enabling them to assess the quality and utility of their datasets. This initiative encourages collaborative contributions by open-sourcing the associated code, fostering a community-driven approach to advancing data auditing practices. This work is intended for publication in an open-source journal to facilitate widespread dissemination, adoption, and impact tracking within the scientific and technical community.
+
+For more information check out the official documentation [here](https://pymdma.readthedocs.io/en/latest/).
 
 ## Prerequisites
 
@@ -106,13 +111,13 @@ Following is an example of executing the evaluation of a synthetic dataset with 
 
 ```bash
 pymdma --modality image \
-    --validation_type synth \
+    --validation_domain synth \
     --reference_type dataset \
     --evaluation_level dataset \
     --reference_data data/test/image/synthesis_val/reference \
     --target_data data/test/image/synthesis_val/dataset \
     --batch_size 3 \
-    --metric_group feature \
+    --metric_category feature \
     --output_dir reports/image_metrics/
 ```
 
@@ -223,4 +228,3 @@ If you publish work that uses pyMDMA, please cite pyMDMA as follows:
 This work was funded by AISym4Med project number 101095387, supported by the European Heath and Digital Executive Agency (HADEA), granting authority under the powers delegated by the Europeam Commision. More information on this project can be found [here](https://aisym4med.eu/).
 
 This work was supported by European funds through the Recovery and Resilience Plan, project ”Center for Responsible AI”, project number C645008882-00000055. Learn more about this project [here](https://centerforresponsible.ai/).
-

@@ -13,12 +13,12 @@ class InceptionFID(BaseExtractor):
             input_size=(299, 299),
             interpolation=Image.Resampling.BILINEAR,
         )
-        
+
         self.extractor = InceptionV3(normalize_input=False)
 
     def forward(self, x):
         N = len(x)
-        x =  self.extractor(x)
+        x = self.extractor(x)
         return x[0].view(N, -1)
 
 
@@ -31,8 +31,8 @@ class VGGExtractor(BaseExtractor):
 
         weights = tvmodels.vgg.__dict__[f"{model_name.upper()}_Weights"].DEFAULT
         self.extractor = tvmodels.vgg.__dict__[model_name](weights=weights)
-        # remove classifier head
-        self.extractor.classifier = self.extractor.classifier[:-1]
+        # features from the last fully connected layer
+        self.extractor.classifier = self.extractor.classifier[:-2]
 
     def forward(self, x):
         return self.extractor(x)

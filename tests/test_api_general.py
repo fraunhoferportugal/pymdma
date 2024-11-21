@@ -14,7 +14,7 @@ def test_healthcheck(test_client):
 
 
 @pytest.mark.parametrize(
-    "data_modalities, validation_types, metric_groups",
+    "data_modalities, validation_domains, metric_categorys",
     [
         (["image"], ["input_val", "synthesis_val"], []),
         (["image"], ["input_val"], ["data", "annotation"]),
@@ -27,29 +27,29 @@ def test_healthcheck(test_client):
         (["image", "tabular", "time_series"], ["input_val", "synthesis_val"], []),
     ],
 )
-def test_metric_info_pass(test_client, data_modalities, validation_types, metric_groups):
+def test_metric_info_pass(test_client, data_modalities, validation_domains, metric_categorys):
     params = {
         "data_modalities": data_modalities,
-        "validation_types": validation_types,
-        "metric_groups": metric_groups,
+        "validation_domains": validation_domains,
+        "metric_categorys": metric_categorys,
     }
     response = test_client.get("/metrics/info", params=params)
     assert response.status_code == 200, response.json()
     assert len(response.json()) > 0, "Empty response"
     # check parameters are in reponse names
-    assert len(metric_groups) == 0 or all(
-        any(metric_group in entry for metric_group in metric_groups) for entry in response.json()
+    assert len(metric_categorys) == 0 or all(
+        any(metric_category in entry for metric_category in metric_categorys) for entry in response.json()
     ), "Missing metric group"
     assert all(
         any(modality in entry for modality in data_modalities) for entry in response.json()
     ), "Missing data modality"
     assert all(
-        any(validation_type in entry for validation_type in validation_types) for entry in response.json()
+        any(validation_domain in entry for validation_domain in validation_domains) for entry in response.json()
     ), "Missing validation type"
 
 
 @pytest.mark.parametrize(
-    "data_modalities, validation_types, metric_groups, code",
+    "data_modalities, validation_domains, metric_categorys, code",
     [
         ([""], [], [], 422),
         (["imag"], ["input_val", "synthesis_val"], [], 422),
@@ -57,11 +57,11 @@ def test_metric_info_pass(test_client, data_modalities, validation_types, metric
         (["image"], ["synthesis_val"], ["data"], 404),
     ],
 )
-def test_metric_info_fail(test_client, data_modalities, validation_types, metric_groups, code):
+def test_metric_info_fail(test_client, data_modalities, validation_domains, metric_categorys, code):
     params = {
         "data_modalities": data_modalities,
-        "validation_types": validation_types,
-        "metric_groups": metric_groups,
+        "validation_domains": validation_domains,
+        "metric_categorys": metric_categorys,
     }
     response = test_client.get("/metrics/info", params=params)
     assert response.status_code == code, response.json()
