@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from loguru import logger
 
-from pymdma.constants import DataModalities, OutputsTypes, ValidationTypes
+from pymdma.constants import DataModalities, OutputsTypes, ValidationDomain
 
 from .definitions import InputLayer
 
@@ -21,8 +21,8 @@ class ComputationManager:
         Input layer instance with data properties.
     data_modality : DataModalities
         Data modality type.
-    validation_type : ValidationTypes
-        Validation type.
+    validation_domain : ValidationDomain
+        Validation domain.
     output_dir : Optional[Path], optional
         Output directory to save results, by default None.
     pretrained_extractor_name : Optional[str], optional
@@ -36,14 +36,14 @@ class ComputationManager:
         group_classes: Dict[str, List[callable]],
         data_input_layer: InputLayer,
         data_modality: DataModalities,
-        validation_type: ValidationTypes,
+        validation_domain: ValidationDomain,
         output_dir: Optional[Path] = None,
         pretrained_extractor_name: Optional[str] = None,
         n_workers: int = 1,
     ) -> None:
         self.data_input_layer = data_input_layer
         self.data_modality = data_modality
-        self.validation_type = validation_type
+        self.validation_domain = validation_domain
         self.output_dir = output_dir
         self.n_workers = n_workers
 
@@ -60,7 +60,7 @@ class ComputationManager:
         if (
             not self._overrode_extractor
             and "feature" in group_metrics
-            and self.validation_type == ValidationTypes.SYNTH
+            and self.validation_domain == ValidationDomain.SYNTH
         ):
             self.extractors = {
                 metric.extractor_model_name
@@ -84,7 +84,7 @@ class ComputationManager:
 
     def _compute_and_reduce(
         self,
-        metric_group: str,
+        metric_category: str,
         metrics: List[object],
         metric_args: Tuple[Any],
         single_value_strategy: Literal["mean", "sum"] = "mean",
@@ -93,7 +93,7 @@ class ComputationManager:
 
         Parameters
         ----------
-        metric_group : str
+        metric_category : str
             Metric group name.
         metrics : List[object]
             List of metric instances.
@@ -114,8 +114,8 @@ class ComputationManager:
             new_result = metric.compute(*metric_args, context=self.global_context)
 
             # merge metric with already compute one (batch calculation)
-            if metric_name in self.metric_results[metric_group]:
-                previous_result = self.metric_results[metric_group][metric_name]
+            if metric_name in self.metric_results[metric_category]:
+                previous_result = self.metric_results[metric_category][metric_name]
                 prev_dataset_lvl, prev_instance_lvl = previous_result.value
                 new_dataset_lvl, new_instance_lvl = new_result.value
 
@@ -140,7 +140,7 @@ class ComputationManager:
             tasks = [executor.submit(_compute_task, metric, metric_args) for metric in metrics]
             for task in as_completed(tasks):
                 metric_name, result = task.result()
-                self.metric_results[metric_group][metric_name] = result
+                self.metric_results[metric_category][metric_name] = result
 
     def compute_metrics(self, model_instances: Optional[Dict[str, callable]] = None):
         """Compute metrics for each group and reduce results.
@@ -157,7 +157,7 @@ class ComputationManager:
         """
         self.metric_results = {group: {} for group in self.metrics.keys()}
         # compute feature based metrics
-        if self.validation_type == ValidationTypes.SYNTH and "feature" in self.metrics:
+        if self.validation_domain == ValidationDomain.SYNTH and "feature" in self.metrics:
             for extractor_name in self.extractors:
                 logger.info(f"Computing metrics for extractor: {extractor_name}")
 

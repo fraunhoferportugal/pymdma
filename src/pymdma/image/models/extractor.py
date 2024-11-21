@@ -48,7 +48,13 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         self.interpolation = interpolation
 
     @torch.no_grad()
-    def extract_features_from_files(self, files: List[Path], batch_size: int = 50, device: str = "cpu") -> np.ndarray:
+    def extract_features_from_files(
+        self,
+        files: List[Path],
+        batch_size: int = 50,
+        device: str = "cpu",
+        preprocess_transform: Optional[Callable] = None,
+    ) -> np.ndarray:
         """Extract features from a list of image files.
 
         Args:
@@ -69,15 +75,15 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         if len(files) % batch_size != 0:
             batch_sizes.append(len(files) % batch_size)
 
-        transform = StandardTransform(self.input_size, self.interpolation)
+        transform = StandardTransform(self.input_size, self.interpolation, preprocess_transform)
         self.extractor = self.extractor.to(device, dtype=torch.float32)
 
         act_array = []
         start, end = 0, 0
         for bsize in batch_sizes:
             end = start + bsize
-            images = [transform(Image.open(f).convert("RGB")).numpy() for f in files[start:end]]
-            batch = torch.from_numpy(np.array(images, dtype=np.float32)).to(device)
+            images = [transform(Image.open(f).convert("RGB")) for f in files[start:end]]
+            batch = torch.stack(images).to(device)
             batch = self(batch).detach().cpu().numpy()
             act_array.append(batch)
             start += bsize
@@ -102,7 +108,7 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         act_array = []
         labels_array = []
         ids_array = []
-        
+
         self.extractor = self.extractor.to(device, dtype=torch.float32)
         dataloader.dataset.transform = StandardTransform(self.input_size, self.interpolation, preprocess_transform)
         for batch, labels, img_ids in tqdm(dataloader, total=len(dataloader)):

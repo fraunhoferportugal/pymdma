@@ -2,7 +2,7 @@ import numpy as np
 
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 from ..utils.util import compute_nearest_neighbour_distances, compute_pairwise_distance
 
@@ -45,7 +45,7 @@ class ImprovedPrecision(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -140,7 +140,7 @@ class ImprovedRecall(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -236,7 +236,7 @@ class Density(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -328,7 +328,7 @@ class Coverage(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -431,7 +431,7 @@ class Authenticity(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = MetricGoal.PRIVACY
+    metric_group = MetricGroup.PRIVACY
 
     higher_is_better: bool = True
     min_value: float = 0.0

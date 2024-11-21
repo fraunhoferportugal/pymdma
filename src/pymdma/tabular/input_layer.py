@@ -8,7 +8,7 @@ from loguru import logger
 from torch.utils.data import DataLoader
 
 from pymdma.common.definitions import InputLayer
-from pymdma.constants import ReferenceType, ValidationTypes
+from pymdma.constants import ReferenceType, ValidationDomain
 
 from .data.load import TabularDataset
 
@@ -102,7 +102,7 @@ class TabularInputLayer(InputLayer):
 
     Parameters
     ----------
-    validation_type : ValidationTypes
+    validation_domain : ValidationDomain
         The type of validation (input or synthetic).
     reference_type : ReferenceType
         The type of reference data (dataset or single tabular set).
@@ -122,7 +122,7 @@ class TabularInputLayer(InputLayer):
 
     def __init__(
         self,
-        validation_type: ValidationTypes,
+        validation_domain: ValidationDomain,
         reference_type: ReferenceType,
         target_data: Path,
         reference_data: Optional[Path] = None,
@@ -135,7 +135,7 @@ class TabularInputLayer(InputLayer):
 
         Parameters
         ----------
-        validation_type : ValidationTypes
+        validation_domain : ValidationDomain
             The validation type (input or synthetic).
         reference_type : ReferenceType
             The reference type (dataset or single tabular set).
@@ -154,7 +154,7 @@ class TabularInputLayer(InputLayer):
         """
 
         super().__init__()
-        self.val_type = validation_type
+        self.val_type = validation_domain
         self.reference_type = reference_type
         self.device = device
 
@@ -166,7 +166,7 @@ class TabularInputLayer(InputLayer):
 
         # prepare reference dataloader (original/reference records)
         # will also be used for input validation
-        if validation_type == ValidationTypes.SYNTH:
+        if validation_domain == ValidationDomain.SYNTH:
             reference_file = _get_data_files_path(reference_data)
             reference_dataset = TabularDataset(
                 file_path=reference_file,
@@ -201,7 +201,7 @@ class TabularInputLayer(InputLayer):
 
         # TODO review for data modality
         # Client input validation
-        if validation_type == ValidationTypes.INPUT and reference_type != ReferenceType.NONE:
+        if validation_domain == ValidationDomain.INPUT and reference_type != ReferenceType.NONE:
             assert len(reference_dataset) == len(
                 target_dataset,
             ), "Reference and target datasets must have the same size for input validation."
@@ -270,7 +270,7 @@ class TabularInputLayer(InputLayer):
 
     # def get_batched_samples(self) -> Generator[Tuple[np.ndarray], None, None]:
     #     # return all features for both reference and synthetic records as a single batch
-    #     if self.val_type in [ValidationTypes.SYNTH]:
+    #     if self.val_type in [ValidationDomain.SYNTH]:
     #         # get reference and synthetic batches
     #         reference_features = next(iter(self.reference_loader))
     #         synth_features = next(iter(self.target_loader))
@@ -289,6 +289,6 @@ class TabularInputLayer(InputLayer):
     #         yield {**reference_features, **synth_features}
 
     #     # return all records
-    #     if self.val_type in [ValidationTypes.INPUT]:
+    #     if self.val_type in [ValidationDomain.INPUT]:
     #         # only reference records for no reference metrics
     #         yield from self.target_loader

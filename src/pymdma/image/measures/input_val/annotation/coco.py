@@ -5,7 +5,7 @@ from pycocotools.coco import COCO
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
-from pymdma.constants import AnnotationType, EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
+from pymdma.constants import AnnotationType, EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 _SUPPORTED_ANNOT_TYPES = {
     "segmentation": AnnotationType.MASK,
@@ -60,7 +60,7 @@ class DatasetCompletness(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = [EvaluationLevel.DATASET, EvaluationLevel.INSTANCE]
-    metric_goal = MetricGoal.VALIDITY
+    metric_group = MetricGroup.VALIDITY
     annotation_type = [AnnotationType.LABEL, AnnotationType.BBOX, AnnotationType.MASK, AnnotationType.KEYPOINTS]
 
     def __init__(
@@ -187,7 +187,7 @@ class AnnotationCorrectness(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = [EvaluationLevel.DATASET, EvaluationLevel.INSTANCE]
-    metric_goal = MetricGoal.VALIDITY
+    metric_group = MetricGroup.VALIDITY
     annotation_type = [AnnotationType.LABEL, AnnotationType.BBOX, AnnotationType.MASK, AnnotationType.KEYPOINTS]
 
     def __init__(
@@ -371,7 +371,7 @@ class AnnotationUniqueness(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = [EvaluationLevel.DATASET, EvaluationLevel.INSTANCE]
-    metric_goal = MetricGoal.VALIDITY
+    metric_group = MetricGroup.VALIDITY
     annotation_type = [AnnotationType.BBOX, AnnotationType.MASK, AnnotationType.KEYPOINTS]
 
     def __init__(

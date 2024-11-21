@@ -4,7 +4,7 @@ import numpy as np
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 from ...utils_inp import compute_k_anonymity
 
@@ -63,7 +63,7 @@ class KAnonymityScore(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = MetricGoal.PRIVACY
+    metric_group = MetricGroup.PRIVACY
 
     higher_is_better: bool = True
     min_value: float = 0.0
@@ -93,7 +93,11 @@ class KAnonymityScore(Metric):
         """
 
         # columns
-        cols = self.column_names if isinstance(self.column_names, list) else [f"att_{idx}" for idx in range(data.shape[-1])]
+        cols = (
+            self.column_names
+            if isinstance(self.column_names, list)
+            else [f"att_{idx}" for idx in range(data.shape[-1])]
+        )
 
         # qi names
         qi_names = self.qi_names if isinstance(self.qi_names, list) else cols[-1:]

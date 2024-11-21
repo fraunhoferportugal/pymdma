@@ -92,7 +92,7 @@ def test_ref_batch_metrics(image_dataset, metric_cls):
 @pytest.mark.parametrize(
     "extractor_name",
     [
-        "inception_v3",
+        "inception_fid",
         "vgg16",
         "dino_vits8",
         "vit_b_16",

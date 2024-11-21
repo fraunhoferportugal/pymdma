@@ -86,7 +86,7 @@ def metric_info(
 ) -> Dict[str, MetricInfo]:
     """Information of available modalities and their respective metrics."""
     logger.info(params.model_dump())
-    info = get_metrics_metadata(params.data_modalities, params.validation_types, params.metric_groups)
+    info = get_metrics_metadata(params.data_modalities, params.validation_domains, params.metric_categorys)
 
     if len(info) < 1:
         return JSONResponse(
@@ -114,11 +114,11 @@ def dataset_eval(
     try:
         group_functions = select_metric_functions(
             data_modality,
-            params.validation_type,
+            params.validation_domain,
             params.reference_type,
             params.evaluation_level,
+            params.metric_category,
             params.metric_group,
-            params.metric_goal,
         )
 
         if len(group_functions) < 1 or any(len(funcs) < 1 for funcs in group_functions.values()):
@@ -135,7 +135,7 @@ def dataset_eval(
 
         data_input_layer = prepare_input_layer(
             data_modality,
-            params.validation_type,
+            params.validation_domain,
             params.reference_type,
             params.annotation_file,
         )
@@ -147,7 +147,7 @@ def dataset_eval(
             group_functions,
             data_input_layer,
             data_modality,
-            params.validation_type,
+            params.validation_domain,
             n_workers=_compute_nworkers,
         )
 
@@ -192,7 +192,7 @@ def specific_metrics(
         group_functions = select_specific_metric_functions(
             params.metric_names,
             data_modality,
-            params.validation_type,
+            params.validation_domain,
             params.reference_type,
         )
 
@@ -211,7 +211,7 @@ def specific_metrics(
 
         data_input_layer = prepare_input_layer(
             data_modality,
-            params.validation_type,
+            params.validation_domain,
             params.reference_type,
             annotation_file=params.annotation_file,
         )
@@ -223,7 +223,7 @@ def specific_metrics(
             group_functions,
             data_input_layer,
             data_modality,
-            params.validation_type,
+            params.validation_domain,
             n_workers=_compute_nworkers,
         )
 
