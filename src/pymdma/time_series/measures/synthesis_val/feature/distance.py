@@ -4,7 +4,7 @@ import numpy as np
 
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 from pymdma.general.functional.distance import cos_sim_2d, fast_mmd_linear, mk_mmd, mmd_kernel, wasserstein
 from pymdma.general.functional.ratio import dispersion_ratio, distance_ratio
 from pymdma.general.utils.util import features_splitting
@@ -33,7 +33,7 @@ class WassersteinDistance(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -165,7 +165,7 @@ class MMD(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -305,7 +305,7 @@ class CosineSimilarity(FeatureMetric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = EvaluationLevel.DATASET
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0

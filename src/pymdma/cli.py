@@ -15,11 +15,10 @@ from pymdma.common.selection import (
 from pymdma.constants import (
     DataModalities,
     EvaluationLevel,
-    InputMetricGroups,
-    MetricGoal,
+    InputCategories,
     ReferenceType,
-    SyntheticMetricGroups,
-    ValidationTypes,
+    SyntheticCategories,
+    ValidationDomain,
 )
 
 
@@ -34,7 +33,7 @@ def parse_args():
         help="Data modality to be evaluated. Options: image, time_series, tabular.",
     )
     parser.add_argument(
-        "--validation_type",
+        "--validation_domain",
         type=str,
         default="synth",
         choices=["input", "synth"],
@@ -54,14 +53,14 @@ def parse_args():
         help="Evaluation level. Options: dataset, instance.",
     )
     parser.add_argument(
-        "--metric_group",
+        "--metric_category",
         type=str,
         nargs="+",
         default=None,
         help="Metrics to be evaluated. E.g. privacy, quality etc.",
     )
     parser.add_argument(
-        "--metric_goals",
+        "--metric_groups",
         type=str,
         nargs="+",
         default=None,
@@ -159,35 +158,35 @@ def main() -> None:
     # INPUTS
     # System-generated inputs
     data_modality = DataModalities[args.modality.upper()]
-    validation_type = ValidationTypes[args.validation_type.upper()]
+    validation_domain = ValidationDomain[args.validation_domain.upper()]
     reference_type = ReferenceType[args.reference_type.upper()]
     evaluation_level = EvaluationLevel[args.evaluation_level.upper()]
 
     # METRIC GOALS
     # None means all metrics
-    if args.metric_group is None:
-        metric_group = None
-    elif validation_type == ValidationTypes.SYNTH:
-        metric_group = [SyntheticMetricGroups[value.upper()] for value in args.metric_group]
+    if args.metric_category is None:
+        metric_category = None
+    elif validation_domain == ValidationDomain.SYNTH:
+        metric_category = [SyntheticCategories[value.upper()] for value in args.metric_category]
     else:
-        metric_group = [InputMetricGroups[value.upper()] for value in args.metric_group]
+        metric_category = [InputCategories[value.upper()] for value in args.metric_category]
 
     # ENDPOINT 3 - Specific metric obtained by metric name
     if args.specific_metrics is not None:
         s_func = select_specific_metric_functions(
             args.specific_metrics,
             data_modality,
-            validation_type,
+            validation_domain,
             reference_type,
         )
     else:
         s_func = select_metric_functions(
             data_modality,
-            validation_type,
+            validation_domain,
             reference_type,
             evaluation_level,
-            metric_group,
-            metric_goals=None,
+            metric_category,
+            metric_groups=None,
         )
 
     if args.annotation_file is None:
@@ -211,7 +210,7 @@ def main() -> None:
     ), "Reference data is required for this evaluation."
     data_input_layer = select_modality_input_layer(
         data_modality,
-        validation_type,
+        validation_domain,
         reference_type,
         target_data,
         reference_data,
@@ -225,10 +224,10 @@ def main() -> None:
         f"""
     ========= RUNNING EVALUATION =========
     Data Modality = {data_modality}
-    Validation Type = {validation_type}
+    Validation Type = {validation_domain}
     Reference Type = {reference_type}
     Evaluation Level = {evaluation_level}
-    Metric Goal = {metric_group}
+    Metric Goal = {metric_category}
     Reference Data = {args.reference_data}
     Target Data = {args.target_data}
     ======================================
@@ -245,7 +244,7 @@ def main() -> None:
         group_classes=s_func,
         data_input_layer=data_input_layer,
         data_modality=data_modality,
-        validation_type=validation_type,
+        validation_domain=validation_domain,
         output_dir=args.output_dir,
         pretrained_extractor_name=args.extractor_model_name,
         n_workers=args.compute_n_workers,

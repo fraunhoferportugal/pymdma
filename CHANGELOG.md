@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2024-11-21
+Taxonomy rework and documentation updates.
+
+### Added 
+ - readthedocs slug in the README file
+
+### Changed
+ - Renamed `validation_type` to `validation_domain`
+ - Renamed `metric_group` to `metric_category`
+ - Renamed `metric_goal` to `metric_group`
+
+### Fixed
+ - Getting features from the last Linear layer of VGG models
+ - Simplified batch stacking in Image extractor method
+ - Updated hierarchy diagram in the documentation
+ - Using local seed in the `features_splitting` method to avoid global overrides that led to inconsistent results
+ - Removed ununsed text modules
+ - Added seed for the `cluster_into_bins` method in the `PrecisionRecallDistribution` metric. This ensures that the results are consistent across runs
+
+
+
 ## [0.1.3] - 2024-11-05
 Documentation and API updates.
 

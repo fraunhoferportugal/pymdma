@@ -4,7 +4,7 @@ import numpy as np
 
 from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
-from pymdma.constants import EvaluationLevel, MetricGoal, OutputsTypes, ReferenceType
+from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 
 class Uniqueness(Metric):
@@ -31,7 +31,7 @@ class Uniqueness(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -91,7 +91,7 @@ class SNR(Metric):
 
     reference_type = ReferenceType.NONE
     evaluation_level = EvaluationLevel.INSTANCE
-    metric_goal = MetricGoal.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0

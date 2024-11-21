@@ -7,7 +7,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 
 from pymdma.common.definitions import InputLayer
-from pymdma.constants import ReferenceType, ValidationTypes
+from pymdma.constants import ReferenceType, ValidationDomain
 
 from .data.simple_dataset import SimpleDataset
 from .utils.extract_features import FeatureExtractor
@@ -78,7 +78,7 @@ class TimeSeriesInputLayer(InputLayer):
 
     def __init__(
         self,
-        validation_type: ValidationTypes,
+        validation_domain: ValidationDomain,
         reference_type: ReferenceType,
         target_data: Union[Path, List[Path]],
         reference_data: Optional[Union[Path, List[Path]]] = None,
@@ -90,7 +90,7 @@ class TimeSeriesInputLayer(InputLayer):
 
         Parameters
         ----------
-        validation_type : ValidationTypes
+        validation_domain : ValidationDomain
             Valition type (input or synthetic).
         reference_type: ReferenceType
             Reference type (dataset or single signal).
@@ -106,7 +106,7 @@ class TimeSeriesInputLayer(InputLayer):
             Feature extractor name. Defaults to tsfel.
         """
         super().__init__()
-        self.val_type = validation_type
+        self.val_type = validation_domain
         self.reference_type = reference_type
         self.batch_size = batch_size
         self.device = device
@@ -148,11 +148,11 @@ class TimeSeriesInputLayer(InputLayer):
 
         # TODO review this for modality
         # Client input validation
-        if self.val_type == ValidationTypes.SYNTH:
+        if self.val_type == ValidationDomain.SYNTH:
             assert (
                 len(target_files) > 4
             ), f"Synthetic datasets must have at least 5 signals for synthetic evaluation. Found {len(target_files)}."
-        elif self.val_type == ValidationTypes.INPUT and reference_type != ReferenceType.NONE:
+        elif self.val_type == ValidationDomain.INPUT and reference_type != ReferenceType.NONE:
             assert len(reference_dataset) == len(
                 target_dataset,
             ), "Reference and target datasets must have the same size for full reference input validation."

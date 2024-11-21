@@ -188,7 +188,7 @@ def create_output_structure(
     output = {}
     errors = {}
     if schema == "v1":
-        for metric_group, metric_results in group_results.items():
+        for metric_category, metric_results in group_results.items():
             for metric_name, metric_result in metric_results.items():
                 dataset_level, instance_level = metric_result.verbose_value
 
@@ -203,7 +203,7 @@ def create_output_structure(
                         },
                     )
 
-                    level_key = "raw_data_metrics" if not metric_group == "annotation" else "label_metrics"
+                    level_key = "raw_data_metrics" if not metric_category == "annotation" else "label_metrics"
                     output["dataset_level"][level_key].update(
                         {
                             metric_name: dataset_level,
@@ -223,7 +223,7 @@ def create_output_structure(
                         },
                     )
 
-                    level_key = "raw_data_metrics" if not metric_group == "annotation" else "label_metrics"
+                    level_key = "raw_data_metrics" if not metric_category == "annotation" else "label_metrics"
                     output["instance_level"][level_key].update(
                         {
                             metric_name: instance_level,
@@ -237,7 +237,7 @@ def create_output_structure(
         return output
     elif schema == "v2":
 
-        for metric_group, metric_results in group_results.items():
+        for metric_category, metric_results in group_results.items():
             for metric_name, metric_result in metric_results.items():
                 dataset_level, instance_level = metric_result.verbose_value
 
@@ -250,9 +250,9 @@ def create_output_structure(
                         },
                     )
 
-                    output["dataset_level"].setdeafult({metric_group: {}})
+                    output["dataset_level"].setdeafult({metric_category: {}})
 
-                    output["dataset_level"][metric_group].update(
+                    output["dataset_level"][metric_category].update(
                         {
                             metric_name: dataset_level,
                         },
@@ -269,7 +269,7 @@ def create_output_structure(
                         },
                     )
 
-                    output["instance_level"][metric_group].update(
+                    output["instance_level"][metric_category].update(
                         {
                             metric_name: instance_level,
                         },

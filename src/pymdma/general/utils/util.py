@@ -53,14 +53,11 @@ def features_splitting(feat, seed: Optional[int] = None):
     tuple
         A tuple of two np.ndarray objects, each representing a subset of the input array.
     """
-    if seed is not None:
-        # Set a seed for reproducibility
-        np.random.seed(seed)
-
+    rng = set_seed(seed)
     # Randomly sample two subsets
-    subset_indices1 = np.random.choice(feat.shape[0], size=len(feat) // 2, replace=False)
+    subset_indices1 = rng.choice(feat.shape[0], size=len(feat) // 2, replace=False)
     remaining_indices = np.setdiff1d(np.arange(len(feat)), subset_indices1)
-    subset_indices2 = np.random.choice(remaining_indices, size=len(feat) // 2, replace=False)
+    subset_indices2 = rng.choice(remaining_indices, size=len(feat) // 2, replace=False)
 
     # Use the sampled indices to extract subsets from the original array
     return feat[subset_indices1], feat[subset_indices2]
@@ -99,7 +96,7 @@ def cluster_into_bins(eval_data, ref_data, num_clusters):
     """
 
     cluster_data = np.vstack([eval_data, ref_data])
-    kmeans = MiniBatchKMeans(n_clusters=num_clusters, n_init=10)
+    kmeans = MiniBatchKMeans(n_clusters=num_clusters, n_init=10, random_state=42)
     labels = kmeans.fit(cluster_data).labels_
 
     eval_labels = labels[: len(eval_data)]

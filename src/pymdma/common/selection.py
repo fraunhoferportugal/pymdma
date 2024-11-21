@@ -11,11 +11,11 @@ from pymdma.constants import (
     METRICS_PACKAGE_NAME,
     DataModalities,
     EvaluationLevel,
-    InputMetricGroups,
-    MetricGoal,
+    InputCategories,
+    MetricGroup,
     ReferenceType,
-    SyntheticMetricGroups,
-    ValidationTypes,
+    SyntheticCategories,
+    ValidationDomain,
 )
 
 
@@ -37,7 +37,7 @@ def _check_class_attribute(source, target):
 
 def select_modality_input_layer(
     data_modality: DataModalities,
-    validation_type: ValidationTypes,
+    validation_domain: ValidationDomain,
     reference_type: ReferenceType,
     target_data: Path,
     reference_data: Optional[Path] = None,
@@ -52,7 +52,7 @@ def select_modality_input_layer(
     ----------
     data_modality : str
         The data modality to be used (time_series, image, tabular, text)
-    validation_type : str
+    validation_domain : str
         The validation type to be used (input_val or synthesis_val)
     reference_type : str
         The reference type (dataset-wise or instance-wise)
@@ -78,9 +78,9 @@ def select_modality_input_layer(
         from pymdma.image.input_layer import ImageInputLayer
 
         # allow for repeat reference in  full reference input validation
-        repeat_reference = validation_type == ValidationTypes.INPUT and reference_type == ReferenceType.INSTANCE
+        repeat_reference = validation_domain == ValidationDomain.INPUT and reference_type == ReferenceType.INSTANCE
         return ImageInputLayer(
-            validation_type,
+            validation_domain,
             reference_type,
             target_data,
             reference_data,
@@ -94,7 +94,7 @@ def select_modality_input_layer(
         from pymdma.time_series.input_layer import TimeSeriesInputLayer
 
         return TimeSeriesInputLayer(
-            validation_type,
+            validation_domain,
             reference_type,
             target_data,
             reference_data,
@@ -104,7 +104,7 @@ def select_modality_input_layer(
         from pymdma.tabular.input_layer import TabularInputLayer
 
         return TabularInputLayer(
-            validation_type,
+            validation_domain,
             reference_type,
             target_data,
             reference_data,
@@ -113,7 +113,7 @@ def select_modality_input_layer(
         from pymdma.text.input_layer import TextInputLayer
 
         return TextInputLayer(
-            validation_type,
+            validation_domain,
             reference_type,
             target_data,
             reference_data,
@@ -147,30 +147,30 @@ def import_module_or_folder(validation_root: Path, group_name: str) -> List[str]
 
 def select_metric_classes(
     data_modality: DataModalities,
-    validation_type: ValidationTypes,
-    metric_groups: Optional[List[Union[SyntheticMetricGroups, InputMetricGroups]]] = None,
+    validation_domain: ValidationDomain,
+    metric_categorys: Optional[List[Union[SyntheticCategories, InputCategories]]] = None,
     ignore_missing: bool = False,
 ) -> Dict[str, List[Metric]]:
     """Helper function for importing classes from the metrics package."""
     # script names
-    module_root = ".".join((data_modality, METRICS_PACKAGE_NAME, validation_type))
+    module_root = ".".join((data_modality, METRICS_PACKAGE_NAME, validation_domain))
     # fetch all modules when None # TODO review for current structure
 
     # fetch all metric groups in a module
-    if metric_groups is None:
-        metric_groups = [path.stem for path in Path(f"{package_base_dir}/{module_root.replace('.', '/')}").iterdir()]
-        metric_groups = [group for group in metric_groups if "__" not in group]
+    if metric_categorys is None:
+        metric_categorys = [path.stem for path in Path(f"{package_base_dir}/{module_root.replace('.', '/')}").iterdir()]
+        metric_categorys = [group for group in metric_categorys if "__" not in group]
 
     group_classes: Dict[str, List[Metric]] = {}
-    for metric_group in metric_groups:
+    for metric_category in metric_categorys:
         group_root = module_root.replace(".", "/")
         group_root = Path(f"{package_base_dir}/{group_root}")
 
-        group_modules = import_module_or_folder(group_root, metric_group)
+        group_modules = import_module_or_folder(group_root, metric_category)
 
         if len(group_modules) < 1 and not ignore_missing:
             logger.error(
-                f"No modules found for {group_root} and the provided metric groups: {metric_groups}. Check if the provided parameters are correct.",
+                f"No modules found for {group_root} and the provided metric groups: {metric_categorys}. Check if the provided parameters are correct.",
             )
             return group_classes
 
@@ -192,17 +192,17 @@ def select_metric_classes(
                     and not member.__name__ in {"Metric", "FeatureMetric"},
                 )
             ]
-            group_classes.setdefault(metric_group, []).extend(classes_in_module)
+            group_classes.setdefault(metric_category, []).extend(classes_in_module)
     return group_classes
 
 
 def select_metric_functions(
     data_modality: DataModalities,
-    validation_type: ValidationTypes,
+    validation_domain: ValidationDomain,
     reference_type: ReferenceType,
     evaluation_level: Optional[EvaluationLevel] = None,
-    metric_group: Optional[Union[SyntheticMetricGroups, InputMetricGroups]] = None,
-    metric_goals: Optional[List[MetricGoal]] = None,
+    metric_category: Optional[Union[SyntheticCategories, InputCategories]] = None,
+    metric_groups: Optional[List[MetricGroup]] = None,
 ) -> Dict[str, List[Metric]]:
     """Helper function for selecting specific subset of measures.
 
@@ -210,15 +210,15 @@ def select_metric_functions(
     ----------
     data_modality : str
         The data modality to be used (time_series, image, tabular, text)
-    validation_type : str
+    validation_domain : str
         The validation type to be used (input_val or synthesis_val)
     reference_type : str
         The reference type (dataset-wise or instance-wise)
     evaluation_level : str, optional (default=None)
         The evaluation level (dataset-wise or instance-wise)
-    metric_group : str, optional (default=None)
+    metric_category : str, optional (default=None)
         The metric group to be used
-    metric_goals : list, optional (default=None)
+    metric_groups : list, optional (default=None)
         The metric goals to be used
 
     Returns
@@ -227,20 +227,20 @@ def select_metric_functions(
         The selected functions
     """
 
-    if isinstance(metric_goals, str):
-        metric_goals = [metric_goals]
+    if isinstance(metric_groups, str):
+        metric_groups = [metric_groups]
 
     # get evaluation group class objects
-    evaluation_group_classes = select_metric_classes(data_modality, validation_type, metric_group)
+    evaluation_group_classes = select_metric_classes(data_modality, validation_domain, metric_category)
 
     # class name
     if len(evaluation_group_classes) == 0:
         logger.error(
-            f"No classes found for {data_modality}.{validation_type} and the provided metric groups: {metric_group}. Check if the provided parameters are correct.",
+            f"No classes found for {data_modality}.{validation_domain} and the provided metric groups: {metric_category}. Check if the provided parameters are correct.",
         )
         return {}
 
-    # filter functions based on reference, evaluation and metric_goal
+    # filter functions based on reference, evaluation and metric_group
     selected_functions = {}
     for evaluation_group, metric_classes in evaluation_group_classes.items():
         # Filter out only the methods defined in the class and exclude those starting with "_"
@@ -249,7 +249,7 @@ def select_metric_functions(
         for class_obj in metric_classes:
             # class_obj: Metric
             # discard classes with missing attributes
-            if metric_goals is None or class_obj.metric_goal in metric_goals:
+            if metric_groups is None or class_obj.metric_group in metric_groups:
                 if (
                     evaluation_level is None or _check_class_attribute(evaluation_level, class_obj.evaluation_level)
                 ) and _check_class_attribute(
@@ -265,16 +265,16 @@ def select_metric_functions(
 def select_specific_metric_functions(
     metric_names: List[str],
     data_modality: DataModalities,
-    validation_type: ValidationTypes,
+    validation_domain: ValidationDomain,
     reference_type: Optional[ReferenceType] = None,
 ):
     """Helper function for selecting metrics by name."""
     # get evaluation group class objects
-    evaluation_group_classes = select_metric_classes(data_modality, validation_type)
+    evaluation_group_classes = select_metric_classes(data_modality, validation_domain)
 
     assert (
         len(evaluation_group_classes) > 0
-    ), f"No groups found for {data_modality}.{validation_type}. Check if the provided parameters are correct."
+    ), f"No groups found for {data_modality}.{validation_domain}. Check if the provided parameters are correct."
 
     # assert all(len(metric_fns) > 0 for metric_fns in evaluation_group_classes.values()), "One or more missing metrics. Check if the provided names are correct."
 
@@ -292,8 +292,8 @@ def select_specific_metric_functions(
 
 def get_metrics_metadata(
     data_modalities: Optional[DataModalities] = None,
-    validation_types: Optional[ValidationTypes] = None,
-    metric_groups: Optional[Union[SyntheticMetricGroups, InputMetricGroups]] = None,
+    validation_domains: Optional[ValidationDomain] = None,
+    metric_categorys: Optional[Union[SyntheticCategories, InputCategories]] = None,
 ):
     """Get metadata for all metrics within the specified modalities, validation
     types and metric groups."""
@@ -302,18 +302,18 @@ def get_metrics_metadata(
     elif isinstance(data_modalities, str):
         data_modalities = [data_modalities]
 
-    if validation_types is None:
-        validation_types = _get_constant_values(ValidationTypes)
-    elif isinstance(validation_types, str):
-        validation_types = [validation_types]
+    if validation_domains is None:
+        validation_domains = _get_constant_values(ValidationDomain)
+    elif isinstance(validation_domains, str):
+        validation_domains = [validation_domains]
 
     metrics = {}
     for data_modality in data_modalities:
-        for validation_type in validation_types:
+        for validation_domain in validation_domains:
             evaluation_group_classes = select_metric_classes(
                 data_modality,
-                validation_type,
-                metric_groups,
+                validation_domain,
+                metric_categorys,
                 ignore_missing=True,
             )
             # class name
@@ -325,11 +325,11 @@ def get_metrics_metadata(
             for evaluation_group, metric_classes in evaluation_group_classes.items():
                 # Filter out only the methods defined in the class and exclude those starting with "_"
                 selected_metrics = {
-                    f"{data_modality}.{validation_type}.{evaluation_group}.{method.__name__}": {
+                    f"{data_modality}.{validation_domain}.{evaluation_group}.{method.__name__}": {
                         "name": method.__name__,
                         "data_modality": data_modality,
-                        "validation_type": validation_type,
-                        "metric_group": evaluation_group,
+                        "validation_domain": validation_domain,
+                        "metric_category": evaluation_group,
                         "description": method.__doc__,
                         **vars(method),
                     }

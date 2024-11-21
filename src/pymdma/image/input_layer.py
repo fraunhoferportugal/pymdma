@@ -7,14 +7,13 @@ from loguru import logger
 from torch.utils.data import DataLoader
 
 from pymdma.common.definitions import InputLayer
-from pymdma.constants import ReferenceType, ValidationTypes
+from pymdma.constants import ReferenceType, ValidationDomain
 
 from .data.simple_dataset import SimpleDataset
 from .models.features import ExtractorFactory
 from .utils.processing import batch_downsample_to_largest
 
-
-SUPPORTED_FILES = {".png", ".jpg", ".jpeg"}  # TODO might want to add others
+SUPPORTED_FILES = {".png", ".jpg", ".jpeg", ".bmp"}  # TODO might want to add others
 
 
 def no_collate_fn(data):
@@ -61,7 +60,7 @@ class ImageInputLayer(InputLayer):
 
     Parameters
     ----------
-    validation_type : ValidationTypes
+    validation_domain : ValidationDomain
         valition type (input or synthetic)
     reference_type : ReferenceType
         reference type (dataset or single image)
@@ -83,7 +82,7 @@ class ImageInputLayer(InputLayer):
 
     def __init__(
         self,
-        validation_type: ValidationTypes,
+        validation_domain: ValidationDomain,
         reference_type: ReferenceType,
         target_data: Union[Path, List[Path]],
         reference_data: Optional[Union[Path, List[Path]]] = None,
@@ -94,7 +93,7 @@ class ImageInputLayer(InputLayer):
         features_cache: Optional[Path] = None,
     ) -> None:
         super().__init__()
-        self.val_type = validation_type
+        self.val_type = validation_domain
         self.reference_type = reference_type
         self.batch_size = batch_size
         self.device = device
@@ -114,7 +113,7 @@ class ImageInputLayer(InputLayer):
         self.transform = np.asarray
 
         # do not use default collate_fn for input validation (autoconverts images to tensors in the range of 0-1)
-        collate_fn = no_collate_fn if self.val_type == ValidationTypes.INPUT else None
+        collate_fn = no_collate_fn if self.val_type == ValidationDomain.INPUT else None
 
         reference_files = source_to_list(reference_data)
         target_files = source_to_list(target_data)
@@ -143,8 +142,8 @@ class ImageInputLayer(InputLayer):
                 collate_fn=collate_fn,  # no need to collate images
             )
 
-            assert self.val_type == ValidationTypes.SYNTH or (
-                self.val_type == ValidationTypes.INPUT and len(target_files) == len(reference_files)
+            assert self.val_type == ValidationDomain.SYNTH or (
+                self.val_type == ValidationDomain.INPUT and len(target_files) == len(reference_files)
             ), "Reference and target datasets must have the same size for full reference input validation."
 
         # prepare target dataloader (evaluation images)
@@ -204,7 +203,7 @@ class ImageInputLayer(InputLayer):
                 extractor = model_instances[ExtractorFactory.default]
 
         if extractor is None:
-            offload_model = True # unload model when finished
+            offload_model = True  # unload model when finished
             model_name = ExtractorFactory.default if model_name == "default" else model_name
             extractor = ExtractorFactory.model_from_name(model_name) if extractor is None else extractor
 
@@ -212,7 +211,6 @@ class ImageInputLayer(InputLayer):
         reference_feats, _labels, _reference_ids = extractor.extract_features_dataloader(
             self.reference_loader,
             device=self.device,
-            preprocess_transform=RetinaCenterCrop(),
         )
         synthetic_feats, _labels, synthetic_ids = extractor.extract_features_dataloader(
             self.target_loader,

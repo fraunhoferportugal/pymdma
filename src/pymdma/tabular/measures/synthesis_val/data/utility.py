@@ -56,7 +56,7 @@
 
 #     reference_type = ReferenceType.DATASET
 #     evaluation_level = EvaluationLevel.DATASET
-#     metric_goal = SyntheticFeatureMetrics.UTILITY
+#     metric_group = SyntheticFeatureMetrics.UTILITY
 
 #     higher_is_better: bool = True
 #     min_value: float = 0
