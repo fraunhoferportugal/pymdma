@@ -7,7 +7,7 @@ real and synthetic datasets across image, tabular, and time-series data modaliti
 developed to address gaps in existing evaluation frameworks that either lack metrics for
 specific data modalities or do not include certain state-of-the-art metrics. The library is designed to be modular, allowing users to easily extend it with new metrics.
 
-The source code is available on [GitHub](https://github.com/fraunhoferportugal/pymdma/tree/main) and the documentation can be found [here](dummy).
+The source code is available on [GitHub](https://github.com/fraunhoferportugal/pymdma/tree/main).
 
 ## Metric Categories
 Each metric class is organized based on the modality, validation type, metric group and goal. Following is a brief description of these categories:

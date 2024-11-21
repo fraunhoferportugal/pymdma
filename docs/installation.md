@@ -6,12 +6,6 @@ PyPI is currently unavailable. To install the package, you can install it direct
 $ pip install "pymdma @ git+https://github.com/fraunhoferportugal/pymdma.git"
 ```
 
-<!-- It is recommended to install the package in a virtual environment. To install the package, run the following command:
-
-```bash
-$ pip install pymdma
-``` -->
-
 Depending on the data modality you are working with, you may need to install additional dependencies. We have three groups of denpendencies: `image`, `tabular` and `time_series`. As an example, to work with image data, you will need to run the following command:
 
 ```bash
