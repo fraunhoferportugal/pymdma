@@ -18,7 +18,7 @@ class StatisticalSimScore(Metric):
     This metric assesses how closely the statistical properties of the synthetic dataset
     resemble those of the real dataset, providing a fidelity measure for synthetic data generation.
 
-    **Objective**: Similarity
+    **Objective**: Fidelity
 
     Parameters
     ----------
@@ -27,6 +27,11 @@ class StatisticalSimScore(Metric):
         how to compute similarity for each column.
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
+
+    References
+    ----------
+    Yang et al., Structured evaluation of synthetic tabular data (2024).
+    https://arxiv.org/abs/2403.10424
 
     Returns
     -------
@@ -204,7 +209,7 @@ class StatisiticalDivergenceScore(Metric):
     """Computes a statistical divergence score for each column, specifically
     the Jensen-Shannon (JS) and Kullback-Leibler (KL) divergence scores.
 
-    **Objective**: Similarity
+    **Objective**: Fidelity
 
     Parameters
     ----------
@@ -215,6 +220,11 @@ class StatisiticalDivergenceScore(Metric):
         By default, it is set to 'kl'.
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
+
+    References
+    ----------
+    Fonseca and Bacao,  Tabular and latent space synthetic data generation: a literature review (2023).
+    https://doi.org/10.1186/s40537-023-00792-7
 
     Returns
     -------
@@ -400,7 +410,7 @@ class CoherenceScore(Metric):
     target and synthetic datasets. A higher coherence score indicates better
     fidelity between the datasets in terms of their correlation structures.
 
-    **Objective**: Similarity
+    **Objective**: Fidelity
 
     Parameters
     ----------
@@ -412,6 +422,11 @@ class CoherenceScore(Metric):
         Other types like 'spearman' may be supported depending on the implementation.
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
+
+    References
+    ----------
+    Yang et al., Structured evaluation of synthetic tabular data (2024).
+    https://arxiv.org/abs/2403.10424
 
     Returns
     -------
