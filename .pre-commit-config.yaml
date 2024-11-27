@@ -153,7 +153,7 @@ repos:
             name: isort - sort Python imports
             description: Library to sort imports
     - repo: https://github.com/asottile/pyupgrade
-      rev: v3.18.0
+      rev: v3.19.0
       hooks:
           - id: pyupgrade
             name: pyupgrade - upgrade syntax for newer versions of the language
@@ -169,7 +169,7 @@ repos:
 # Notebooks
 ##########################################################################################
     - repo: https://github.com/nbQA-dev/nbQA
-      rev: 1.8.7
+      rev: 1.9.1
       hooks:
           - id: nbqa-flake8
             name: nbqa-flake8 - Python linting (notebooks)
@@ -191,7 +191,7 @@ repos:
 #          - id: nbqa-pydocstyle
 #            additional_dependencies: [pydocstyle, toml==0.10.2]
     - repo: https://github.com/kynan/nbstripout
-      rev: 0.7.1
+      rev: 0.8.1
       hooks:
           - id: nbstripout
             name: nbstripout - strip outputs from notebooks
@@ -270,7 +270,7 @@ repos:
 # Documentation
 ##########################################################################################
     - repo: https://github.com/executablebooks/mdformat
-      rev: 0.7.17
+      rev: 0.7.19
       hooks:
           - id: mdformat
             name: mdformat - Markdown formatter that can be used to enforce a consistent style in Markdown files
