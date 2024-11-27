@@ -34,6 +34,11 @@ class CorrelationScore(Metric):
     **kwargs : dict
         Additional keyword arguments for compatibility or future use.
 
+    References
+    ----------
+    Shrestha, Detecting multicollinearity in regression analysis (2020).
+    http://pubs.sciepub.com/ajams/8/2/1
+
     Returns
     -------
     MetricResult
@@ -147,6 +152,11 @@ class UniquenessScore(Metric):
     ----------
     **kwargs : dict
         Additional keyword arguments for compatibility or future use.
+
+    References
+    ----------
+    Sukhobok, Tabular data anomaly patterns (2017).
+    https://ieeexplore.ieee.org/document/8316296
 
     Returns
     -------
@@ -390,6 +400,11 @@ class OutlierScore(Metric):
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
 
+    References
+    ----------
+    Iglewicz, B. and Hoaglin, D. (1993) The ASQC Basic References in Quality Control: Statistical Techniques. 
+    In: Mykytka, E.F., Eds., How to Detect and Handle Outliers, ASQC Quality Press, Milwaukee, Vol. 16
+
     Returns
     -------
     MetricResult
@@ -515,6 +530,11 @@ class MissingScore(Metric):
         List of column names in the dataset, by default None.
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
+
+    References
+    ----------
+    Taleb et al., Big data quality: A quality dimensions evaluation (2016).
+    https://ieeexplore.ieee.org/document/7816918
 
     Returns
     -------
@@ -690,6 +710,11 @@ class VIFactorScore(Metric):
         List of the names of the columns (features) in the dataset.
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
+
+    References
+    ----------
+    Marcoulides and Raykov, Evaluation of variance inflation factors in regression models using latent variable modeling methods (2019).
+    https://pmc.ncbi.nlm.nih.gov/articles/PMC6713981/
 
     Returns
     -------

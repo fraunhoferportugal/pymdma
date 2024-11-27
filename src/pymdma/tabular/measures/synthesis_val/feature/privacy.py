@@ -22,6 +22,11 @@ class NNDRPrivacy(FeatureMetric):
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
 
+    References
+    ----------
+    Liu et al., Scaling while privacy preserving: A comprehensive synthetic tabular data generation and evaluation in learning analytics (2024).
+    https://doi.org/10.1145/3636555.3636921
+
     Returns
     -------
     MetricResult
@@ -122,6 +127,11 @@ class DCRPrivacy(FeatureMetric):
         Default is "euclidean". Available from: `link <https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.distance_metrics.html#sklearn.metrics.pairwise.distance_metrics>`_
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
+
+    References
+    ----------
+    Liu et al., Scaling while privacy preserving: A comprehensive synthetic tabular data generation and evaluation in learning analytics (2024).
+    https://doi.org/10.1145/3636555.3636921
 
     Returns
     -------

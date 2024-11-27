@@ -25,6 +25,11 @@ class KAnonymityScore(Metric):
     **kwargs : dict
         Additional keyword arguments passed to the parent class.
 
+    References
+    ----------
+    Díaz and García, A python library to check the level of anonymity of a dataset. (2022).
+    http://dx.doi.org/10.1038/s41597-022-01894-2
+
     Returns
     -------
     MetricResult
