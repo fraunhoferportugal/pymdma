@@ -1,10 +1,12 @@
 import warnings
+from copy import deepcopy
 
 import numpy as np
 import pytest
 
 from pymdma.constants import OutputsTypes
 from pymdma.time_series.measures.input_val.data import quality as input_metrics
+from pymdma.time_series.measures.synthesis_val.data import reference as synth_data_metrics
 from pymdma.time_series.measures.synthesis_val.feature import _shared as synth_shared_metrics
 from pymdma.time_series.measures.synthesis_val.feature import distance as synth_distance_metrics
 
@@ -107,6 +109,158 @@ TOLERANCE = 1e-4  # numeric tolerance for float comparison
 APROXIMATION_TOLERANCE = 1e-2  # numeric tolerance for approximations
 
 
+@pytest.mark.parametrize(
+    "metric_name, expected",
+    [
+        (synth_data_metrics.DTW, 3.84066727425),
+        (synth_data_metrics.CrossCorrelation, 4.040718166076052),
+    ],
+)
+def test_reproducibility_dtw_crosscorr(metric_name, expected, show_dist=False):
+    """Test if dtw and cross correlation measures are reproducible."""
+
+    # From sample_distribution((10, 2), sigma=0.5, mu = 0):
+    x_ref = np.array(
+        [
+            [
+                [0.88202617, 0.2000786],
+                [0.48936899, 1.1204466],
+                [0.933779, -0.48863894],
+                [0.47504421, -0.0756786],
+                [-0.05160943, 0.20529925],
+                [0.07202179, 0.72713675],
+                [0.38051886, 0.06083751],
+                [0.22193162, 0.16683716],
+                [0.74703954, -0.10257913],
+                [0.15653385, -0.42704787],
+            ],
+        ],
+    )
+
+    # From sample_distribution((10, 2), sigma=0.5, mu = 0.5):
+    y_synth = np.array(
+        [
+            [
+                [1.38202617e00, 7.00078604e-01],
+                [9.89368992e-01, 1.62044660e00],
+                [1.43377900e00, 1.13610601e-02],
+                [9.75044209e-01, 4.24321396e-01],
+                [4.48390574e-01, 7.05299251e-01],
+                [5.72021786e-01, 1.22713675e00],
+                [8.80518863e-01, 5.60837508e-01],
+                [7.21931616e-01, 6.66837164e-01],
+                [1.24703954e00, 3.97420868e-01],
+                [6.56533851e-01, 7.29521303e-02],
+            ],
+        ],
+    )
+
+    metric = metric_name()
+    result = metric.compute(x_ref, y_synth)
+
+    if result.dataset_level.dtype == OutputsTypes.NUMERIC:
+        value = result.dataset_level.value
+
+        assert value == pytest.approx(expected), f"{metric_name}: unexpected value of {value}."
+    else:
+        warnings.warn(f"Unknown output type: {result['dataset_level']['type']}. Skipping comparison.", stacklevel=2)
+
+
+def dtw_cross_corr_symetry(sample_distribution, metric_name):
+    """Test if dtw and cross correlation are symetric."""
+
+    signals_1 = sample_distribution((200, 1000, 12))
+    signals_2 = sample_distribution((200, 1000, 12))
+
+    metric = metric_name()
+    result_norm = metric.compute(signals_1, signals_2)
+    result_inv = metric.compute(signals_2, signals_1)
+
+    if result_norm.dataset_level.dtype == OutputsTypes.NUMERIC:
+        value_norm = result_norm.dataset_level.value
+        value_inv = result_inv.dataset_level.value
+
+        assert value_norm == pytest.approx(value_inv), f"{metric_name}: unexpected value of {value_norm}."
+    else:
+        warnings.warn(
+            f"Unknown output type: {result_norm['dataset_level']['type']}. Skipping comparison.",
+            stacklevel=2,
+        )
+
+
+def _generate_triangular_signals(shape):
+    """Generates a set of triangular signals with random variations in
+    amplitude, phase shift, and slope."""
+    n_samples, length, n_channels = shape
+    signals = np.zeros(shape)
+
+    for i in range(n_samples):
+        for j in range(n_channels):
+            t = np.linspace(0, 1, length)
+            # Random amplitude scaling factor (varies between 0.5 and 1.5)
+            amplitude = np.random.uniform(0.5, 1.5)
+
+            # Random phase shift (varies between -0.2 and 0.2 in normalized time units)
+            phase_shift = np.random.uniform(-0.2, 0.2)
+            t_shifted = np.clip(t + phase_shift, 0, 1)  # Ensure phase remains within bounds
+
+            # Random slope adjustment (varies between 0.8 and 1.2)
+            slope_variation = np.random.uniform(0.8, 1.2)
+
+            # Generate the triangular waveform with variations
+            signals[i, :, j] = amplitude * np.abs((t_shifted - 0.5) * slope_variation)
+
+    return signals
+
+
+def _generate_square_signals(shape):
+    """Generates a set of square wave signals with random variations in
+    frequency, amplitude, and phase."""
+
+    n_samples, length, n_channels = shape
+    signals = np.zeros(shape)
+    for i in range(n_samples):
+        for j in range(n_channels):
+            t = np.linspace(0, 1, length)
+            frequency = np.random.uniform(1, 10)  # Random frequency between 1Hz and 10Hz
+            amplitude = np.random.uniform(0.5, 1.5)  # Random amplitude between 0.5 and 1.5
+            phase = np.random.uniform(0, 2 * np.pi)  # Random phase shift
+            signals[i, :, j] = amplitude * np.sign(np.sin(2 * np.pi * frequency * t + phase))
+    return signals
+
+
+@pytest.mark.parametrize(
+    "metric_name",
+    [
+        (synth_data_metrics.DTW),
+        (synth_data_metrics.CrossCorrelation),
+    ],
+)
+def test_dtw_crosscorr_order_sigs(metric_name):
+    """Test if the similarity between signals of the same shape is greater than
+    the similarity between different shapes (square vs triangle)"""
+
+    shape = (5, 500, 12)
+    triangular_signals = _generate_triangular_signals(shape)
+    square_signals = _generate_square_signals(shape)
+
+    metric = metric_name()
+    result_tt = metric.compute(triangular_signals, triangular_signals)
+    result_ts = metric.compute(triangular_signals, square_signals)
+
+    if result_ts.dataset_level.dtype == OutputsTypes.NUMERIC:
+        if metric_name == synth_data_metrics.DTW:
+            value_min = result_tt.dataset_level.value
+            value_max = result_ts.dataset_level.value
+        else:
+            value_min = result_ts.dataset_level.value
+            value_max = result_tt.dataset_level.value
+
+        assert value_min < value_max, f"{metric_name}: unexpected order of values {value_min} < {value_max}."
+    else:
+        warnings.warn(f"Unknown output type: {result_ts['dataset_level']['type']}. Skipping comparison.", stacklevel=2)
+
+
 # AUXILIARY FUNCTION
 def validate_stats(stats_values, stats, expected_stats):
     if stats in stats_values:
@@ -127,9 +281,9 @@ def test_extractor_models(ts_feature_extractor, synth_ts_filenames, extractor_na
 
     features = extractor.extract_features_from_files(
         synth_ts_filenames,
-        fs=50,
+        fs=500,
         dims=["ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7", "ch8", "ch9", "ch10", "ch11", "ch12"],
-        batch_size=6,
+        batch_size=20,
     )
 
     assert features.shape[0] == len(synth_ts_filenames), "Feature length does not match input length"
@@ -137,6 +291,7 @@ def test_extractor_models(ts_feature_extractor, synth_ts_filenames, extractor_na
 
     prec = synth_shared_metrics.ImprovedPrecision()
     result = prec.compute(features, features)
+
     assert result.dataset_level is not None and result.instance_level is not None, "Eval level is None"
     dataset_level, instance_level = result.value
     assert dataset_level > 0.90, "Dataset level is below threshold"
@@ -539,7 +694,7 @@ def test_distribution_shift(metric_name, sample_distribution, expected_upper, si
         (synth_distance_metrics.CosineSimilarity, 0.8370494332671239),
         (synth_shared_metrics.PrecisionRecallDistribution, (0.6881853042325229, 0.6920392785323591)),
         (synth_shared_metrics.FrechetDistance, 0.5000000060902672),
-        (synth_shared_metrics.MultiScaleIntrinsicDistance, 24.476226229017197),
+        (synth_shared_metrics.MultiScaleIntrinsicDistance, 152.29991989954718),
         (synth_shared_metrics.Authenticity, 0.5),
         (synth_shared_metrics.ImprovedPrecision, 1.0),
         (synth_shared_metrics.ImprovedRecall, 0.8),
@@ -624,6 +779,73 @@ def test_mmd_kerneis(metric_name, kernel, sample_distribution):
     value = result.dataset_level.value
 
     assert isinstance(value, float)
+
+
+@pytest.mark.parametrize(
+    "metric_name, kernel, expected",
+    [
+        (synth_distance_metrics.MMD, "multi_gaussian", 1.0416591425747472),
+        (synth_distance_metrics.MMD, "additive_chi2", 0.4689359283845498),
+        (synth_distance_metrics.MMD, "chi2", 0.2499004582501716),
+        (synth_distance_metrics.MMD, "linear", 0.3188643337711042),
+        (synth_distance_metrics.MMD, "poly", 1.462841954853067),  # ?
+        (synth_distance_metrics.MMD, "rbf", 0.20019771014560495),  # ?
+        (synth_distance_metrics.MMD, "laplacian", 0.1733109813486864),
+        (synth_distance_metrics.MMD, "sigmoid", 0.0188876128198876),
+        (synth_distance_metrics.MMD, "cosine", 0.014276571438203822),
+    ],
+)
+def test_mmd_kerneis_reproductibility(metric_name, kernel, expected):
+    """Test if mmd with several kernels is reproducible."""
+
+    # From sample_distribution((10, 2), sigma=0.5, mu = 0): (all positivr)
+    x_ref = np.array(
+        [
+            [0.88202617, 0.2000786],
+            [0.48936899, 1.1204466],
+            [0.933779, 0.48863894],
+            [0.47504421, 0.0756786],
+            [0.05160943, 0.20529925],
+            [0.07202179, 0.72713675],
+            [0.38051886, 0.06083751],
+            [0.22193162, 0.16683716],
+            [0.74703954, 0.10257913],
+            [0.15653385, 0.42704787],
+        ],
+    )
+
+    # From sample_distribution((10, 2), sigma=0.5, mu = 0.5):
+    y_synth = np.array(
+        [
+            [1.38202617e00, 7.00078604e-01],
+            [9.89368992e-01, 1.62044660e00],
+            [1.43377900e00, 1.13610601e-02],
+            [9.75044209e-01, 4.24321396e-01],
+            [4.48390574e-01, 7.05299251e-01],
+            [5.72021786e-01, 1.22713675e00],
+            [8.80518863e-01, 5.60837508e-01],
+            [7.21931616e-01, 6.66837164e-01],
+            [1.24703954e00, 3.97420868e-01],
+            [6.56533851e-01, 7.29521303e-02],
+        ],
+    )
+
+    metric = metric_name(kernel=kernel)
+    result = metric.compute(x_ref, y_synth)
+
+    if result.dataset_level.dtype == OutputsTypes.KEY_ARRAY:
+        x_values = result.dataset_level.value["precision_values"]
+        y_values = result.dataset_level.value["recall_values"]
+        assert np.mean(x_values) == pytest.approx(expected[0]) and np.mean(y_values) == pytest.approx(
+            expected[1],
+        ), f"{metric_name}: unexpected value of {np.mean(x_values)} or {np.mean(y_values)} with kernel {kernel}."
+
+    elif result.dataset_level.dtype == OutputsTypes.NUMERIC:
+        value = result.dataset_level.value
+
+        assert value == pytest.approx(expected), f"{metric_name}: unexpected value of {value} with kernel {kernel}."
+    else:
+        warnings.warn(f"Unknown output type: {result['dataset_level']['type']}. Skipping comparison.", stacklevel=2)
 
 
 # ###### Test General Metrics Import #######

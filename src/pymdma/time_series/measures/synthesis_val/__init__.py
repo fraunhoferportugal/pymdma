@@ -1,3 +1,4 @@
+from pymdma.time_series.measures.synthesis_val.data.reference import DTW, CrossCorrelation
 from pymdma.time_series.measures.synthesis_val.feature._shared import (
     Authenticity,
     Coverage,
@@ -24,4 +25,6 @@ __all__ = [
     "GeometryScore",
     "MultiScaleIntrinsicDistance",
     "PrecisionRecallDistribution",
+    "DTW",
+    "CrossCorrelation",
 ]
