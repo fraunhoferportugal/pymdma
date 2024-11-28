@@ -141,8 +141,7 @@ class MMD(FeatureMetric):
         If False, ratio computation is skipped. Default is True.
     kernel : str, optional, default='linear'
         The kernel function to use for calculating MMD. Options include:
-        'multi_gaussian','gaussian', 'additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf', 'laplacian', 'sigmoid', 'cosine'
-        (Note: when using gaussian kernel, the number of samples in both datasets must be the same.)
+        'multi_gaussian', 'additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf', 'laplacian', 'sigmoid', 'cosine'
 
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
@@ -294,6 +293,12 @@ class CosineSimilarity(FeatureMetric):
     ----------
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
+
+    References
+    ----------
+    Manning, C. D., Raghavan, P., & Schütze, H., An Introduction to Information Retrieval (2008).
+    https://www.cambridge.org/highereducation/books/introduction-to-information-retrieval/669D108D20F556C5C30957D63B5AB65C#overview
+
 
     Examples
     --------

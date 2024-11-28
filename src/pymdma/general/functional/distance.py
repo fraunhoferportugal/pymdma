@@ -163,6 +163,11 @@ def cos_sim_2d(x_feat, y_feat):
     -------
     float
         The cosine similarity between the two sets of feature vectors.
+
+    References
+    ----------
+    Manning, C. D., Raghavan, P., & Schütze, H., Introduction to Information Retrieval (2008).
+    https://www.cambridge.org/highereducation/books/introduction-to-information-retrieval/669D108D20F556C5C30957D63B5AB65C#overview
     """
     # Normalize the vectors in both sets to have unit length
     norm_x = x_feat / np.linalg.norm(x_feat, axis=1, keepdims=True)

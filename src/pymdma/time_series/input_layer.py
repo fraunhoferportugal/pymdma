@@ -58,6 +58,7 @@ def _get_data_files_path(data_src: Union[List[str], Path]) -> List[Path]:
                 else:
                     raise AssertionError(f"Unsupported file extension: {item.suffix} (file: {item})")
             elif item.is_dir():
+                item = Path(item)
                 # Recursively search for data files in subdirectories
                 for sig_file in item.iterdir():
                     if sig_file.is_file() and sig_file.suffix in SUPPORTED_FILES:
@@ -214,3 +215,24 @@ class TimeSeriesInputLayer(InputLayer):
                 # self.instance_ids.extend(list(sig_ids))
 
                 yield ref_sigs, sim_sigs
+
+    def get_full_samples(self):
+        # only reference signals for no reference metrics
+        if self.reference_type == ReferenceType.NONE:
+            full_no_ref_signals = []
+            for no_ref_signals, _labels, _sig_ids in self.target_loader:
+                full_no_ref_signals.extend(no_ref_signals)
+            return np.array(full_no_ref_signals)
+        else:  # full reference
+            # iterate through both dataloaders and return all signals
+            full_ref_sigs = []
+            full_sim_sigs = []
+            ref_iter = iter(self.reference_loader)
+            sim_iter = iter(self.target_loader)
+            for _ in range(len(self.reference_loader)):
+                ref_sigs, _, _ = next(ref_iter)
+                sim_sigs, _, _sig_ids = next(sim_iter)
+                full_ref_sigs.extend(ref_sigs)
+                full_sim_sigs.extend(sim_sigs)
+
+            return np.array(full_ref_sigs), np.array(full_sim_sigs)
