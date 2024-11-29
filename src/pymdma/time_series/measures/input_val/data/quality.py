@@ -82,6 +82,11 @@ class SNR(Metric):
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
 
+    References
+    ----------
+    Smith, S. W., The Scientist and Engineer's Guide to Digital Signal Processing (1997).
+    https://dl.acm.org/doi/10.5555/281875
+
     Examples
     --------
     >>> snr = SNR()

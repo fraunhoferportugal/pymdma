@@ -1,6 +1,6 @@
 def dispersion_ratio(func, x_feat_1, x_feat_2, y_feat_1, y_feat_2):
-    """Calculates the ratio of the distance between real samples and the
-    distance between fake samples, using the metric passed in the argument
+    """Calculates the ratio of the distance between fake samples and the
+    distance between real samples, using the metric passed in the argument
     "func".
 
     The dispersion ratio is a measure of how well the generator model
@@ -42,7 +42,7 @@ def dispersion_ratio(func, x_feat_1, x_feat_2, y_feat_1, y_feat_2):
 
 def distance_ratio(func, x_feat_1, x_feat_2, y_feat_1, y_feat_2):
     """Calculates the ratio of the distance between real and fake samples and
-    the distance of between fake samples, using the metric passed in the
+    the distance of between real samples, using the metric passed in the
     argument "func".
 
     The distance ratio is a measure of how well the generator model
