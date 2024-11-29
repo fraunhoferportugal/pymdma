@@ -25,22 +25,22 @@ For more information check out the official documentation [here](https://pymdma.
 
 You will need:
 
+- `pip`
 - `python` (see `pyproject.toml` for full version)
 - `anaconda` or similar (recommended)
-- `Git`
+- `Git` (developers)
 - `Make` and `poetry` (developers)
-- load environment variables from `.env`
+- load environment variables from `.env` (developers)
 
 ## 1. Installing
 
-<!-- You can either install this package via pip (if you want access to individual modules) or clone the repository (if you want to contribute to the project or change the code in any way). -->
+You can either install this package via pip (if you want access to individual modules) or clone the repository (if you wish to contribute to the project or change the code in any way). Currently, the package supports the following modalities: `image`, `tabular`, and `time_series`.
 
-At this moment only the installation from source is available.
+You should install the package in a virtual environment to avoid conflicts with system packages. Please consult the official [documentation](https://docs.python.org/3/library/venv.html) for developing with virtual environments.
 
-You should install the package in a virtual environment to avoid conflicts with other packages. Please consult the official [documentation](https://docs.python.org/3/library/venv.html) for developing with virtual environments.
+### 1.1 Installing via pip (recommended)
 
-<!-- ### 1.1 Installing via pip (recommended)
-
+Before running any commands, make sure you have the latest versions of `pip` and `setuptools` installed.
 The package can be installed with the following command:
 
 ```bash
@@ -56,76 +56,36 @@ pip install pymdma[time_series] # time series dependencies
 pip install pymdma[all] # dependencies for all modalities
 ```
 
-Choose the one(s) that best suits your needs. -->
+Choose the one(s) that best suits your needs.
+
+> **Note:** for a minimal installation without CUDA support, you can install the package without the `cuda` dependencies. This can be done by forcing pip to install torch from the CPU index with the `--find-url=https://download.pytorch.org/whl/cpu/torch_stable.html` command. **You will not have access to the GPU-accelerated features.**
 
 ### 1.1 Installing from source
 
-If you want to clone the repository, you can do so with the following commands:
+You can install the package from source with the following command:
 
 ```bash
-git clone --recursive https://github.com/fraunhoferportugal/pymdma.git
-cd pymdma
-```
-
-**(Recommended)** Install and activate conda dependencies for python version and package management:
-
-```bash
-conda env create -f environment.yml
-conda activate da_metrics
-```
-
-This repository can evaluate three different modalities: `image`, `tabular`, and `time_series`. If you wish to test only one data modality, you can install only the required dependencies. Before running any commands, make sure you have the latest versions of `pip` and `setuptools` installed.
-
-After this, you can install the package with the following command:
-
-```bash
-pip install . # install base from source
+pip install "pymdma @ git+https://github.com/fraunhoferportugal/pymdma.git"
 ```
 
 Depending on the data modality you want to use, you may need to install additional dependencies. The following commands will install the dependencies for each modality:
 
 ```bash
-pip install .[image] # image dependencies
-pip install .[tabular] # tabular dependencies
-pip install .[time_series] # time series dependencies
+pip install "pymdma[image] @ git+https://github.com/fraunhoferportugal/pymdma.git" # image dependencies
+pip install "pymdma[tabular] @ git+https://github.com/fraunhoferportugal/pymdma.git" # tabular dependencies
+pip install "pymdma[tabular] @ git+https://github.com/fraunhoferportugal/pymdma.git" # time series dependencies
 ```
-
-> **Note:** The previous commands install the components from the base of the repository. If you are in another directory, you should replace `.` with the path to the repository's base.
 
 For a minimal installation, you can install the package without CUDA support by forcing pip to install torch from the CPU index with the `--find-url` command.
 
 ## 2. Execution Examples
-The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your code.
 
+The package provides a CLI interface for automatically evaluating folder datasets. You can also import the metrics for a specific modality and use them in your code.
 Before running any commands make sure the package was correctly installed.
 
-## 2.1. CLI Execution
+### 2.1. Importing Modality Metrics
 
-To evaluate a dataset, you can use the CLI interface. The following command will list the available commands:
-
-```bash
-pymdma --help # list available commands
-```
-
-Following is an example of executing the evaluation of a synthetic dataset with regard to a reference dataset:
-
-```bash
-pymdma --modality image \
-    --validation_domain synth \
-    --reference_type dataset \
-    --evaluation_level dataset \
-    --reference_data data/test/image/synthesis_val/reference \
-    --target_data data/test/image/synthesis_val/dataset \
-    --batch_size 3 \
-    --metric_category feature \
-    --output_dir reports/image_metrics/
-```
-
-This will evaluate the synthetic dataset in the `data/test/image/synthesis_val/dataset` with regard to the reference dataset in `data/test/image/synthesis_val/reference`. The evaluation will be done at the dataset level and the report will be saved in the `reports/image_metrics/` folder in JSON format. Only feature metrics will be computed for this evaluation.
-
-## 2.2. Importing Modality Metrics
-
-You can also import the metrics for a specific modality and use them in your code. The following example shows how to import an image metric and use it to evaluate input images in terms of sharpness. Note that this metric only returns the sharpness value for each image (i.e. the instance level value). The dataset level value is none.
+You can import the metrics for a specific modality and use them in your code. The following example shows how to import an image metric and use it to evaluate input images in terms of sharpness. Note that this metric only returns the sharpness value for each image (i.e. the instance- level value). The dataset-level value is none.
 
 ```python
 from pymdma.image.measures.input_val import Tenengrad
@@ -163,8 +123,8 @@ Now you can calculate the Improved Precision and Recall of the synthetic dataset
 ```python
 from pymdma.image.measures.synthesis_val import ImprovedPrecision, ImprovedRecall
 
-ip = ImprovedPrecision() # Improved Precision metric
-ir = ImprovedRecall() # Improved Recall metric
+ip = ImprovedPrecision()  # Improved Precision metric
+ir = ImprovedRecall()  # Improved Recall metric
 
 # Compute the metrics
 ip_result = ip.compute(ref_features, synth_features)
@@ -180,6 +140,30 @@ print(f"Precision: {precision_instance} | Recall: {recall_instance}")
 ```
 
 You can find more examples of execution in the [notebooks](notebooks) folder.
+
+### 2.2. CLI Execution
+
+To evaluate a dataset, you can use the CLI interface. The following command will list the available commands:
+
+```bash
+pymdma --help # list available commands
+```
+
+Following is an example of executing the evaluation of a synthetic dataset with regard to a reference dataset:
+
+```bash
+pymdma --modality image \
+    --validation_domain synth \
+    --reference_type dataset \
+    --evaluation_level dataset \
+    --reference_data data/test/image/synthesis_val/reference \
+    --target_data data/test/image/synthesis_val/dataset \
+    --batch_size 3 \
+    --metric_category feature \
+    --output_dir reports/image_metrics/
+```
+
+This will evaluate the synthetic dataset in the `data/test/image/synthesis_val/dataset` with regard to the reference dataset in `data/test/image/synthesis_val/reference`. The evaluation will be done at the dataset level and the report will be saved in the `reports/image_metrics/` folder in JSON format. Only feature metrics will be computed for this evaluation.
 
 ## Documentation
 
@@ -225,6 +209,7 @@ If you publish work that uses pyMDMA, please cite pyMDMA as follows:
 ```
 
 ## Acknowledgments
-This work was funded by AISym4Med project number 101095387, supported by the European Health and Digital Executive Agency (HADEA), granting authority under the powers delegated by the European Commision. More information on this project can be found [here](https://aisym4med.eu/).
+
+This work was funded by AISym4Med project number 101095387, supported by the European Health and Digital Executive Agency (HADEA), granting authority under the powers delegated by the European Commission. More information on this project can be found [here](https://aisym4med.eu/).
 
 This work was supported by European funds through the Recovery and Resilience Plan, project ”Center for Responsible AI”, project number C645008882-00000055. Learn more about this project [here](https://centerforresponsible.ai/).

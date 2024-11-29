@@ -2,7 +2,7 @@
 # https://github.com/microsoft/vscode-python/blob/master/CHANGELOG.md#enhancements-1
 [tool.poetry]
 name = "pymdma"
-version = "0.1.4"
+version = "0.1.5"
 description = "Multimodal Data Metrics for Auditing real and synthetic data"
 authors = ["Fraunhofer AICOS <no-reply@aicos.fraunhofer.pt>"]
 maintainers = [
@@ -15,11 +15,14 @@ classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
   "Operating System :: OS Independent",
+  "Development Status :: 5 - Production/Stable",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 readme = "README.md"
 license = "LGPL-3.0-or-later"
 package-mode = true
-#homepage = ""
+documentation = "https://pymdma.readthedocs.io/en/latest/"
 repository = "https://github.com/fraunhoferportugal/pymdma"
 packages = [
   { include = "pymdma", from = "src"}
@@ -101,7 +104,6 @@ pytest = "^7.4.3"
 pytest-cov = "^4.1.0"
 commitizen = "^3.17.0"
 safety = "^2.3.5"
-# cz-bitbucket-jira-conventional = {git = "https://bitbucket.fraunhofer.pt/scm/is2020/mlops-commit-drafter.git", rev = "v1.0.3"}
 httpx = "^0.27.0"
 twine = "^5.1.1"
 
@@ -109,7 +111,6 @@ twine = "^5.1.1"
 optional = true
 [tool.poetry.group.docs.dependencies]
 pydocstyle = "^6.3.0"
-# TODO (telmo.baptista): Add support for Sphinx. Sphinx is only supported by Python 3.9+, so we have to manage the minimal version required before creation.
 mkdocs = "^1.6.1"
 mkdocstrings = {extras = ["python"], version = "^0.26.1"}
 mkdocs-gen-files = "^0.5.0"
@@ -128,16 +129,6 @@ nbconvert = "^7.11.0"
 [tool.poetry.scripts]
 pymdma = "pymdma.cli:main"
 
-# [[tool.poetry.source]]
-# name = "torch-cu118"
-# url = "https://download.pytorch.org/whl/cu118"
-# priority = "explicit"
-
-
-# [[tool.poetry.source]]
-# name = "torch-cpu"
-# url = "https://download.pytorch.org/whl/cpu"
-# priority = "explicit"
 
 [tool.black]
 line-length = 120
@@ -287,5 +278,3 @@ skip = [".git"]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-# requires = ["setuptools"]
-# build-backend = "setuptools.build_meta"
