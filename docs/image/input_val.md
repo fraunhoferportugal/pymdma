@@ -2,6 +2,7 @@
 
 ## Data-based
 ### Quality (No-reference)
+::: pymdma.image.measures.input_val.DOM
 ::: pymdma.image.measures.input_val.Tenengrad
 ::: pymdma.image.measures.input_val.TenengradRelative
 ::: pymdma.image.measures.input_val.EME

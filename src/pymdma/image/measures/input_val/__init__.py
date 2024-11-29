@@ -1,7 +1,7 @@
+from pymdma.image.measures.input_val.data.dom import DOM
 from pymdma.image.measures.input_val.data.no_reference import (
     BRISQUE,
     CLIPIQA,
-    DOM,
     EME,
     Brightness,
     Colorfulness,

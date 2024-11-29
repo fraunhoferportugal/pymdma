@@ -20,3 +20,9 @@ These metrics require a preprocessing of the data, to extract the features that 
 
 ### Privacy
 ::: pymdma.time_series.measures.synthesis_val.Authenticity
+
+## Data-based
+### Quality
+::: pymdma.time_series.measures.synthesis_val.DTW
+::: pymdma.time_series.measures.synthesis_val.CrossCorrelation
+

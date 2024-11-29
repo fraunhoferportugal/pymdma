@@ -1,3 +1,0 @@
-statsmodels>=0.14.4, <0.15.0 ; python_version >= "3.9" and python_version < "3.13"
-tsfel>0.1.7 ; python_version >= "3.9" and python_version < "3.13"
-wfdb>=4.1.2, <5.0.0 ; python_version >= "3.9" and python_version < "3.13"

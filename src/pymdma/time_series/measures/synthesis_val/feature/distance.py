@@ -5,7 +5,7 @@ import numpy as np
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
-from pymdma.general.functional.distance import cos_sim_2d, fast_mmd_linear, mk_mmd, mmd_kernel, wasserstein
+from pymdma.general.functional.distance import cos_sim_2d, fast_mmd_linear, mmd_kernel, wasserstein, mk_mmd
 from pymdma.general.functional.ratio import dispersion_ratio, distance_ratio
 from pymdma.general.utils.util import features_splitting
 
@@ -129,8 +129,7 @@ class WassersteinDistance(FeatureMetric):
 
 class MMD(FeatureMetric):
     """Calculate the Maximum Mean Discrepancy (MMD) using a specified kernel
-    function. If the chosen kernel is "multi_gaussian", the multi-kernel MMD
-    using gaussian kernels will be computed.
+    function.
 
     **Objective**: Fidelity, Diversity
 
@@ -141,11 +140,13 @@ class MMD(FeatureMetric):
         If False, ratio computation is skipped. Default is True.
     kernel : str, optional, default='linear'
         The kernel function to use for calculating MMD. Options include:
-        'multi_gaussian','gaussian', 'additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf', 'laplacian', 'sigmoid', 'cosine'
-        (Note: when using gaussian kernel, the number of samples in both datasets must be the same.)
-
+        'multi_gaussian', 'additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf', 'laplacian', 'sigmoid', 'cosine'
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
+        
+    Notes
+    -----
+    When using gaussian kernel, the number of samples in both datasets must be the same
 
     References
     ----------
@@ -157,7 +158,7 @@ class MMD(FeatureMetric):
 
     Examples
     --------
-    >>> mmd = MMD(kernel = 'multi_gaussian')
+    >>> mmd = MMD(kernel = 'linear')
     >>> real_features = np.random.rand(64, 48) # (n_samples, num_features)
     >>> fake_features = np.random.rand(64, 48) # (n_samples, num_features)
     >>> result: MetricResult = mmd.compute(x_feat, y_feat)
@@ -248,8 +249,7 @@ class MMD(FeatureMetric):
 
     def compute(self, real_features: np.ndarray, fake_features: np.ndarray, **kwargs) -> MetricResult:
         """Calculate the Maximum Mean Discrepancy (MMD) using a specified
-        kernel function. If the chosen kernel is "multi_gaussian", the multi-
-        kernel MMD using gaussian kernels willbe computed.
+        kernel function.
 
         Parameters
         ----------
@@ -294,6 +294,12 @@ class CosineSimilarity(FeatureMetric):
     ----------
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
+
+    References
+    ----------
+    Manning, C. D., Raghavan, P., & Schütze, H., An Introduction to Information Retrieval (2008).
+    https://www.cambridge.org/highereducation/books/introduction-to-information-retrieval/669D108D20F556C5C30957D63B5AB65C#overview
+
 
     Examples
     --------
