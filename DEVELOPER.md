@@ -4,11 +4,11 @@ This project uses [Conda](https://anaconda.org/anaconda/python) to manage Python
 
 There are three main modalities: `image`, `time_series`, and `tabular`. Each modality has its own folder/submodule in the `pymdma` package. The `general` and `common` modules contain the main classes definitions used in the API and on the package version of the project.
 
-Each modality dependency is defined as an extra in the [pyproject](pyproject.toml) configuration file. Development dependencies are defined as poetry groups in the same file. More information about packaging and dependencies can be found below.
+Each modality dependency is defined as an extra in the [pyproject](https://python-poetry.org/docs/pyproject/) configuration file. Development dependencies are defined as poetry groups in the same file. More information about packaging and dependencies can be found below.
 
 The `scripts` folder contains shell scripts that can be used to automate common tasks. You can find some examples of execution in this folder. Additionally, the `notebooks` folder contains Jupyter notebooks with examples of how to import and use the package.
 
-We also provide a docker image to run a REST API version of the repository. The docker image is built using the [Dockerfile](Dockerfile) in the root of the repository.
+We also provide a docker image to run a REST API version of the repository. The docker image is built using the [Dockerfile](https://docs.docker.com/reference/dockerfile/) in the root of the repository.
 
 A coding standard is enforced using [Black](https://github.com/psf/black), [isort](https://pypi.org/project/isort/) and
 [Flake8](https://flake8.pycqa.org/en/latest/). Python 3 type hinting is validated using
@@ -25,7 +25,7 @@ ensure you're not pushing any passwords or sensitive information into your Bitbu
 Commits are rejected if the tool matches any of the configured regular expression patterns that indicate that sensitive
 information has been stored improperly.
 
-We use [mkdocs](https://www.mkdocs.org)  with the [Numpydocs](https://numpydoc.readthedocs.io/en/latest/format.html) style for building documentation. More information on how to build the documentation can be found below.
+We use [mkdocs](https://www.mkdocs.org) with the [Numpydocs](https://numpydoc.readthedocs.io/en/latest/format.html) style for building documentation. More information on how to build the documentation can be found below.
 
 ## Prerequisites
 
@@ -46,6 +46,7 @@ bash Miniconda3-latest-Linux-x86_64.sh
 ```
 
 ## Environment Setup
+
 We recommend you install [Conda](https://docs.conda.io/en/latest/) (or similar) to manage your Python versions in your computer. After which, you can create a new environment with the following commands:
 
 ```shell
@@ -70,8 +71,6 @@ Alternatively, you can install the dependencies manually by running the followin
 (da_metrics) poetry run pre-commit install --install-hooks -t pre-commit -t commit-msg
 ```
 
-
-
 ## Packaging and Dependencies
 
 This project uses [Conda](https://anaconda.org/anaconda/python) to manage Python virtual environments and [Poetry](https://python-poetry.org/) as the main packaging and dependency manager.
@@ -83,6 +82,7 @@ poetry add <package>
 ```
 
 ### Dependency Groups
+
 To add a dependency into a specific group, use:
 
 ```
@@ -114,33 +114,37 @@ poetry install --only <group>,<group>,...
 ```
 
 ### Extra Dependencies
+
 To add an extra dependency, use:
+
 ```
-poetry add <package> --extras <extra>
+poetry add <package>
 ```
 
+> **Important:** You will need to update the pyproject.toml dependencies to indicate it as optional, and to specify it in the `extras` parameter of the same configuration file. For an example refer to the poetry documentation on this topic [here](https://python-poetry.org/docs/pyproject/#extras).
+
 To install the extra dependencies, use:
+
 ```
 poetry install --extras <extra>
 ```
+
 Note that `<extra>` is the name of the extra dependencies group or a space separated list of extra dependencies.
 
-
-A list of all dependencies can be found in the [pyproject.toml](pyproject.toml) configuration file.
-
+A list of all dependencies can be found in the [pyproject.toml](https://github.com/fraunhoferportugal/pymdma/blob/main/pyproject.toml) configuration file.
 
 ## Git Hooks
 
 We rely on [pre-commit](https://pre-commit.com) hooks to ensure that the code is properly-formatted, clean, and type-safe when it's checked in.
 The `run install` step described below installs the project pre-commit hooks into your repository. These hooks
-are configured in [`.pre-commit-config.yaml`](/.pre-commit-config.yaml). After installing the development requirements
+are configured in [`.pre-commit-config.yaml`](https://github.com/fraunhoferportugal/pymdma/blob/main/.pre-commit-config.yaml). After installing the development requirements
 and cloning the package, run
 
 ```
 pre-commit install
 ```
 
-from the project root to install the hooks locally.  Now before every `git commit ...` these hooks will be run to verify
+from the project root to install the hooks locally. Now before every `git commit ...` these hooks will be run to verify
 that the linting and type checking is correct. If there are errors, the commit will fail, and you will see the changes
 that need to be made. Alternatively, you can run pre-commit
 
@@ -166,11 +170,11 @@ the pre-commit hooks in the currently active environment).
 
 ### Markdown
 
-Local links can be written as normal, but external links should be referenced at the  bottom of the Markdown file for clarity.
+Local links can be written as normal, but external links should be referenced at the bottom of the Markdown file for clarity.
 For example:
 
 ```md
-Use a local link to reference the [`README.md`](../README.md) file, but an external link for [Fraunhofer AICOS][fhp-aicos].
+Use a local link to reference the `README.md` file, but an external link for [Fraunhofer AICOS][fhp-aicos].
 
 [fhp-aicos]: https://www.fraunhofer.pt/
 ```
@@ -180,7 +184,7 @@ enforced in all cases, for example with long hyperlinks.
 
 ## Testing
 
-\[Tests are written using the `pytest` framework\]\[pytest\], with its configuration in the `pyproject.toml` file.
+\[Tests are written using the `pytest` framework\][pytest], with its configuration in the `pyproject.toml` file.
 Note, only tests in `pymdma/tests` folders folder are run.
 To run the tests, enter the following command in your terminal:
 
@@ -190,7 +194,7 @@ pytest -vvv
 
 ### Code coverage
 
-\[Code coverage of Python scripts is measured using the `coverage` Python package\]\[coverage\]; its configuration
+\[Code coverage of Python scripts is measured using the `coverage` Python package\][coverage]; its configuration
 can be found in `pyproject.toml`.
 To run code coverage, and view it as an HTML report, enter the following command in your terminal:
 
@@ -208,6 +212,7 @@ make coverage-html
 The HTML report can be accessed at `htmlcov/index.html`.
 
 ## Generating Documentation
+
 The documentation is written in Markdown and follows the [Numpy Style Python Docstring](https://numpydoc.readthedocs.io/en/latest/format.html) format. All documentation source files is in the `docs` folder. To build the documentation, run the following commands:
 
 ```shell
@@ -218,7 +223,8 @@ make mkdocs-serve # serve the documentation locally
 The documentation will be built in the `docs/_build` folder. The default link to access the documentation is `http://localhost:8000`.
 
 ## Docker Encapsulation
-We developed a Docker image to encapsulate the REST API server version of the repository, for internal use. The server is built using the [FastAPI](https://fastapi.tiangolo.com/) framework. A list of frozen dependencies can be found in [requirements-prod.txt](requirements/requirements-prod.txt). The image is built from the [Dockerfile](Dockerfile) in the root of the repository.
+
+We developed a Docker image to encapsulate the REST API server version of the repository, for internal use. The server is built using the [FastAPI](https://fastapi.tiangolo.com/) framework. A list of frozen dependencies can be found in [requirements-prod.txt](https://github.com/fraunhoferportugal/pymdma/blob/main/requirements/requirements-prod.txt). The image is built from the [Dockerfile](https://github.com/fraunhoferportugal/pymdma/blob/main/Dockerfile) in the root of the repository.
 
 To build the Docker image, run the following command:
 
@@ -231,8 +237,8 @@ To run the Docker image, run the following command:
 ```shell
 docker run -d -p 8080:8000 -v ./data/:/app/data/ pymdma
 ```
-This will start the server on port `8080` in the host machine and mount the `data` folder in the container. The server documentation can be accessed at `http://localhost:8080/docs`. Dataset files should be placed in the data folder to be accessed by the server. You should follow the current structure of datasets in the data
 
+This will start the server on port `8080` in the host machine and mount the `data` folder in the container. The server documentation can be accessed at `http://localhost:8080/docs`. Dataset files should be placed in the data folder to be accessed by the server. You should follow the current structure of datasets in the data
 
 ## Set private environment variables in .envrc file
 
@@ -250,7 +256,6 @@ All variables from .env are loaded in config.py automatically.
 
 If you have [direnv](https://direnv.net/docs/installation.html) correctly configured, when entering the directory of this project through the command line interface the conda environment and the virtual environment should be automatically activated. If this does not work, try running `$ direnv allow`, cd out of the directory and then cd into the directory again; the identification of the two activated environments should appear to the left of the terminal (not always the case when using VS Code).
 
-
 <!-- ## CI
 
 All PRs trigger a CI job to run linting, type checking, tests, and build docs. The CI script is located [here](Jenkinsfile)
@@ -258,9 +263,7 @@ and should be considered the source of truth for running the various development
 
 ## Line Endings
 
-The [`.gitattributes`](.gitattributes) file controls line endings for the files in this repository.
-
-
+The `.gitattributes` file controls line endings for the files in this repository.
 
 ## IDE Setup
 
