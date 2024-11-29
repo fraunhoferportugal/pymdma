@@ -8,6 +8,7 @@ Taxonomy rework and documentation updates.
 
 ### Added 
  - readthedocs slug in the README file
+ - References to tabular metrics
 
 ### Changed
  - Renamed `validation_type` to `validation_domain`
