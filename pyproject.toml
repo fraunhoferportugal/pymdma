@@ -6,10 +6,10 @@ version = "0.1.4"
 description = "Multimodal Data Metrics for Auditing real and synthetic data"
 authors = ["Fraunhofer AICOS <no-reply@aicos.fraunhofer.pt>"]
 maintainers = [
-  "Marília Barandas <marilia.barandas@aicos.fraunhofer.pt>",
   "Ivo Façoco <ivo.facoco@aicos.fraunhofer.pt>",
   "Joana Rebelo <joana.rebelo@aicos.fraunhofer.pt>",
-  "Pedro Matias <pedro.matias@aicos.fraunhofer.pt>"
+  "Pedro Matias <pedro.matias@aicos.fraunhofer.pt>",
+  "Marília Barandas <marilia.barandas@aicos.fraunhofer.pt>",
 ]
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -43,7 +43,6 @@ gudhi = {version = ">=3.9.0, <=4.0.0"}
 scikit-learn = {version = ">1.4.0"}
 
 # Image dependencies
-# pydom = {git = "https://github.com/umang-singhal/pydom.git", rev = "2554af8d0", optional = true}
 torchvision = {version = ">=0.15.2, <0.19.0", optional = true}
 torchmetrics = {version = ">=1.3.2, <1.4.0", extras = ["image"], optional = true}
 pycocotools = {version = ">=2.0.8", optional = true}
@@ -73,12 +72,12 @@ word2number = {version = ">=1.1.0, <1.5.0", optional = true}
 
 
 [tool.poetry.extras]
-image = ["pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity"]
+image = ["torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity"]
 tabular = ["numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "umap-learn", "word2number", "statsmodels"]
 time_series = ["tsfel", "wfdb", "statsmodels", "fastdtw"]
 # text = ["accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"]
 all = [
-  "pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity",
+  "torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity",
   "numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "umap-learn", "word2number",
   "tsfel", "wfdb", "statsmodels", "fastdtw"
   # "accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"

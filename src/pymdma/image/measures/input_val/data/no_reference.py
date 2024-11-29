@@ -1,7 +1,6 @@
 from typing import Literal, Tuple, Union
 
 import cv2
-# import dom as _dom
 import numpy as np
 import torch
 from PIL import Image, ImageEnhance
@@ -13,88 +12,6 @@ from pymdma.common.output import DistributionResult, MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 from ....utils.processing import image_resize
-
-# TODO review documentations and attributes
-
-
-# class DOM(Metric):
-#     """Computes DOM sharpness score for an image. It is effective in detecting
-#     motion-blur, de-focused images or inherent properties of imaging system.
-
-#     **Objective**: Sharpness
-
-#     Parameters
-#     ----------
-#     width : int, optional, default=2
-#         Width of the edge filter.
-#     sharpness_threshold : int, optional, default=2
-#         Threshold for considering if a pixel is sharp or not.
-#     edge_threshold : float, optional, default=0.0001
-#         Threshold for edge.
-#     **kwargs : dict, optional
-#         Additional keyword arguments for compatibility.
-
-#     References
-#     ----------
-#     Kumar et al., Sharpness estimation for document and scene images (2012).
-#     https://ieeexplore.ieee.org/document/6460868
-
-#     Code was adapted from:
-#     pydom, Sharpness Estimation for Document and Scene Images.
-#     https://github.com/umang-singhal/pydom
-
-#     Examples
-#     --------
-#     >>> dom = DOM()
-#     >>> imgs = np.random.rand(20, 100, 100, 3) # (N, H, W, C)
-#     >>> result: MetricResult = dom.compute(imgs)
-#     """
-
-#     reference_type = ReferenceType.NONE
-#     evaluation_level = EvaluationLevel.INSTANCE
-#     metric_group = MetricGroup.QUALITY
-
-#     higher_is_better: bool = True
-#     min_value: float = 0.0
-#     max_value: float = 1.0
-
-#     def __init__(
-#         self,
-#         width: int = 2,
-#         sharpness_threshold: int = 2,
-#         edge_threshold: float = 0.0001,
-#         **kwargs,
-#     ):
-#         super().__init__(**kwargs)
-#         self._dom = _dom.DOM()
-#         self.width = width
-#         self.sharpness_threshold = sharpness_threshold
-#         self.edge_threshold = edge_threshold
-
-#     def compute(
-#         self,
-#         imgs: np.ndarray,
-#         **kwargs,
-#     ) -> MetricResult:
-#         """Computes DOM score for an image.
-
-#         Parameters
-#         ----------
-#         imgs : {(N, H, W, C) ndarray, (N, H, W) ndarray}
-#             List of arrays representing RGB or grayscale image of shape (H, W, C) or (H, W), respectively.
-
-#         Returns
-#         -------
-#         result: MetricResult
-#             DOM score for each image.
-#         """
-#         scores = [
-#             self._dom.get_sharpness(img, self.width, self.sharpness_threshold, self.edge_threshold) for img in imgs
-#         ]
-
-#         return DistributionResult(
-#             instance_level={"dtype": OutputsTypes.ARRAY, "subtype": "float", "value": scores},
-#         )
 
 
 class Tenengrad(Metric):
@@ -379,8 +296,8 @@ class EME(Metric):
 
 # TODO documentation
 class ExposureBrightness(Metric):
-    """Computes Exposure and Brightness level Metric.
-    Values higher than 1 indicate overexposure, while values closer to 0 indicate underexposure.
+    """Computes Exposure and Brightness level Metric. Values higher than 1
+    indicate overexposure, while values closer to 0 indicate underexposure.
 
     **Objective**: Exposure and Brightness
 
@@ -814,7 +731,6 @@ class BRISQUE(Metric):
 
 
 __all__ = [
-    "DOM",
     "Tenengrad",
     "TenengradRelative",
     "EME",
