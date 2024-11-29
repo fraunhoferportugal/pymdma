@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2024-11-29
+Introduce new time-series metrics and documentation updates.
+
+### Added
+ - `DTW` metric for time-series synthetic data
+ - `CrossCorrelation` metric for time-series synthetic data
+ - Time-series example notebook
+ - PyPI ckassifiers for development status and machine learning topics
+ - Documentation page in pyproject.toml
+ - `fastdtw` dependency for the `DTW` metric
+
+### Changed
+ - removed `pydom` dependency from the `DOM` metric
+ - DOM metric now has a local implementation
+
+### Fixed
+ - PyPI security issues due to direct external `pydom` dependency
+ 
+
 ## [0.1.4] - 2024-11-21
 Taxonomy rework and documentation updates.
 
