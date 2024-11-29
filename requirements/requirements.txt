@@ -1,8 +1,0 @@
-loguru>=0.7.2, <0.8.0 ; python_version >= "3.9" and python_version < "3.13"
-matplotlib>=3.4.3, <4.0.0 ; python_version >= "3.9" and python_version < "3.13"
-numpy>=1.22.0, <2.0.0 ; python_version >= "3.9" and python_version < "3.13"
-piq>=0.8.0, <1.0.0 ; python_version >= "3.9" and python_version < "3.13"
-POT>=0.9.4, <0.10.0 ; python_version >= "3.9" and python_version < "3.13"
-pydantic>=2.8.2, <2.9.0 ; python_version >= "3.9" and python_version < "3.13"
-python-dotenv>=1.0.0, <2.0.0 ; python_version >= "3.9" and python_version < "3.13"
-torch>=2.0.1, <2.5.0 ; python_version >= "3.9" and python_version < "3.13"
