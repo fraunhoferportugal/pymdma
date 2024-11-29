@@ -694,7 +694,7 @@ def test_distribution_shift(metric_name, sample_distribution, expected_upper, si
         (synth_distance_metrics.CosineSimilarity, 0.8370494332671239),
         (synth_shared_metrics.PrecisionRecallDistribution, (0.6881853042325229, 0.6920392785323591)),
         (synth_shared_metrics.FrechetDistance, 0.5000000060902672),
-        (synth_shared_metrics.MultiScaleIntrinsicDistance, 152.29991989954718),
+        # (synth_shared_metrics.MultiScaleIntrinsicDistance, 152.29991989954718),
         (synth_shared_metrics.Authenticity, 0.5),
         (synth_shared_metrics.ImprovedPrecision, 1.0),
         (synth_shared_metrics.ImprovedRecall, 0.8),

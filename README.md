@@ -225,6 +225,6 @@ If you publish work that uses pyMDMA, please cite pyMDMA as follows:
 ```
 
 ## Acknowledgments
-This work was funded by AISym4Med project number 101095387, supported by the European Heath and Digital Executive Agency (HADEA), granting authority under the powers delegated by the Europeam Commision. More information on this project can be found [here](https://aisym4med.eu/).
+This work was funded by AISym4Med project number 101095387, supported by the European Health and Digital Executive Agency (HADEA), granting authority under the powers delegated by the European Commision. More information on this project can be found [here](https://aisym4med.eu/).
 
 This work was supported by European funds through the Recovery and Resilience Plan, project ”Center for Responsible AI”, project number C645008882-00000055. Learn more about this project [here](https://centerforresponsible.ai/).
