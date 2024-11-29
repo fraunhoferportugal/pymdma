@@ -1,9 +1,6 @@
 import numpy as np
 import ot
-import torch
 from sklearn.metrics import pairwise_kernels
-
-from ..models.kernels import GaussianKernel, MultipleKernelMaximumMeanDiscrepancy
 
 
 def wasserstein(x_feat, y_feat):
@@ -114,39 +111,39 @@ def mmd_kernel(x_feat, y_feat, kernel="sigmoid"):
     return mmd
 
 
-def mk_mmd(x_feat, y_feat, **kwargs):
-    """Compute Multiple Kernel Maximum Mean Discrepancy (MK-MMD) between two
-    sets of samples using a set of Gaussian kernels.
+# def mk_mmd(x_feat, y_feat, **kwargs):
+#     """Compute Multiple Kernel Maximum Mean Discrepancy (MK-MMD) between two
+#     sets of samples using a set of Gaussian kernels.
 
-    Parameters
-    ----------
-    x_feat : array-like of shape [n_samples_x, n_features]
-        2D array containing features from samples of the original distribution.
-    y_feat : array-like of shape [n_samples_y, n_features]
-        2D array containing features from samples of the fake distribution.
-    **kwargs : dict, optional
-        Additional keyword arguments for compatibility (unused).
+#     Parameters
+#     ----------
+#     x_feat : array-like of shape [n_samples_x, n_features]
+#         2D array containing features from samples of the original distribution.
+#     y_feat : array-like of shape [n_samples_y, n_features]
+#         2D array containing features from samples of the fake distribution.
+#     **kwargs : dict, optional
+#         Additional keyword arguments for compatibility (unused).
 
-    Returns
-    -------
-    torch.Tensor
-        MK-MMD value.
+#     Returns
+#     -------
+#     torch.Tensor
+#         MK-MMD value.
 
-    References
-    ----------
-    Gretton, A. et al, Optimal kernel choice for large-scale two-sample tests. (NIPS'12)
-    https://proceedings.neurips.cc/paper_files/paper/2012/file/dbe272bab69f8e13f14b405e038deb64-Paper.pdf
+#     References
+#     ----------
+#     Gretton, A. et al, Optimal kernel choice for large-scale two-sample tests. (NIPS'12)
+#     https://proceedings.neurips.cc/paper_files/paper/2012/file/dbe272bab69f8e13f14b405e038deb64-Paper.pdf
 
-    Code adapted from:
-    Transfer Learning Library by the THUML Group.
-    https://github.com/thuml/Transfer-Learning-Library/blob/master/examples/domain_adaptation/image_classification/dan.py
-    """
-    mk_mmd = MultipleKernelMaximumMeanDiscrepancy(
-        kernels=[GaussianKernel(alpha=2**k) for k in range(-3, 2)],
-        linear=False,
-    )
+#     Code adapted from:
+#     Transfer Learning Library by the THUML Group.
+#     https://github.com/thuml/Transfer-Learning-Library/blob/master/examples/domain_adaptation/image_classification/dan.py
+#     """
+#     mk_mmd = MultipleKernelMaximumMeanDiscrepancy(
+#         kernels=[GaussianKernel(alpha=2**k) for k in range(-3, 2)],
+#         linear=False,
+#     )
 
-    return mk_mmd(torch.from_numpy(x_feat), torch.from_numpy(y_feat)).item()
+#     return mk_mmd(torch.from_numpy(x_feat), torch.from_numpy(y_feat)).item()
 
 
 def cos_sim_2d(x_feat, y_feat):

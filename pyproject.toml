@@ -54,6 +54,7 @@ torch-fidelity = {version = ">=0.3.0, <0.4.0", optional = true}
 tsfel = {version = ">0.1.7", optional = true}
 wfdb = {version = ">=4.1.2, <5.0.0", optional = true}
 statsmodels = {version = ">=0.14.4, <0.15.0", optional = true}
+fastdtw = {version = "^0.3.4", optional = true}
 # Text Dependencies TODO
 # accelerate = {version = "^0.24.0", optional = true}
 # datasets = {version = "^2.14.6", optional = true}
@@ -74,12 +75,12 @@ word2number = {version = ">=1.1.0, <1.5.0", optional = true}
 [tool.poetry.extras]
 image = ["pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity"]
 tabular = ["numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "umap-learn", "word2number", "statsmodels"]
-time_series = ["tsfel", "wfdb", "statsmodels"]
+time_series = ["tsfel", "wfdb", "statsmodels", "fastdtw"]
 # text = ["accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"]
 all = [
   "pydom", "torchvision", "torchmetrics", "pycocotools", "opencv-python", "torch-fidelity",
   "numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "umap-learn", "word2number",
-  "tsfel", "wfdb", "statsmodels"
+  "tsfel", "wfdb", "statsmodels", "fastdtw"
   # "accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"
 ]
 

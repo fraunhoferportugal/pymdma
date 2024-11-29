@@ -1,4 +1,3 @@
-import math
 from typing import List, Literal
 
 import numpy as np
@@ -41,7 +40,7 @@ class DTW(Metric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = MetricGroup.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = False
     min_value: float = 0.0
@@ -149,7 +148,7 @@ class CrossCorrelation(Metric):
 
     reference_type = ReferenceType.DATASET
     evaluation_level = [EvaluationLevel.INSTANCE, EvaluationLevel.DATASET]
-    metric_goal = MetricGroup.QUALITY
+    metric_group = MetricGroup.QUALITY
 
     higher_is_better: bool = True
     min_value: float = -np.inf
