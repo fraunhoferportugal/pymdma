@@ -5,7 +5,7 @@ import numpy as np
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
-from pymdma.general.functional.distance import cos_sim_2d, fast_mmd_linear, mmd_kernel, wasserstein
+from pymdma.general.functional.distance import cos_sim_2d, fast_mmd_linear, mmd_kernel, wasserstein, mk_mmd
 from pymdma.general.functional.ratio import dispersion_ratio, distance_ratio
 from pymdma.general.utils.util import features_splitting
 
@@ -140,10 +140,13 @@ class MMD(FeatureMetric):
         If False, ratio computation is skipped. Default is True.
     kernel : str, optional, default='linear'
         The kernel function to use for calculating MMD. Options include:
-        'additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf', 'laplacian', 'sigmoid', 'cosine'
-
+        'multi_gaussian', 'additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf', 'laplacian', 'sigmoid', 'cosine'
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
+        
+    Notes
+    -----
+    When using gaussian kernel, the number of samples in both datasets must be the same
 
     References
     ----------
@@ -172,6 +175,7 @@ class MMD(FeatureMetric):
     def __init__(
         self,
         kernel: Literal[
+            "multi_gaussian",
             "gaussian",
             "additive_chi2",
             "chi2",
@@ -192,6 +196,8 @@ class MMD(FeatureMetric):
 
         if kernel == "linear":
             self.kernel_fn = fast_mmd_linear
+        elif kernel == "multi_gaussian":
+            self.kernel_fn = mk_mmd
         else:
             self.kernel_fn = mmd_kernel
 
