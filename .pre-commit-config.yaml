@@ -160,7 +160,7 @@ repos:
             description: Automatically upgrade syntax for newer versions of the language
             args: [--py36-plus]
     - repo: https://github.com/jendrikseipp/vulture
-      rev: v2.13
+      rev: v2.14
       hooks:
           - id: vulture
             name: vulture - finds unused code in Python programs
@@ -244,13 +244,13 @@ repos:
             language: system
             files: requirements/*.txt
     - repo:  https://github.com/PyCQA/bandit
-      rev: 1.7.10
+      rev: 1.8.0
       hooks:
           - id: bandit
             args: ["-c", "pyproject.toml"]
             additional_dependencies: [".[toml]"]
     - repo: https://github.com/PyCQA/bandit
-      rev: 1.7.10
+      rev: 1.8.0
       hooks:
           - id: bandit
             name: bandit - find common security issues in Python code.
