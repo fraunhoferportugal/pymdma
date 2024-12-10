@@ -208,11 +208,11 @@ class ImageInputLayer(InputLayer):
             extractor = ExtractorFactory.model_from_name(model_name) if extractor is None else extractor
 
         # extractor = model_instance if model_instance is not None else FeatureExtractor(model_name, device=self.device)
-        reference_feats, _labels, _reference_ids = extractor.extract_features_dataloader(
+        reference_feats, _labels, _reference_ids = extractor._extract_features_dataloader(
             self.reference_loader,
             device=self.device,
         )
-        synthetic_feats, _labels, synthetic_ids = extractor.extract_features_dataloader(
+        synthetic_feats, _labels, synthetic_ids = extractor._extract_features_dataloader(
             self.target_loader,
             device=self.device,
         )

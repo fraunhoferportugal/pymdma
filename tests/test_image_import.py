@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from torch.utils.data import DataLoader
 
+from pymdma.image.data.simple_dataset import SimpleDataset
 from pymdma.image.measures.input_val.annotation import coco as ann
 from pymdma.image.measures.input_val.data import no_reference as no_ref_quality
 from pymdma.image.measures.input_val.data import reference as ref_quality
@@ -110,4 +112,41 @@ def test_extractor_models(image_feature_extractor, synth_image_filenames, extrac
     assert result.dataset_level is not None and result.instance_level is not None, "Eval level is None"
     dataset_level, instance_level = result.value
     assert dataset_level > 0.90, "Dataset level is below threshold"
+    assert all([inst == 1 for inst in instance_level]), "Same image instance should be precise"
+
+
+@pytest.mark.parametrize(
+    "extractor_name, input_size",
+    [
+        ("inception_fid", (299, 299)),
+        ("vgg16", (224, 224)),
+        ("dino_vits8", (224, 224)),
+        ("vit_b_16", (224, 224)),
+    ],
+)
+def test_extractor_methods(
+    image_feature_extractor, synth_image_filenames, image_transforms, extractor_name, input_size
+):
+    extractor = image_feature_extractor(extractor_name)
+
+    dataset = SimpleDataset(synth_image_filenames, image_transforms(input_size, extractor.interpolation))
+    dataloader = DataLoader(dataset, batch_size=2, shuffle=False)
+
+    features_files = extractor.extract_features_from_files(synth_image_filenames)
+    features_dataloader = extractor.extract_features_from_dataloader(dataloader, normalize=True)
+
+    assert features_files.shape[0] == len(synth_image_filenames), "Feature length does not match input length"
+    assert features_dataloader.shape[0] == len(synth_image_filenames), "Feature length does not match input length"
+
+    assert (
+        features_dataloader.mean() == features_files.mean()
+    ), "Feature extraction from files and dataloader should be the same"
+    assert (
+        features_dataloader.std() == features_files.std()
+    ), "Feature extraction from files and dataloader should be the same"
+
+    prec = ImprovedPrecision()
+    result = prec.compute(features_files, features_dataloader)
+    dataset_level, instance_level = result.value
+    assert dataset_level > 0.98, "Dataset level is below threshold"
     assert all([inst == 1 for inst in instance_level]), "Same image instance should be precise"
