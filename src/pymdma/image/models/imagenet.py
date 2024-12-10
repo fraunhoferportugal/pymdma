@@ -63,9 +63,9 @@ class ViTExtractor(BaseExtractor):
 
 
 class DinoExtractor(BaseExtractor):
-    def __init__(self, model_name) -> None:
+    def __init__(self, model_name, input_size: tuple[int, int] = (224, 224)) -> None:
         super().__init__(
-            input_size=(224, 224),
+            input_size=input_size,
             interpolation=Image.Resampling.BICUBIC,
         )
 

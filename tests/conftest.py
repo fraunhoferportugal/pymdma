@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
+from torchvision.transforms import transforms
 
 from pymdma.api.run_api import app
 from pymdma.config import data_dir
@@ -63,6 +64,19 @@ def image_feature_extractor():
         return ImageFeatureExtractor.model_from_name(name)
 
     return get_extractor
+
+
+@pytest.fixture(scope="module")
+def image_transforms():
+    def get_transforms(input_size: Tuple[int], interpolation: int = Image.BILINEAR):
+        return transforms.Compose(
+            [
+                transforms.Resize(input_size, interpolation=interpolation),
+                transforms.ToTensor(),
+            ]
+        )
+
+    return get_transforms
 
 
 # ###################################################################################################

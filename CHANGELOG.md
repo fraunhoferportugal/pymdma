@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2024-12-10
+Minor patch release with new image features extraction method and documentation updates.
+
+### Added
+ - `extract_features_from_dataloader` method to the image `BaseExtractor` class
+
+### Changed
+ - Allowed for `numpy >= 2.0.0` in the requirements
+ - Allowed `pydantic>2.9.0` in the requirements
+ - Moved internal method in the image `BaseExtractor` to underscore method
+
+### Fixed
+ - Simplified the `StandardTransform` in images to work directly with tensors
+
+
 ## [0.1.5] - 2024-11-29
 Introduce new time-series metrics and documentation updates.
 
@@ -20,12 +35,12 @@ Introduce new time-series metrics and documentation updates.
 
 ### Fixed
  - PyPI security issues due to direct external `pydom` dependency
- 
+
 
 ## [0.1.4] - 2024-11-21
 Taxonomy rework and documentation updates.
 
-### Added 
+### Added
  - readthedocs slug in the README file
  - References to tabular metrics
 

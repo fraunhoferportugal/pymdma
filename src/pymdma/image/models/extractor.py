@@ -6,6 +6,7 @@ import torch
 from loguru import logger
 from PIL import Image
 from torch.utils.data import DataLoader
+from torchvision.transforms import transforms
 from tqdm import tqdm
 
 from pymdma.common.definitions import EmbedderInterface
@@ -26,13 +27,15 @@ class StandardTransform:
         self.interp = interpolation
         self.preprocess_transform = preprocess_transform
 
+        self._to_tensor = transforms.PILToTensor()
+
     def __call__(self, image: Image.Image) -> torch.Tensor:
         image = self.preprocess_transform(image) if self.preprocess_transform is not None else image
         image = image.resize(self.img_size, self.interp)
         # bring image to the range [0, 1] and normalize to [-1, 1]
-        image = np.array(image).astype(np.float32) / 255.0
+        image = self._to_tensor(image).float() / 255.0
         image = image * 2.0 - 1.0
-        return torch.from_numpy(image).permute(2, 0, 1).float()
+        return image
 
 
 class BaseExtractor(torch.nn.Module, EmbedderInterface):
@@ -55,14 +58,20 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         device: str = "cpu",
         preprocess_transform: Optional[Callable] = None,
     ) -> np.ndarray:
-        """Extract features from a list of image files.
+        """Extract features from a list of image files. Converts images to
+        tensors and normalizes them to the [-1, 1] range.
 
-        Args:
-            files (List[Path]): list of paths to image files
-            batch_size (int): batch size for feature extraction. Defaults to 50.
+        Parameters
+        ----------
+        files : List[Path]
+            list of paths to image files
+        batch_size : int, optional
+            batch size for feature extraction, by default 50
 
-        Returns:
-            np.ndarray: array of features
+        Returns
+        -------
+        np.ndarray
+            array of features with shape (n_samples, n_features)
         """
         if batch_size > len(files):
             # print("Warning: batch size is bigger than the data size. " "Setting batch size to data size")
@@ -90,19 +99,78 @@ class BaseExtractor(torch.nn.Module, EmbedderInterface):
         return np.concatenate(act_array, axis=0)
 
     @torch.no_grad()
-    def extract_features_dataloader(
+    def extract_features_from_dataloader(
+        self,
+        dataloader: DataLoader,
+        normalize: bool = False,
+        device: str = "cpu",
+    ):
+        """Extract features from a DataLoader.
+
+        Parameters
+        ----------
+        dataloader : DataLoader
+            PyTorch DataLoader
+        normalize : bool, optional
+            Wether to normalize the images to 0.5 mean and 0.5 std across channels.
+            Assumes that the images are in the [0, 1] range, by default False
+        device : str, optional
+            device to use, by default "cpu"
+
+        Notes
+        -----
+        Has the following assumptions:
+         - Dataloader outputs a tuple with the first element being the image batch tensor.
+         - Image tensors are of shape (batch_size, channels, height, width)
+         - Tensors are in the [0, 1] range in which case you should set `normalize` to True.
+         - Tensors have been normalized to the [-1, 1] range (0.5 mean and 0.5 std across channels) or to another range (e.g. ImageNet normalization).
+
+        It is recommended to disable the `shuffle` option in the DataLoader for consistency.
+
+        Depending on the model, you might need to resize the images to the model's input size.
+
+        Returns
+        -------
+        np.ndarray
+            array of features with shape (n_samples, n_features)
+        """
+        self.extractor = self.extractor.to(device, dtype=torch.float32)
+
+        # validation dry run
+        sample_batch = next(iter(dataloader))
+        assert isinstance(
+            sample_batch[0], torch.Tensor
+        ), f"First element of the tuple must be a torch.Tensor. Got {type(sample_batch[0])}."
+
+        if sample_batch[0].shape[2:] != self.input_size:
+            logger.warning(
+                f"Model default input size {self.input_size} does not match the size of the images in the dataloader {sample_batch[0][2:]}. Might lead to execution errors."
+            )
+
+        act_array = []
+        for batch in tqdm(dataloader, total=len(dataloader)):
+            images = batch[0]
+            images = images.to(device, dtype=torch.float32)
+            if normalize:
+                images = images * 2.0 - 1.0
+            act_array.append(self(images).detach().cpu().numpy())
+        return np.concatenate(act_array, axis=0)
+
+    @torch.no_grad()
+    def _extract_features_dataloader(
         self,
         dataloader: DataLoader,
         device: str = "cpu",
         preprocess_transform: Optional[Callable] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """Use selected model to extract features from all images in
-        dataloader.
+        """Internal method to extract features from a DataLoader.
 
-        Args:
-            dataloader (DataLoader): image dataloader
+        Parameters
+        ----------
+        dataloader : DataLoader
+            image dataloader
         Returns:
-            Tuple[np.ndarray, np.ndarray]: array of features and array of image labels
+            Tuple[np.ndarray, np.ndarray, np.ndarray]: extracted features, labels, and image ids
         """
         logger.info("Extracting image features.")
         act_array = []
