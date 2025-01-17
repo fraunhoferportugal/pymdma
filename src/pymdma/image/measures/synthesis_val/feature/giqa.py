@@ -11,9 +11,15 @@ from pymdma.general.utils.util import min_max_scaling
 
 class GIQA(FeatureMetric):
     """Generated Image Quality Assessment (GIQA) metric based on Gaussian
-    Mixture Model (GMM).
+    Mixture Model (GMM). By default, computes the Quality score (QS) as
+    reported in the paper.
 
-    **Objective**: General Quality
+    To compute the Diversity score (DS), exchange the real and synthetic features.
+    The instance level result will indicate, for each real sample, how well it
+    is represented in the synthetic distribution. The dataset level result will
+    indicate the overal diversity score as defined in the paper.
+
+    **Objective**: Quality, Diversity
 
     Parameters
     ----------
@@ -23,6 +29,7 @@ class GIQA(FeatureMetric):
         Type of covariance. Defaults to "full".
     cache_model : bool, optional
         If set to true the GMM model will only be fitted once and then cached. Defaults to False.
+        Only set to True if the reference features are constant across all calls to the compute method.
     random_state : int, optional
         Random seed. Defaults to 0.
     **kwargs : dict, optional
@@ -41,7 +48,8 @@ class GIQA(FeatureMetric):
     >>> giqa = GIQA()
     >>> x_feats = np.random.rand(100, 100)
     >>> y_feats = np.random.rand(100, 100)
-    >>> result: MetricResult = giqa.compute(x_feats, y_feats)
+    >>> quality_score: MetricResult = giqa.compute(x_feats, y_feats)
+    >>> diversity_score: MetricResult = giqa.compute(y_feats, x_feats)
     """
 
     reference_type = ReferenceType.DATASET
@@ -93,6 +101,7 @@ class GIQA(FeatureMetric):
         # fit GMM model on real features
         if not self._fitted or (self._fitted and not self.cache_model):
             self._mixture_model.fit(real_features)
+            self._fitted = True
         # compute scores for fake features
         scores = self._mixture_model.score_samples(fake_features)
         scores = min_max_scaling(scores)
