@@ -1,6 +1,7 @@
-from typing import Dict, Optional, Union
+from typing import Dict, Literal, Optional, Union
 
 import numpy as np
+import torch
 from piq import FID as _FID
 from piq import GS as _GS
 from piq import MSID as _MSID
@@ -265,8 +266,24 @@ class MultiScaleIntrinsicDistance(FeatureMetric):
         Number of steps for the MSID computation. Defaults to 10.
     niters : int, optional
         Number of iterations for the MSID computation. Defaults to 100.
+    rademacher : bool, optional
+        Whether to use Rademacher distribution for the MSID computation. Defaults to False.
+        When not active will use standard normal for random vectors in Hutchinson.
+    normalized_laplacian : bool, optional
+        Whether to normalize the laplacian for the MSID computation. Defaults to True.
+    normalize : Literal["empty", "complete", "er", "none"], optional
+        Normalization strategy for the laplacian. Defaults to "empty".
+    msid_mode : Literal["l2", "max"], optional
+        Mode for the MSID computation. Defaults to "max".
     **kwargs : dict, optional
         Additional keyword arguments for compatibility (unused).
+
+    Notes
+    -----
+    The results of this metric are based on random approximations, so they are not deterministic.
+    In some datasets the results can be unstable. This can be mitigated by increasing the
+    number of iterations with the `niters` parameter.
+
 
     References
     ----------
@@ -296,24 +313,35 @@ class MultiScaleIntrinsicDistance(FeatureMetric):
 
     def __init__(
         self,
-        ts: Optional[Tensor] = None,
+        ts: Optional[Union[Tensor, np.ndarray]] = None,
         k_neighbours: int = 5,
         m_steps: int = 10,
         niters: int = 100,
+        rademacher: bool = False,
+        normalized_laplacian: bool = True,
+        normalize: Literal["empty", "complete", "er", "none"] = "empty",
+        msid_mode: Literal["l2", "max"] = "max",
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.ts = ts
+        self.ts = torch.from_numpy(ts) if isinstance(ts, np.ndarray) else ts
         self.k_neighbours = k_neighbours
         self.m_steps = m_steps
         self.niters = niters
+        self.rademacher = rademacher
+        self.normalized_laplacian = normalized_laplacian
+        self.normalize = normalize
+        self.msid_mode = msid_mode
 
         self._msid = _MSID(
             ts=self.ts,
             k=self.k_neighbours,
             m=self.m_steps,
             niters=self.niters,
-            **kwargs,
+            rademacher=self.rademacher,
+            normalized_laplacian=self.normalized_laplacian,
+            normalize=self.normalize,
+            msid_mode=self.msid_mode,
         )
 
     def compute(
