@@ -44,7 +44,7 @@ def _validate_inputs(
 
 class SSIM(Metric):
     """Computes the Structural Similarity Index (SSIM) between two images.
-    Wrapper of the torchmetrics.image.StructuralSimilarityIndexMeasure.
+    Wrapper of the PIQ SSIMLoss implementation.
 
     **Objective**: Similarity
 
@@ -73,8 +73,8 @@ class SSIM(Metric):
     References
     ----------
     This class is a wrapper of the implementation from:
-    torchmetrics, TorchMetrics - Measuring Reproducibility in PyTorch.
-    https://github.com/Lightning-AI/torchmetrics
+    piq, PyTorch Image Quality: Metrics and Measure for Image Quality Assessment,
+    https://github.com/photosynthesis-team/piq
 
     Examples
     --------
@@ -161,9 +161,8 @@ class SSIM(Metric):
 
 
 class MSSSIM(Metric):
-    """Computes the Multiscale Structural Similarity Index (MSSIM) between two
-    images. Wrapper of the
-    torchmetrics.image.MultiScaleStructuralSimilarityIndexMeasure.
+    """Computes the Multiscale Structural Similarity Index (MSSSIM) between two
+    images. Wrapper of the PIQ MultiScaleSSIMLoss implementation.
 
     **Objective**: Similarity
 
@@ -192,8 +191,8 @@ class MSSSIM(Metric):
     References
     ----------
     This class is a wrapper of the implementation from:
-    torchmetrics, TorchMetrics - Measuring Reproducibility in PyTorch.
-    https://github.com/Lightning-AI/torchmetrics
+    piq, PyTorch Image Quality: Metrics and Measure for Image Quality Assessment,
+    https://github.com/photosynthesis-team/piq
 
     Examples
     --------

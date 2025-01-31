@@ -412,8 +412,6 @@ class Authenticity(FeatureMetric):
 
     Parameters
     ----------
-    k : int, optional
-        Number of nearest neighbors to consider in the hypersphere estimation. Defaults to 5.
     metric : str, optional, default="euclidean"
         The metric to use when calculating distance between instances.
         For the available metrics, see the documentation of `sklearn.metrics.pairwise_distances`.
