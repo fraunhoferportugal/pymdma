@@ -2,7 +2,7 @@
 # https://github.com/microsoft/vscode-python/blob/master/CHANGELOG.md#enhancements-1
 [tool.poetry]
 name = "pymdma"
-version = "0.1.6"
+version = "0.1.7"
 description = "Multimodal Data Metrics for Auditing real and synthetic data"
 authors = ["Fraunhofer AICOS <no-reply@aicos.fraunhofer.pt>"]
 maintainers = [
@@ -274,5 +274,5 @@ exclude = ["*_test.py", "test_*.py"]
 skip = [".git"]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0, <2.0.0"]
 build-backend = "poetry.core.masonry.api"
