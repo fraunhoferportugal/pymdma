@@ -127,6 +127,7 @@ setup-all:
 	@echo -e "$(INFO) Creating development virtual environment...$(TERMINATOR)" && \
 	python3 -m venv .venv-dev && \
 	source .venv-dev/bin/activate && \
+	pip install -U poetry<2.0.0 && \
 	poetry run pip install --upgrade pip setuptools && \
 	poetry install --with dev --all-extras && \
 	echo -e "$(SUCCESS) Virtual environment created successfully!$(TERMINATOR)" && \

@@ -93,7 +93,12 @@ class ImprovedPrecision(FeatureMetric):
             state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
 
         precision = (
-            (state["real_fake_distances"] < np.expand_dims(state["real_nn_distances"], axis=1)).any(axis=0).astype(int)
+            np.logical_or(
+                (state["real_fake_distances"] < np.expand_dims(state["real_nn_distances"], axis=1)),
+                np.isclose(state["real_fake_distances"], np.expand_dims(state["real_nn_distances"], axis=1)),
+            )
+            .any(axis=0)
+            .astype(int)
         )
 
         return MetricResult(
@@ -187,7 +192,10 @@ class ImprovedRecall(FeatureMetric):
         if "real_fake_distances" not in state:
             state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
 
-        recall_mask = state["real_fake_distances"] < np.expand_dims(state["fake_nn_distances"], axis=0)
+        recall_mask = np.logical_or(
+            state["real_fake_distances"] < np.expand_dims(state["fake_nn_distances"], axis=0),
+            np.isclose(state["real_fake_distances"], np.expand_dims(state["fake_nn_distances"], axis=0)),
+        )
         recall = recall_mask.any(axis=1).astype(int)
 
         # matrix with (R, F) shape -> .any() -> matrix with (F,) shape
@@ -283,9 +291,11 @@ class Density(FeatureMetric):
         if "real_fake_distances" not in state:
             state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
 
-        density = (1.0 / float(self.k)) * (
-            state["real_fake_distances"] < np.expand_dims(state["real_nn_distances"], axis=1)
-        ).sum(axis=0)
+        density = np.logical_or(
+            (state["real_fake_distances"] < np.expand_dims(state["real_nn_distances"], axis=1)),
+            np.isclose(state["real_fake_distances"], np.expand_dims(state["real_nn_distances"], axis=1)),
+        )
+        density = (1.0 / float(self.k)) * density.sum(axis=0)
 
         return MetricResult(
             dataset_level={"dtype": OutputsTypes.NUMERIC, "subtype": "float", "value": density.mean()},
@@ -375,12 +385,17 @@ class Coverage(FeatureMetric):
         if "real_fake_distances" not in state:
             state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
 
-        coverage = state["real_fake_distances"].min(axis=1) < state["real_nn_distances"]
+        coverage = np.logical_or(
+            state["real_fake_distances"].min(axis=1) < state["real_nn_distances"],
+            np.isclose(state["real_fake_distances"].min(axis=1), state["real_nn_distances"]),
+        )
 
         # matrix with (R, F) shape -> .any() -> matrix with (F,) shape
         # an array that indicates for each F in how many real manifolds it is contained in
-        coverage_counts = state["real_fake_distances"] < np.expand_dims(state["real_nn_distances"], axis=1)
-        coverage_counts = coverage_counts.sum(axis=0)
+        coverage_counts = np.logical_or(
+            state["real_fake_distances"] < np.expand_dims(state["real_nn_distances"], axis=1),
+            np.isclose(state["real_fake_distances"], np.expand_dims(state["real_nn_distances"], axis=1)),
+        ).sum(axis=0)
 
         return MetricResult(
             dataset_level={"dtype": OutputsTypes.NUMERIC, "subtype": "float", "value": coverage.mean()},
@@ -397,8 +412,6 @@ class Authenticity(FeatureMetric):
 
     Parameters
     ----------
-    k : int, optional
-        Number of nearest neighbors to consider in the hypersphere estimation. Defaults to 5.
     metric : str, optional, default="euclidean"
         The metric to use when calculating distance between instances.
         For the available metrics, see the documentation of `sklearn.metrics.pairwise_distances`.
@@ -439,12 +452,10 @@ class Authenticity(FeatureMetric):
 
     def __init__(
         self,
-        k: int = 5,
         metric: str = "euclidean",
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.k = k
         self.metric = metric
 
     def compute(self, real_features: np.ndarray, fake_features: np.ndarray, **kwargs) -> MetricResult:
@@ -480,7 +491,10 @@ class Authenticity(FeatureMetric):
         )
 
         # check if any fake sample is closer to Ri than Ri is to any other Rj
-        authenticity = state["real_fake_distances"] < np.expand_dims(state["real_closest_real_distances"], axis=1)
+        authenticity = np.logical_or(
+            state["real_fake_distances"] < np.expand_dims(state["real_closest_real_distances"], axis=1),
+            np.isclose(state["real_fake_distances"], np.expand_dims(state["real_closest_real_distances"], axis=1)),
+        )
 
         # mask of the values that are considered authentic in the fake dataset
         authenticity_mask = ~authenticity.any(axis=0)

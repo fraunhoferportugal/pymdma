@@ -1,7 +1,9 @@
 # Input Validation
 
 ## Data-based
+
 ### Quality (No-reference)
+
 ::: pymdma.image.measures.input_val.DOM
 ::: pymdma.image.measures.input_val.Tenengrad
 ::: pymdma.image.measures.input_val.TenengradRelative
@@ -15,6 +17,7 @@
 ______________________________________________________________________
 
 ### Quality (Full-reference)
+
 ::: pymdma.image.measures.input_val.PSNR
 ::: pymdma.image.measures.input_val.SSIM
-::: pymdma.image.measures.input_val.MSSIM
+::: pymdma.image.measures.input_val.MSSSIM

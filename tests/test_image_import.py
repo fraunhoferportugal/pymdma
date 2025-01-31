@@ -4,9 +4,8 @@ import pytest
 from torch.utils.data import DataLoader
 
 from pymdma.image.data.simple_dataset import SimpleDataset
+from pymdma.image.measures import input_val
 from pymdma.image.measures.input_val.annotation import coco as ann
-from pymdma.image.measures.input_val.data import no_reference as no_ref_quality
-from pymdma.image.measures.input_val.data import reference as ref_quality
 from pymdma.image.measures.synthesis_val import ImprovedPrecision
 
 
@@ -24,7 +23,7 @@ def test_ann_bbox__area(coco_bbox_dataset, area_range):
     metric_result = ann_val.compute(coco_bbox_dataset)
     assert metric_result.dataset_level is not None, "Dataset level is None"
     dataset_level, _ = metric_result.value
-    assert type(dataset_level) == dict, "Dataset level is not of evaluation level type"
+    assert isinstance(dataset_level, dict), "Dataset level is not of evaluation level type"
     assert "annots_mask_oob" in dataset_level and len(dataset_level["annots_mask_oob"]) > 0, dataset_level
 
 
@@ -42,7 +41,7 @@ def test_ann_bbox__valid_names(coco_bbox_dataset, valid_names, invalid):
     metric_result = ann_val.compute(coco_bbox_dataset)
     assert metric_result.dataset_level is not None, "Dataset level is None"
     dataset_level, _ = metric_result.value
-    assert type(dataset_level) == dict, "Dataset level is not of evaluation level type"
+    assert isinstance(dataset_level, dict), "Dataset level is not of evaluation level type"
     assert "invalid_labels" in dataset_level, dataset_level.keys()
     assert "annots_invalid_label" in dataset_level, dataset_level.keys()
     if invalid:
@@ -56,8 +55,8 @@ def test_ann_bbox__valid_names(coco_bbox_dataset, valid_names, invalid):
 @pytest.mark.parametrize(
     "metric_cls",
     [
-        no_ref_quality.CLIPIQA,
-        no_ref_quality.BRISQUE,
+        input_val.CLIPIQA,
+        input_val.BRISQUE,
     ],
 )
 def test_no_ref_batch_metrics(image_dataset, metric_cls):
@@ -67,15 +66,15 @@ def test_no_ref_batch_metrics(image_dataset, metric_cls):
     result = metric.compute(images)
     _, instance_level = result.value
 
-    assert type(instance_level) == list, "Instance level is not a list"
+    assert isinstance(instance_level, list), "Instance level is not a list"
     assert len(instance_level) == len(images), "Instance level length does not match input length"
 
 
 @pytest.mark.parametrize(
     "metric_cls",
     [
-        ref_quality.SSIM,
-        ref_quality.MSSIM,
+        input_val.SSIM,
+        input_val.MSSSIM,
     ],
 )
 def test_ref_batch_metrics(image_dataset, metric_cls):
@@ -84,7 +83,7 @@ def test_ref_batch_metrics(image_dataset, metric_cls):
 
     result = metric.compute(images, images)
     _, instance_level = result.value
-    assert type(instance_level) == list, "Instance level is not a list"
+    assert isinstance(instance_level, list), "Instance level is not a list"
     assert len(instance_level) == len(images), "Instance level length does not match input length"
 
 
@@ -112,7 +111,7 @@ def test_extractor_models(image_feature_extractor, synth_image_filenames, extrac
     assert result.dataset_level is not None and result.instance_level is not None, "Eval level is None"
     dataset_level, instance_level = result.value
     assert dataset_level > 0.90, "Dataset level is below threshold"
-    assert all([inst == 1 for inst in instance_level]), "Same image instance should be precise"
+    assert all(inst == 1 for inst in instance_level), "Same image instance should be precise"
 
 
 @pytest.mark.parametrize(
@@ -125,7 +124,11 @@ def test_extractor_models(image_feature_extractor, synth_image_filenames, extrac
     ],
 )
 def test_extractor_methods(
-    image_feature_extractor, synth_image_filenames, image_transforms, extractor_name, input_size
+    image_feature_extractor,
+    synth_image_filenames,
+    image_transforms,
+    extractor_name,
+    input_size,
 ):
     extractor = image_feature_extractor(extractor_name)
 
@@ -149,4 +152,4 @@ def test_extractor_methods(
     result = prec.compute(features_files, features_dataloader)
     dataset_level, instance_level = result.value
     assert dataset_level > 0.98, "Dataset level is below threshold"
-    assert all([inst == 1 for inst in instance_level]), "Same image instance should be precise"
+    assert all(inst == 1 for inst in instance_level), "Same image instance should be precise"
