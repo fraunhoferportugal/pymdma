@@ -9,7 +9,8 @@ from pymdma.image.measures.input_val.data.no_reference import (
     Tenengrad,
     TenengradRelative,
 )
-from pymdma.image.measures.input_val.data.reference import MSSIM, PSNR, SSIM
+from pymdma.image.measures.input_val.data.psnr import PSNR
+from pymdma.image.measures.input_val.data.ssim import MSSSIM, SSIM
 
 __all__ = [
     "BRISQUE",
@@ -23,5 +24,5 @@ __all__ = [
     "CLIPIQA",
     "PSNR",
     "SSIM",
-    "MSSIM",
+    "MSSSIM",
 ]
