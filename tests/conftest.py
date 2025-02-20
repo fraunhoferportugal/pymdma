@@ -18,7 +18,7 @@ from pymdma.config import data_dir
 from pymdma.image.models.features import ExtractorFactory as ImageFeatureExtractor
 from pymdma.time_series.data.simple_dataset import _read_sig_file
 from pymdma.time_series.input_layer import _get_data_files_path
-from pymdma.time_series.utils.extract_features import FeatureExtractor as TimeSeriesFeatureExtractor
+from pymdma.time_series.models.features import ExtractorFactory as TimeSeriesFeatureExtractor
 
 MODALITIES = ["image", "tabular", "time_series"]
 VALIDATION_TYPES = ["input_val", "synthesis_val"]
@@ -73,7 +73,7 @@ def image_transforms():
             [
                 transforms.Resize(input_size, interpolation=interpolation),
                 transforms.ToTensor(),
-            ]
+            ],
         )
 
     return get_transforms
@@ -99,7 +99,7 @@ def synth_ts_filenames():
 @pytest.fixture()
 def ts_feature_extractor():
     def get_extractor(name):
-        return TimeSeriesFeatureExtractor(name)
+        return TimeSeriesFeatureExtractor.model_from_name(name)
 
     return get_extractor
 
