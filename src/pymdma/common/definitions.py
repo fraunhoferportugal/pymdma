@@ -79,5 +79,9 @@ class EmbedderInterface(ABC):
         self.name = name
 
     @abstractmethod
-    def _extract_features_dataloader(self, dataloader):
+    def extract_features_from_files(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def _extract_features_dataloader(self, dataloader, **kwargs):
         pass
