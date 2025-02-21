@@ -10,7 +10,7 @@ from pymdma.common.definitions import InputLayer
 from pymdma.constants import ReferenceType, ValidationDomain
 
 from .data.simple_dataset import SimpleDataset
-from .utils.extract_features import FeatureExtractor
+from .models.features import ExtractorFactory
 
 # Get the absolute path of the parent directory
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -176,16 +176,18 @@ class TimeSeriesInputLayer(InputLayer):
         if model_instances is not None:
             if model_name in model_instances:
                 extractor = model_instances[model_name]
-            elif model_name == "default" and FeatureExtractor.default in model_instances:
-                extractor = model_instances[FeatureExtractor.default]
-        extractor = FeatureExtractor(model_name, device=self.device) if extractor is None else extractor
+            elif model_name == "default" and ExtractorFactory.default in model_instances:
+                extractor = model_instances[ExtractorFactory.default]
+        if extractor is None:
+            model_name = ExtractorFactory.default if model_name == "default" else model_name
+            extractor = ExtractorFactory.model_from_name(model_name) if extractor is None else extractor
 
-        reference_features, _labels, _ = extractor.extract_features_dataloader(
+        reference_features, _labels, _ = extractor._extract_features_dataloader(
             self.reference_loader,
             self.reference_loader.dataset.fs,
             self.reference_loader.dataset.dims,
         )
-        synth_features, _labels, self.instance_ids = extractor.extract_features_dataloader(
+        synth_features, _labels, self.instance_ids = extractor._extract_features_dataloader(
             self.target_loader,
             self.target_loader.dataset.fs,
             self.target_loader.dataset.dims,
