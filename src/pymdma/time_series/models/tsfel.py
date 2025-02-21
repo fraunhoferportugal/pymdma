@@ -51,7 +51,6 @@ class TSFEL(BaseTSExtractor):
         features: DataFrame
             DataFrame with the features from each batch.
         """
-        print(self.verbose, int(self.verbose))
         features = tsfel.time_series_features_extractor(
             self.cfg_file,
             batch_windows,
