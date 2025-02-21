@@ -73,7 +73,7 @@ Depending on the data modality you want to use, you may need to install addition
 ```bash
 pip install "pymdma[image] @ git+https://github.com/fraunhoferportugal/pymdma.git" # image dependencies
 pip install "pymdma[tabular] @ git+https://github.com/fraunhoferportugal/pymdma.git" # tabular dependencies
-pip install "pymdma[tabular] @ git+https://github.com/fraunhoferportugal/pymdma.git" # time series dependencies
+pip install "pymdma[time_series] @ git+https://github.com/fraunhoferportugal/pymdma.git" # time series dependencies
 ```
 
 For a minimal installation, you can install the package without CUDA support by forcing pip to install torch from the CPU index with the `--find-url` command.

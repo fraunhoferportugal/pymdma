@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.1.8] - 2025-02-21
+Minor patch release with Time Series standardization and documentation updates.
+
+### Changed
+ - Introduced `BaseTSExtractor` torch module for time_series
+ - Loading TSFEL config on class instanciation
+
+### Fixed
+ - Removed input layer logic from time_series example notebook (should not use internal methods or classes)
+
+
+## [0.1.7] - 2025-01-31
+Minor patch release with reduced dependency tree and documentaion updates.
+
+### Added
+ - `convert_grayscale` option in `PSNR`metric
+ - Explicitely listing `SSIM` and `MSSIM` params
+ - Non deterministic warning for MSID documentation
+
+### Changed
+ - Renamed `MSSIM` to `MSSSIM`
+ - GIQA documentation to indicate QS and DS as in paper
+ - Removed unnecessary torchmetrics dependency for image
+
+### Fixed
+ - Added `np.isclose` verification in hypersphere estimation functions for synthetic evaluation
+
+
 ## [0.1.6] - 2024-12-10
 Minor patch release with new image features extraction method and documentation updates.
 
