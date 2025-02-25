@@ -4,7 +4,7 @@ from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
-from ..utils.util import compute_nearest_neighbour_distances, compute_pairwise_distance
+from ..functional.knn import compute_nearest_neighbour_distances, compute_pairwise_distance
 
 
 class ImprovedPrecision(FeatureMetric):

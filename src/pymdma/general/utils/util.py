@@ -3,7 +3,6 @@ from typing import Optional, Union
 
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
-from sklearn.metrics import pairwise_distances
 from torch import Tensor, tensor
 
 
@@ -115,68 +114,6 @@ def cluster_into_bins(eval_data, ref_data, num_clusters):
         density=True,
     )[0]
     return eval_bins, ref_bins
-
-
-# ======= DISTANCE FUNCTIONS =======
-# from: https://github.com/clovaai/generative-evaluation-prdc
-def compute_pairwise_distance(
-    data_x: np.ndarray,
-    data_y: Optional[np.ndarray] = None,
-    metric: str = "euclidean",
-) -> np.ndarray:
-    """
-    Args:
-        data_x (np.ndarray): numpy.ndarray([N, feature_dim], dtype=np.float32)
-        data_y (Optional[np.ndarray], optional): numpy.ndarray([N, feature_dim], dtype=np.float32). Defaults to None.
-        metric (str): name of the metric used for computing the pairwise distances. Defaults to "euclidean".
-
-    Returns:
-        np.ndarray: numpy.ndarray([N, N], dtype=np.float32) of pairwise distances.
-    """
-    if data_y is None:
-        data_y = data_x
-    dists = pairwise_distances(
-        data_x,
-        data_y,
-        metric=metric,
-        n_jobs=8,
-    )
-    return dists
-
-
-def get_kth_value(unsorted: np.ndarray, kth: int, axis: Optional[int] = -1) -> np.ndarray:
-    """
-    Args:
-        unsorted (np.ndarray): numpy.ndarray of any dimensionality
-        kth (int): kth value to be retrieved
-        axis (int, optional): axis for operation. Defaults to -1.
-
-    Returns:
-        np.ndarray: The kth values along the designated axis.
-    """
-    indices = np.argpartition(unsorted, kth, axis=axis)[..., :kth]
-    k_smallests = np.take_along_axis(unsorted, indices, axis=axis)
-    kth_values = k_smallests.max(axis=axis)
-    return kth_values
-
-
-def compute_nearest_neighbour_distances(
-    input_features: np.ndarray,
-    nearest_k: int,
-    metric: str = "euclidean",
-) -> np.ndarray:
-    """
-    Args:
-        input_features (np.ndarray): numpy.ndarray([N, feature_dim], dtype=np.float32)
-        nearest_k (int): nearest k neighbours
-        metric (str): name of the metric used for computing the pairwise distances. Defaults to "euclidean".
-
-    Returns:
-        np.ndarray: numpy.ndarray([N, 1], dtype=np.float32) of distances to kth nearest neighbours.
-    """
-    distances = compute_pairwise_distance(input_features, metric=metric)
-    radii = get_kth_value(distances, kth=nearest_k + 1, axis=-1)
-    return radii
 
 
 def to_tensor(data: Union[Tensor, np.ndarray]) -> Tensor:
