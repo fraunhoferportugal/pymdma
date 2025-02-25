@@ -11,6 +11,7 @@ def compute_pairwise_distance(
     data_x: np.ndarray,
     data_y: Optional[np.ndarray] = None,
     metric: str = "euclidean",
+    n_workers: int = 4,
 ) -> np.ndarray:
     """Computes the pairwise distance between the rows of data_x and data_y.
 
@@ -36,7 +37,7 @@ def compute_pairwise_distance(
         data_x,
         data_y,
         metric=metric,
-        n_jobs=4,
+        n_jobs=n_workers,
     )
 
     pos = 0
@@ -77,6 +78,7 @@ def get_kth_value_chunked(
     )
     slices = gen_batches(len(unsorted), chunk_n_rows)
 
+    # TODO parallel processing?
     for slice_ in slices:
         chunk = unsorted[slice_]
         indices = np.argpartition(chunk, kth, axis=axis)[..., :kth]
@@ -115,6 +117,7 @@ def compute_nearest_neighbour_distances(
     input_features: np.ndarray,
     nearest_k: int,
     metric: str = "euclidean",
+    n_workers: int = 4,
 ) -> np.ndarray:
     """Compute the distances to the kth nearest neighbor for each point in the
     input features.
@@ -133,6 +136,6 @@ def compute_nearest_neighbour_distances(
     np.ndarray
         A 1D array of shape (N,) containing the distances to the kth nearest neighbor for each input feature.
     """
-    distances = compute_pairwise_distance(input_features, metric=metric)
+    distances = compute_pairwise_distance(input_features, metric=metric, n_workers=n_workers)
     radii = get_kth_value(distances, kth=nearest_k + 1, axis=-1)
     return radii
