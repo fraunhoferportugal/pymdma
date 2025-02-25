@@ -2,7 +2,7 @@
 # https://github.com/microsoft/vscode-python/blob/master/CHANGELOG.md#enhancements-1
 [tool.poetry]
 name = "pymdma"
-version = "0.1.8"
+version = "0.1.9"
 description = "Multimodal Data Metrics for Auditing real and synthetic data"
 authors = ["Fraunhofer AICOS <no-reply@aicos.fraunhofer.pt>"]
 maintainers = [

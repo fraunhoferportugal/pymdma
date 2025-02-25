@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2025-02-25
+Patch release with fixes for high memory consumption in k-nn manifold estimation metrics.
+
+## Added
+ - `n_workers` parameter in k-nn estimation functions
+
+## Changed
+ - Moved k-nn estimation functions from `general.utils` to `general.functional`
+
+## Fixed
+ - Computing argpartition on distance matrix chunks instead of the entire matrix
+ - Using sklearn's `pairwise_distances_chunked` instead of `pairwise_distances`
+ - Reserving memory for the distance matrices to avoid memory spikes
+
 
 ## [0.1.8] - 2025-02-21
 Minor patch release with Time Series standardization and documentation updates.
