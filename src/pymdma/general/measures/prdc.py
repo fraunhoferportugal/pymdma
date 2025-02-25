@@ -4,7 +4,7 @@ from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
-from ..utils.util import compute_nearest_neighbour_distances, compute_pairwise_distance
+from ..functional.knn import compute_nearest_neighbour_distances, compute_pairwise_distance
 
 
 class ImprovedPrecision(FeatureMetric):
@@ -19,6 +19,8 @@ class ImprovedPrecision(FeatureMetric):
     metric : str, optional, default="euclidean"
         The metric to use when calculating distance between instances.
         For the available metrics, see the documentation of `sklearn.metrics.pairwise_distances`.
+    n_workers : int, optional
+        Number of workers for computing pairwise distances. Defaults to 4.
     **kwargs
         Additional keyword arguments for compatiblilty.
 
@@ -55,11 +57,13 @@ class ImprovedPrecision(FeatureMetric):
         self,
         k: int = 5,
         metric: str = "euclidean",
+        n_workers: int = 4,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.k = k
         self.metric = metric
+        self.n_workers = n_workers
 
     def compute(self, real_features: np.ndarray, fake_features: np.ndarray, **kwargs) -> MetricResult:
         """Compute the Improved Precision metric.
@@ -87,10 +91,16 @@ class ImprovedPrecision(FeatureMetric):
                 real_features,
                 nearest_k=self.k,
                 metric=self.metric,
+                n_workers=self.n_workers,
             )
 
         if "real_fake_distances" not in state:
-            state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
+            state["real_fake_distances"] = compute_pairwise_distance(
+                real_features,
+                fake_features,
+                metric=self.metric,
+                n_workers=self.n_workers,
+            )
 
         precision = (
             np.logical_or(
@@ -119,6 +129,8 @@ class ImprovedRecall(FeatureMetric):
     metric : str, optional, default="euclidean"
         The metric to use when calculating distance between instances.
         For the available metrics, see the documentation of `sklearn.metrics.pairwise_distances`.
+    n_workers : int, optional
+        Number of workers for computing pairwise distances. Defaults to 4.
     **kwargs
         Additional keyword arguments for compatiblilty.
 
@@ -155,11 +167,13 @@ class ImprovedRecall(FeatureMetric):
         self,
         k: int = 5,
         metric: str = "euclidean",
+        n_workers: int = 4,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.k = k
         self.metric = metric
+        self.n_workers = n_workers
 
     def compute(self, real_features: np.ndarray, fake_features: np.ndarray, **kwargs) -> MetricResult:
         """Compute the Improved Recall metric.
@@ -187,10 +201,16 @@ class ImprovedRecall(FeatureMetric):
                 fake_features,
                 nearest_k=self.k,
                 metric=self.metric,
+                n_workers=self.n_workers,
             )
 
         if "real_fake_distances" not in state:
-            state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
+            state["real_fake_distances"] = compute_pairwise_distance(
+                real_features,
+                fake_features,
+                metric=self.metric,
+                n_workers=self.n_workers,
+            )
 
         recall_mask = np.logical_or(
             state["real_fake_distances"] < np.expand_dims(state["fake_nn_distances"], axis=0),
@@ -222,6 +242,8 @@ class Density(FeatureMetric):
     metric : str, optional, default="euclidean"
         The metric to use when calculating distance between instances.
         For the available metrics, see the documentation of `sklearn.metrics.pairwise_distances`.
+    n_workers : int, optional
+        Number of workers for computing pairwise distances. Defaults to 4.
     **kwargs
         Additional keyword arguments for compatibility.
 
@@ -254,11 +276,13 @@ class Density(FeatureMetric):
         self,
         k: int = 5,
         metric: str = "euclidean",
+        n_workers: int = 4,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.k = k
         self.metric = metric
+        self.n_workers = n_workers
 
     def compute(self, real_features: np.ndarray, fake_features: np.ndarray, **kwargs) -> MetricResult:
         """Compute the Density metric.
@@ -286,10 +310,16 @@ class Density(FeatureMetric):
                 real_features,
                 nearest_k=self.k,
                 metric=self.metric,
+                n_workers=self.n_workers,
             )
 
         if "real_fake_distances" not in state:
-            state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
+            state["real_fake_distances"] = compute_pairwise_distance(
+                real_features,
+                fake_features,
+                metric=self.metric,
+                n_workers=self.n_workers,
+            )
 
         density = np.logical_or(
             (state["real_fake_distances"] < np.expand_dims(state["real_nn_distances"], axis=1)),
@@ -316,6 +346,8 @@ class Coverage(FeatureMetric):
     metric : str, optional, default="euclidean"
         The metric to use when calculating distance between instances.
         For the available metrics, see the documentation of `sklearn.metrics.pairwise_distances`.
+    n_workers : int, optional
+        Number of workers for computing pairwise distances. Defaults to 4.
     **kwargs
         Additional keyword arguments for compatibility.
 
@@ -348,11 +380,13 @@ class Coverage(FeatureMetric):
         self,
         k: int = 5,
         metric: str = "euclidean",
+        n_workers: int = 4,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.k = k
         self.metric = metric
+        self.n_workers = n_workers
 
     def compute(self, real_features: np.ndarray, fake_features: np.ndarray, **kwargs) -> MetricResult:
         """Compute the Coverage metric.
@@ -380,10 +414,16 @@ class Coverage(FeatureMetric):
                 real_features,
                 nearest_k=self.k,
                 metric=self.metric,
+                n_workers=self.n_workers,
             )
 
         if "real_fake_distances" not in state:
-            state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
+            state["real_fake_distances"] = compute_pairwise_distance(
+                real_features,
+                fake_features,
+                metric=self.metric,
+                n_workers=self.n_workers,
+            )
 
         coverage = np.logical_or(
             state["real_fake_distances"].min(axis=1) < state["real_nn_distances"],
@@ -453,10 +493,12 @@ class Authenticity(FeatureMetric):
     def __init__(
         self,
         metric: str = "euclidean",
+        n_workers: int = 4,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.metric = metric
+        self.n_workers = n_workers
 
     def compute(self, real_features: np.ndarray, fake_features: np.ndarray, **kwargs) -> MetricResult:
         """Compute the Authenticity metric.
@@ -481,13 +523,19 @@ class Authenticity(FeatureMetric):
         state = kwargs.get("context", {})
 
         if "real_fake_distances" not in state:
-            state["real_fake_distances"] = compute_pairwise_distance(real_features, fake_features, metric=self.metric)
+            state["real_fake_distances"] = compute_pairwise_distance(
+                real_features,
+                fake_features,
+                metric=self.metric,
+                n_workers=self.n_workers,
+            )
 
         # compute distance to closest real samples
         state["real_closest_real_distances"] = compute_nearest_neighbour_distances(
             real_features,
             nearest_k=1,
             metric=self.metric,
+            n_workers=self.n_workers,
         )
 
         # check if any fake sample is closer to Ri than Ri is to any other Rj
