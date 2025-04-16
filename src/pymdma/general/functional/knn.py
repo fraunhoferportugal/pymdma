@@ -1,8 +1,45 @@
 from typing import Generator, Optional
 
 import numpy as np
-from loguru import logger
+from sklearn import get_config
 from sklearn.metrics.pairwise import pairwise_distances_chunked
+from sklearn.utils import gen_batches
+
+
+def get_chunk_n_rows(row_bytes, *, max_n_rows=None, working_memory=None):
+    """Calculate how many rows can be processed within `working_memory`.
+
+    Parameters
+    ----------
+    row_bytes : int
+        The expected number of bytes of memory that will be consumed
+        during the processing of each row.
+    max_n_rows : int, default=None
+        The maximum return value.
+    working_memory : int or float, default=None
+        The number of rows to fit inside this number of MiB will be
+        returned. When None (default), the value of
+        ``sklearn.get_config()['working_memory']`` is used.
+
+    Returns
+    -------
+    int
+        The number of rows which can be processed within `working_memory`.
+
+    Warns
+    -----
+    Issues a UserWarning if `row_bytes exceeds `working_memory` MiB.
+    """
+
+    if working_memory is None:
+        working_memory = get_config()["working_memory"]
+
+    chunk_n_rows = int(working_memory * (2**20) // row_bytes)
+    if max_n_rows is not None:
+        chunk_n_rows = min(chunk_n_rows, max_n_rows)
+    if chunk_n_rows < 1:
+        chunk_n_rows = 1
+    return chunk_n_rows
 
 
 # ======= DISTANCE FUNCTIONS =======
@@ -44,11 +81,7 @@ def compute_pairwise_distance(
     for chunk in gen:
         dists[pos : pos + len(chunk)] = chunk
         pos += len(chunk)
-
     return dists
-
-
-from sklearn.utils._chunking import gen_batches, get_chunk_n_rows
 
 
 def get_kth_value_chunked(

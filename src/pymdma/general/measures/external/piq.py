@@ -63,7 +63,7 @@ class FrechetDistance(FeatureMetric):
     min_value: float = 0.0
     max_value: float = np.inf
 
-    extractor_model_name: str = "inception_v3"
+    extractor_model_name: str = "inception_fid"
 
     def __init__(
         self,
@@ -309,7 +309,7 @@ class MultiScaleIntrinsicDistance(FeatureMetric):
     min_value: float = 0.0
     max_value: float = np.inf
 
-    extractor_model_name: str = "inception_v3"
+    extractor_model_name: str = "inception_fid"
 
     def __init__(
         self,
