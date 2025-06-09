@@ -1,4 +1,4 @@
-FROM python:3.9.19-slim
+FROM python:3.11.11-slim
 
 # Maintainer info
 LABEL authors.auth1="ivo.facoco@fraunhofer.pt"\

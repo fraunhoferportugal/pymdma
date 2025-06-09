@@ -94,6 +94,7 @@ class DatasetParams(BaseModel):
                         },
                     ],
                 )
+        return self
 
 
 class MetricInfoParams(BaseModel):
