@@ -1,3 +1,4 @@
+from pymdma.time_series.measures.synthesis_val.data.freq_sim import SpectralCoherence, SpectralWassersteinDistance
 from pymdma.time_series.measures.synthesis_val.data.reference import DTW, CrossCorrelation
 from pymdma.time_series.measures.synthesis_val.feature._shared import (
     Authenticity,
@@ -27,4 +28,6 @@ __all__ = [
     "PrecisionRecallDistribution",
     "DTW",
     "CrossCorrelation",
+    "SpectralCoherence",
+    "SpectralWassersteinDistance",
 ]
