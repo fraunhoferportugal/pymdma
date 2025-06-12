@@ -1,11 +1,11 @@
 import warnings
-from copy import deepcopy
 
 import numpy as np
 import pytest
 
 from pymdma.constants import OutputsTypes
 from pymdma.time_series.measures.input_val.data import quality as input_metrics
+from pymdma.time_series.measures.synthesis_val import SpectralCoherence, SpectralWassersteinDistance
 from pymdma.time_series.measures.synthesis_val.data import reference as synth_data_metrics
 from pymdma.time_series.measures.synthesis_val.feature import _shared as synth_shared_metrics
 from pymdma.time_series.measures.synthesis_val.feature import distance as synth_distance_metrics
@@ -188,24 +188,26 @@ def dtw_cross_corr_symetry(sample_distribution, metric_name):
         )
 
 
-def _generate_triangular_signals(shape):
+def _generate_triangular_signals(shape, seed=None):
     """Generates a set of triangular signals with random variations in
     amplitude, phase shift, and slope."""
     n_samples, length, n_channels = shape
     signals = np.zeros(shape)
 
+    generator = np.random.default_rng(seed)
+
     for i in range(n_samples):
         for j in range(n_channels):
             t = np.linspace(0, 1, length)
             # Random amplitude scaling factor (varies between 0.5 and 1.5)
-            amplitude = np.random.uniform(0.5, 1.5)
+            amplitude = generator.uniform(0.5, 1.5)
 
             # Random phase shift (varies between -0.2 and 0.2 in normalized time units)
-            phase_shift = np.random.uniform(-0.2, 0.2)
+            phase_shift = generator.uniform(-0.2, 0.2)
             t_shifted = np.clip(t + phase_shift, 0, 1)  # Ensure phase remains within bounds
 
             # Random slope adjustment (varies between 0.8 and 1.2)
-            slope_variation = np.random.uniform(0.8, 1.2)
+            slope_variation = generator.uniform(0.8, 1.2)
 
             # Generate the triangular waveform with variations
             signals[i, :, j] = amplitude * np.abs((t_shifted - 0.5) * slope_variation)
@@ -213,18 +215,21 @@ def _generate_triangular_signals(shape):
     return signals
 
 
-def _generate_square_signals(shape):
+def _generate_square_signals(shape, seed=None):
     """Generates a set of square wave signals with random variations in
     frequency, amplitude, and phase."""
 
     n_samples, length, n_channels = shape
     signals = np.zeros(shape)
+
+    generator = np.random.default_rng(seed)
+
     for i in range(n_samples):
         for j in range(n_channels):
             t = np.linspace(0, 1, length)
-            frequency = np.random.uniform(1, 10)  # Random frequency between 1Hz and 10Hz
-            amplitude = np.random.uniform(0.5, 1.5)  # Random amplitude between 0.5 and 1.5
-            phase = np.random.uniform(0, 2 * np.pi)  # Random phase shift
+            frequency = generator.uniform(1, 10)  # Random frequency between 1Hz and 10Hz
+            amplitude = generator.uniform(0.5, 1.5)  # Random amplitude between 0.5 and 1.5
+            phase = generator.uniform(0, 2 * np.pi)  # Random phase shift
             signals[i, :, j] = amplitude * np.sign(np.sin(2 * np.pi * frequency * t + phase))
     return signals
 
@@ -758,6 +763,39 @@ def test_reproducibility(metric_name, expected, show_dist=False):
         assert value == pytest.approx(expected), f"{metric_name}: unexpected value of {value}."
     else:
         warnings.warn(f"Unknown output type: {result['dataset_level']['type']}. Skipping comparison.", stacklevel=2)
+
+
+@pytest.mark.parametrize(
+    "metric, expected",
+    [
+        (SpectralCoherence, 0.02950173805071692),
+        (SpectralWassersteinDistance, 0.041511867769033095),
+    ],
+)
+def test_freq_sim_metrics(metric, expected):
+    shape = (10, 1000, 12)
+    ref_data = _generate_square_signals(shape, 0)
+    target_data = _generate_triangular_signals(shape, 0)
+
+    result = metric().compute(ref_data, target_data)
+    assert result.dataset_level.value == pytest.approx(expected)
+
+
+@pytest.mark.parametrize(
+    "metric, expected",
+    [
+        (SpectralCoherence, 0.07076905306492262),
+        (SpectralWassersteinDistance, 0.0036375821679288734),
+    ],
+)
+def test_freq_sim_shape(metric, expected):
+    shape = (10, 2000)
+    generator = np.random.default_rng(42)
+    ref_data = generator.uniform(size=shape)
+    target_data = generator.uniform(size=shape)
+
+    result = metric().compute(ref_data, target_data)
+    assert result.dataset_level.value == pytest.approx(expected)
 
 
 @pytest.mark.parametrize(

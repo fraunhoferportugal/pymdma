@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, ReferenceType
 
 
@@ -52,7 +53,7 @@ class Metric(ABC):
         self.use_cpu: bool = kwargs.get("use_cpu", False)
 
     @abstractmethod
-    def compute(self, *args, **kwargs):
+    def compute(self, *args, **kwargs) -> MetricResult:
         pass
 
     def debug(self):

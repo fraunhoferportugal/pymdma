@@ -5,7 +5,9 @@ For synthesis validation we have only feature based evaluation metrics. Reminder
 These metrics require a preprocessing of the data, to extract the features that will be used to compare the generated data with the reference dataset. For more information on this process, please refer to the feature extraction tutorials.
 
 ## Feature-based
+
 ### Quality
+
 ::: pymdma.time_series.measures.synthesis_val.ImprovedPrecision
 ::: pymdma.time_series.measures.synthesis_val.ImprovedRecall
 ::: pymdma.time_series.measures.synthesis_val.Density
@@ -19,10 +21,14 @@ These metrics require a preprocessing of the data, to extract the features that 
 ::: pymdma.time_series.measures.synthesis_val.CosineSimilarity
 
 ### Privacy
+
 ::: pymdma.time_series.measures.synthesis_val.Authenticity
 
 ## Data-based
+
 ### Quality
+
 ::: pymdma.time_series.measures.synthesis_val.DTW
 ::: pymdma.time_series.measures.synthesis_val.CrossCorrelation
-
+::: pymdma.time_series.measures.synthesis_val.SpectralCoherence
+::: pymdma.time_series.measures.synthesis_val.SpectralWassersteinDistance
