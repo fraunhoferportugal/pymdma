@@ -303,10 +303,10 @@ class CosineSimilarity(FeatureMetric):
 
     Examples
     --------
-    >>> cossine_sim = MMD()
+    >>> cosine_sim = CosineSimilarity()
     >>> real_features = np.random.rand(64, 48) # (n_samples, num_features)
     >>> fake_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> result: MetricResult = cossine_sim.compute(real_features, fake_features)
+    >>> result: MetricResult = cosine_sim.compute(real_features, fake_features)
     """
 
     reference_type = ReferenceType.DATASET
