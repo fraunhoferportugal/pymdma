@@ -25,6 +25,17 @@ class SpectralCoherence(Metric):
         The range of valid frequencies for the signal.
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
+        
+    References
+    ----------
+    F. P. Carrle, Y. Hollenbenders, and A. Reichenbach, Generation of synthetic EEG data for training algorithms supporting the diagnosis of major depressive disorder (2023).
+    https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2023.1219133/full.
+    
+    J. Vetter, J. H. Macke, and R. Gao, Generating realistic neurophysiological time series with denoising diffusion probabilistic models (2024)
+    https://pmc.ncbi.nlm.nih.gov/articles/PMC11573898/
+    
+    A. Zancanaro, I. Zoppis, S. Manzoni, and G. Cisotto, vEEGNet: A New Deep Learning Model to Classify and Generate EEG (2023)
+    https://www.scitepress.org/DigitalLibrary/Link.aspx?doi=10.5220/0011990800003476.
 
     Examples
     --------
@@ -129,7 +140,12 @@ class SpectralWassersteinDistance(Metric):
         Length of each segment used to compute the power spectral density.
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
-
+        
+    References
+    ----------
+    F. P. Carrle, Y. Hollenbenders, and A. Reichenbach, Generation of synthetic EEG data for training algorithms supporting the diagnosis of major depressive disorder (2023).
+    https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2023.1219133/full.
+    
     Examples
     --------
     >>> spectral_wd = SpectralWassersteinDistance()
