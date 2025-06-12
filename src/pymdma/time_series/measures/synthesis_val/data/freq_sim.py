@@ -1,25 +1,26 @@
-from typing import Optional
+from typing import List, Optional, Union
 
 import numpy as np
 import ot
-from scipy.integrate import simps
 from scipy.signal import coherence, welch
 
-from pymdma.common.definitions import FeatureMetric
+from pymdma.common.definitions import Metric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
 
 
-class SpectralCoherence(FeatureMetric):
+class SpectralCoherence(Metric):
     """Compute the mean coherence between real and synthetic signals. Returns
     the average (median-based) coherence across signals.
 
-    **Objective**: Fidelity, Diversity
+    **Objective**: Similarity
 
     Parameters
     ----------
     fs: int, optional, default=2048
         The sampling frequency of the signal.
+    nperseg: int, optional, default=None
+        Length of each segment used to compute the power spectral density.
     valid_freq_range: tuple, optional, default=(-np.inf, np.inf)
         The range of valid frequencies for the signal.
     **kwargs : dict, optional
@@ -27,10 +28,10 @@ class SpectralCoherence(FeatureMetric):
 
     Examples
     --------
-    >>> wasserstein_distance = WassersteinDistance()
-    >>> real_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> fake_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> result: MetricResult = wasserstein_distance.compute(x_feat, y_feat)
+    >>> coeherence = SpectralCoherence()
+    >>> real_data = np.random.rand(64, 1000, 12) # (N, L, C)
+    >>> fake_data = np.random.rand(64, 1000, 12) # (N, L, C)
+    >>> result: MetricResult = coherence.compute(real_data, fake_data)
     """
 
     reference_type = ReferenceType.DATASET
@@ -53,31 +54,50 @@ class SpectralCoherence(FeatureMetric):
         self.valid_freq_range = valid_freq_range
         self.nperseg = nperseg
 
+    def _preprocess(self, data: Union[np.ndarray, List[np.ndarray]]):
+        """Preprocess data for computation.
+
+        Parameters
+        ----------
+        data : Union[np.ndarray, List[np.ndarray]]
+            Input data, either a 1D, 2D, or 3D array.
+
+        Returns
+        -------
+        data : np.ndarray
+            Preprocessed data, a 2D array.
+        """
+        data = np.array(data)
+        # 1D signals need to be converted to 2D
+        if data.ndim == 1:
+            data = np.expand_dims(data, axis=1)
+        elif data.ndim > 2:
+            # Convert to 2D
+            data = data.reshape(data.shape[0], -1)
+        return data
+
     def compute(self, real_data: np.ndarray, syn_data: np.ndarray, **kwargs) -> MetricResult:
         """Compute the metric.
 
         Parameters
         ----------
-        real_features : array-like of shape (n_samples, n_features)
-            2D array with features of the original samples.
-        fake_features : array-like of shape (n_samples, n_features)
-            2D array with features of the fake samples.
+        real_features : array-like of shape (N, L) or (N, L, C)
+            Array with the original samples.
+        fake_features : array-like of shape (N, L) or (N, L, C)
+            Array with the fake samples.
         **kwargs : dict, optional
-        Additional keyword arguments for compatibility (unused).
-
+            Additional keyword arguments for compatibility (unused).
 
         Returns
         -------
         MetricResult
-            Dataset-level results for the Wasserstein distance.
+            Dataset-level results for the Spectral Coherence.
         """
 
         coherence_values = []
-        # Wrap single 1D signals as a list
-        if isinstance(real_data, np.ndarray) and real_data.ndim == 1:
-            real_data = [real_data]
-        if isinstance(syn_data, np.ndarray) and syn_data.ndim == 1:
-            syn_data = [syn_data]
+
+        real_data = self._preprocess(real_data)
+        syn_data = self._preprocess(syn_data)
 
         # Pair up signals one-to-one
         for real_sig, synth_sig in zip(real_data, syn_data):
@@ -95,27 +115,27 @@ class SpectralCoherence(FeatureMetric):
         )
 
 
-class SpectralWassersteinDistance(FeatureMetric):
-    """Compute a Wasserstein distance in the frequency domain based on PSD
-    differences.
+class SpectralWassersteinDistance(Metric):
+    """Compute a Wasserstein distance in the frequency domain based on Power
+    Spectral Density (PSD) differences.
 
-    **Objective**: Fidelity, Diversity
+    **Objective**: Similarity
 
     Parameters
     ----------
     fs: int, optional, default=2048
         The sampling frequency of the signal.
-    valid_freq_range: tuple, optional, default=(-np.inf, np.inf)
-        The range of valid frequencies for the signal.
+    nperseg: int, optional, default=None
+        Length of each segment used to compute the power spectral density.
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
 
     Examples
     --------
-    >>> wasserstein_distance = WassersteinDistance()
-    >>> real_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> fake_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> result: MetricResult = wasserstein_distance.compute(x_feat, y_feat)
+    >>> spectral_wd = SpectralWassersteinDistance()
+    >>> real_data = np.random.rand(64, 1000, 12) # (N, L, C)
+    >>> fake_data = np.random.rand(64, 1000, 12) # (N, L, C)
+    >>> result: MetricResult = spectral_wd.compute(real_data, fake_data)
     """
 
     reference_type = ReferenceType.DATASET
@@ -137,6 +157,18 @@ class SpectralWassersteinDistance(FeatureMetric):
         self.nperseg = nperseg
 
     def _compute_power_spectral_density(self, data) -> np.ndarray:
+        """Compute the power spectral density of the given data.
+
+        Parameters
+        ----------
+        data: array-like of shape (N,) or (N, L) or (N, L, C)
+            The input data.
+
+        Returns
+        -------
+        psd: array-like of shape (N, L) or (N, L, C)
+            The power spectral density of the input data.
+        """
         if isinstance(data, np.ndarray) and data.ndim == 1:
             data = [data]
 
@@ -148,7 +180,22 @@ class SpectralWassersteinDistance(FeatureMetric):
         return np.array(psd)
 
     def compute(self, real_data: np.ndarray, syn_data: np.ndarray, **kwargs) -> MetricResult:
-        """Compute the metric."""
+        """Compute the metric.
+
+        Parameters
+        ----------
+        real_features : array-like of shape (N, L) or (N, L, C)
+            Array with the original samples.
+        fake_features : array-like of shape (N, L) or (N, L, C)
+            Array with the fake samples.
+        **kwargs : dict, optional
+            Additional keyword arguments for compatibility (unused).
+
+        Returns
+        -------
+        MetricResult
+            Dataset-level results for the Spectral Coherence.
+        """
         real_psd = self._compute_power_spectral_density(real_data)
         syn_psd = self._compute_power_spectral_density(syn_data)
 
