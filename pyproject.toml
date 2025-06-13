@@ -33,7 +33,7 @@ exclude = ["tests/*", "notebooks/*", "docs/*", "src/**/main.py",
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9, <3.13"
+python = ">=3.9, <4.0"
 loguru = {version = ">=0.7.2, <0.8.0"}
 matplotlib = {version = ">=3.4.3, <4.0.0"}
 numpy = {version = ">=1.22.0, <2.5.0"}
