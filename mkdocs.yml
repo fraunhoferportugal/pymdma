@@ -63,6 +63,8 @@ nav:
     - Tabular Metrics:
         - Input Validation: tabular/input_val.md
         - Synthetic Validation: tabular/synth_val.md
+    - User Guides:
+        - Pratical Examples: guides/practical_examples.md
 
 # WIP
 markdown_extensions:
