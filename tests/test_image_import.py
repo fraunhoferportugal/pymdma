@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 from torch.utils.data import DataLoader
 
-from pymdma.image.data.simple_dataset import SimpleDataset
+from pymdma.image.data import SimpleDataset
 from pymdma.image.measures import input_val
 from pymdma.image.measures.input_val.annotation import coco as ann
 from pymdma.image.measures.synthesis_val import ImprovedPrecision

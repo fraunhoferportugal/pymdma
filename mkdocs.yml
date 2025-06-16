@@ -65,6 +65,7 @@ nav:
         - Synthetic Validation: tabular/synth_val.md
     - User Guides:
         - Pratical Examples: guides/practical_examples.md
+        - Image Guides: guides/image_guides.md
 
 # WIP
 markdown_extensions:
