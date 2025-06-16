@@ -66,6 +66,8 @@ nav:
     - User Guides:
         - Pratical Examples: guides/practical_examples.md
         - Image Guides: guides/image_guides.md
+    - Performance:
+        - Image Metrics: performance/image.md
 
 # WIP
 markdown_extensions:
