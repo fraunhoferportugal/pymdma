@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from pymdma.common.definitions import InputLayer
 from pymdma.constants import ReferenceType, ValidationDomain
 
-from .data.simple_dataset import SimpleDataset
+from .data import SimpleDataset
 from .models.features import ExtractorFactory
 from .utils.processing import batch_downsample_to_largest
 
