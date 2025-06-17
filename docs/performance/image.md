@@ -4,7 +4,7 @@ In this section, we measure the performance of the image metrics. All computatio
 
 ## Input Validation
 
-To validate the performance of the image metrics, we measured the mean batch time for a large image dataset. A total of 5000 images with a resolution of 512x512 were randomly generated for the purposes of this experiment. We split the computation into batches of 50 images at a time. We measured the mean batch time, total time, and peak memory usage for each metric.
+To validate the performance of the image metrics, we measured the mean batch time for a large image dataset. A total of 5000 RGB images with a resolution of 512x512 were randomly generated for the purposes of this experiment. We split the computation into batches of 50 images at a time, and measured the mean batch time, total time, and peak memory usage for each metric.
 
 | Metric | Mean Batch Time (s) | Total Time (s) | Mean Peak Memory (GiB) | Max Peak Memory (GiB) |
 |:-------------------|----------------------:|-----------------:|-------------------------:|------------------------:|
@@ -23,7 +23,7 @@ To validate the performance of the image metrics, we measured the mean batch tim
 
 ## Synthesis Validation
 
-In these experiments we measure the performance of the image metrics on synthetic data. We generated random reference and target embeddings of size 5000x2048 to mimic the embedding size of the Inception V3 model on two sets of 50000 images. We measure the total execution time of the metrics executed individually on the random embeddings, as well as the peak memory usage of the metrics. The measurments were repeated 5 times for each metric and then averaged.
+In these experiments we measure the performance of the image metrics on synthetic data. We generated random reference and target embeddings of size 50000x2048 to mimic the embedding size of the Inception V3 model on two sets of 50000 images. We measure the total execution time of the metrics executed individually on the random embeddings, as well as the peak memory usage of the metrics. The measurments were repeated 5 times for each metric and then averaged.
 
 | Metric | Total Time (s) | Peak Memory (GiB) |
 |:----------------------------|------------------:|--------------------:|
@@ -37,5 +37,5 @@ In these experiments we measure the performance of the image metrics on syntheti
 | MultiScaleIntrinsicDistance | 570.26 ± 53.03 | 2.54 ± 0.00 |
 | PrecisionRecallDistribution | 81.97 ± 9.84 | 4.37 ± 0.04 |
 
-> **Note:** K-NN-based metrics such as `ImprovedPrecision` and `ImprovedRecall` share intermediate computations. In these experiments, each metric was computed independently.  
+> **Note:** K-NN-based metrics such as `ImprovedPrecision` and `ImprovedRecall` share intermediate computations. In these experiments, each metric was computed independently.\
 > However, in practice, you can significantly reduce execution time by reusing these shared computations via the `context` argument.
