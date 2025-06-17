@@ -26,13 +26,13 @@ To validate the performance of the image metrics, we measured the mean batch tim
 In these experiments we measure the performance of the image metrics on synthetic data. We generated random reference and target embeddings of size 5000x2048 to mimic the embedding size of the Inception V3 model on two sets of 50000 images. We measure the total execution time of the metrics executed individually on the random embeddings, as well as the peak memory usage of the metrics.
 
 | Metric | Total Time (s) | Peak Memory (GiB) |
-|:----------------------------|-----------------:|--------------------:|
-| Authenticity | 141.82 | 24.25 |
-| Coverage | 153.4 | 24.27 |
-| Density | 153.17 | 24.19 |
-| FrechetDistance | 17.15 | 3.38 |
-| GIQA | 42.84 | 2.7 |
-| ImprovedPrecision | 140.46 | 24.63 |
-| ImprovedRecall | 145.24 | 24.56 |
-| MultiScaleIntrinsicDistance | 504.51 | 2.55 |
-| PrecisionRecallDistribution | 83.23 | 4.45 |
+|:----------------------------|------------------:|--------------------:|
+| Authenticity | 145.84 ± 4.95 | 24.20 ± 0.06 |
+| Coverage | 151.65 ± 4.20 | 24.15 ± 0.03 |
+| Density | 149.03 ± 4.07 | 24.24 ± 0.06 |
+| FrechetDistance | 16.05 ± 0.46 | 3.34 ± 0.01 |
+| GIQA | 42.66 ± 2.29 | 2.75 ± 0.00 |
+| ImprovedPrecision | 154.78 ± 8.08 | 24.44 ± 0.08 |
+| ImprovedRecall | 148.06 ± 5.40 | 24.43 ± 0.10 |
+| MultiScaleIntrinsicDistance | 570.26 ± 53.03 | 2.54 ± 0.00 |
+| PrecisionRecallDistribution | 81.97 ± 9.84 | 4.37 ± 0.04 |
