@@ -23,7 +23,7 @@ To validate the performance of the image metrics, we measured the mean batch tim
 
 ## Synthesis Validation
 
-In these experiments we measure the performance of the image metrics on synthetic data. We generated random reference and target embeddings of size 5000x2048 to mimic the embedding size of the Inception V3 model on two sets of 50000 images. We measure the total execution time of the metrics executed individually on the random embeddings, as well as the peak memory usage of the metrics.
+In these experiments we measure the performance of the image metrics on synthetic data. We generated random reference and target embeddings of size 5000x2048 to mimic the embedding size of the Inception V3 model on two sets of 50000 images. We measure the total execution time of the metrics executed individually on the random embeddings, as well as the peak memory usage of the metrics. The measurments were repeated 5 times for each metric and then averaged.
 
 | Metric | Total Time (s) | Peak Memory (GiB) |
 |:----------------------------|------------------:|--------------------:|
