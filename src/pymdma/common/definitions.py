@@ -50,22 +50,10 @@ class Metric(ABC):
 
     def __init__(self, **kwargs) -> None:
         super().__init__()
-        self.use_cpu: bool = kwargs.get("use_cpu", False)
 
     @abstractmethod
     def compute(self, *args, **kwargs) -> MetricResult:
         pass
-
-    def debug(self):
-        print(f"============== {self.__class__.__name__} ===============")
-        print(f"Higher is better: {self.higher_is_better}")
-        print(f"Min value: {self.min_value}")
-        print(f"Max value: {self.max_value}")
-        print(f"State: {self.state}")
-        print(f"Use CPU: {self.use_cpu}")
-        print(f"Evaluation Level: {self.evaluation_level}")
-        print(f"Metric Goal: {self.metric_group}")
-        print(f"Reference Type: {self.reference_type}")
 
 
 class FeatureMetric(Metric):
