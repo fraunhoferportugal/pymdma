@@ -36,3 +36,6 @@ In these experiments we measure the performance of the image metrics on syntheti
 | ImprovedRecall | 148.06 ± 5.40 | 24.43 ± 0.10 |
 | MultiScaleIntrinsicDistance | 570.26 ± 53.03 | 2.54 ± 0.00 |
 | PrecisionRecallDistribution | 81.97 ± 9.84 | 4.37 ± 0.04 |
+
+> **Note:** K-NN-based metrics such as `ImprovedPrecision` and `ImprovedRecall` share intermediate computations. In these experiments, each metric was computed independently.  
+> However, in practice, you can significantly reduce execution time by reusing these shared computations via the `context` argument.
