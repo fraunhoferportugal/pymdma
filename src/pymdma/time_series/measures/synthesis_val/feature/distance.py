@@ -5,7 +5,7 @@ import numpy as np
 from pymdma.common.definitions import FeatureMetric
 from pymdma.common.output import MetricResult
 from pymdma.constants import EvaluationLevel, MetricGroup, OutputsTypes, ReferenceType
-from pymdma.general.functional.distance import cos_sim_2d, fast_mmd_linear, mmd_kernel, wasserstein, mk_mmd
+from pymdma.general.functional.distance import cos_sim_2d, fast_mmd_linear, mk_mmd, mmd_kernel, wasserstein
 from pymdma.general.functional.ratio import dispersion_ratio, distance_ratio
 from pymdma.general.utils.util import features_splitting
 
@@ -28,7 +28,7 @@ class WassersteinDistance(FeatureMetric):
     >>> wasserstein_distance = WassersteinDistance()
     >>> real_features = np.random.rand(64, 48) # (n_samples, num_features)
     >>> fake_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> result: MetricResult = wasserstein_distance.compute(x_feat, y_feat)
+    >>> result: MetricResult = wasserstein_distance.compute(real_features, fake_features)
     """
 
     reference_type = ReferenceType.DATASET
@@ -143,7 +143,7 @@ class MMD(FeatureMetric):
         'multi_gaussian', 'additive_chi2', 'chi2', 'linear', 'poly', 'polynomial', 'rbf', 'laplacian', 'sigmoid', 'cosine'
     **kwargs : dict, optional
         Additional keyword arguments for compatibility.
-        
+
     Notes
     -----
     When using gaussian kernel, the number of samples in both datasets must be the same
@@ -161,7 +161,7 @@ class MMD(FeatureMetric):
     >>> mmd = MMD(kernel = 'linear')
     >>> real_features = np.random.rand(64, 48) # (n_samples, num_features)
     >>> fake_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> result: MetricResult = mmd.compute(x_feat, y_feat)
+    >>> result: MetricResult = mmd.compute(real_features, fake_features)
     """
 
     reference_type = ReferenceType.DATASET
@@ -303,10 +303,10 @@ class CosineSimilarity(FeatureMetric):
 
     Examples
     --------
-    >>> cossine_sim = MMD()
+    >>> cosine_sim = CosineSimilarity()
     >>> real_features = np.random.rand(64, 48) # (n_samples, num_features)
     >>> fake_features = np.random.rand(64, 48) # (n_samples, num_features)
-    >>> result: MetricResult = cossine_sim.compute(x_feat, y_feat)
+    >>> result: MetricResult = cosine_sim.compute(real_features, fake_features)
     """
 
     reference_type = ReferenceType.DATASET

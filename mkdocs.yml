@@ -53,6 +53,7 @@ nav:
         # - Tutorials: tutorials.md
         - Contributting: contributing.md
         - Developing: developer.md
+        - Implementing Metrics: implement_metrics.md
     - Image Metrics:
         - Input Validation: image/input_val.md
         - Synthetic Validation: image/synth_val.md
@@ -63,6 +64,11 @@ nav:
     - Tabular Metrics:
         - Input Validation: tabular/input_val.md
         - Synthetic Validation: tabular/synth_val.md
+    - User Guides:
+        - Pratical Examples: guides/practical_examples.md
+        - Image Guides: guides/image_guides.md
+    - Performance:
+        - Image Metrics: performance/image.md
 
 # WIP
 markdown_extensions:

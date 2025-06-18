@@ -2,7 +2,7 @@
 # https://github.com/microsoft/vscode-python/blob/master/CHANGELOG.md#enhancements-1
 [tool.poetry]
 name = "pymdma"
-version = "0.1.9"
+version = "0.2.0"
 description = "Multimodal Data Metrics for Auditing real and synthetic data"
 authors = ["Fraunhofer AICOS <no-reply@aicos.fraunhofer.pt>"]
 maintainers = [
@@ -33,7 +33,7 @@ exclude = ["tests/*", "notebooks/*", "docs/*", "src/**/main.py",
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9, <3.13"
+python = ">=3.9, <4.0"
 loguru = {version = ">=0.7.2, <0.8.0"}
 matplotlib = {version = ">=3.4.3, <4.0.0"}
 numpy = {version = ">=1.22.0, <2.5.0"}

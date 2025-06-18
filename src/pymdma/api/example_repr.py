@@ -20,8 +20,8 @@ def prepare_input_layer(
 ):
     assert data_modality in {"image", "time_series", "tabular", "text"}, f"Unknown data modality {data_modality}"
 
-    batch_size = os.getenv(f"{data_modality.value.upper}_BATCH_SIZE", 10)
-
+    batch_size = int(os.getenv(f"{data_modality.value.upper()}_BATCH_SIZE", 10))
+    
     if reference_type != ReferenceType.NONE:
         reference_data = Path(f"{_CONTAINER_DATA_ROOT}/{data_modality.value}/{validation_domain.value}/reference")
     else:

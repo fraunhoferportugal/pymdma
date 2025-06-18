@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from loguru import logger
 from typing import Dict, Generator, List, Optional, Tuple, Union
 
 import numpy as np
@@ -56,17 +57,15 @@ def _get_data_files_path(data_src: Union[List[str], Path]) -> List[Path]:
                 if item.suffix in SUPPORTED_FILES:
                     data_files_path.append(item)
                 else:
-                    raise AssertionError(f"Unsupported file extension: {item.suffix} (file: {item})")
+                    logger.warning(f"Skipping unsupported file extension: {item.suffix} (file: {item})")
             elif item.is_dir():
                 item = Path(item)
                 # Recursively search for data files in subdirectories
                 for sig_file in item.iterdir():
                     if sig_file.is_file() and sig_file.suffix in SUPPORTED_FILES:
                         data_files_path.append(sig_file)
-                    elif sig_file.is_file() and sig_file.suffix == ".hea":
-                        continue
                     else:
-                        raise AssertionError(f"Unsupported file extension: {sig_file.suffix} (file: {sig_file})")
+                        logger.warning(f"Skipping unsupported file extension: {sig_file.suffix} (file: {sig_file})")
             else:
                 raise AssertionError(f"Invalid item encountered: {item}")
 

@@ -287,7 +287,7 @@ class EME(Metric):
                     total_contrast_ratio += contrast_ratio_block
                     total_blocks += 1
 
-            emes.append(total_contrast_ratio / total_blocks)
+            emes.append(total_contrast_ratio / total_blocks if total_blocks > 0 else 0)
 
         return DistributionResult(
             instance_level={"dtype": OutputsTypes.ARRAY, "subtype": "float", "value": emes},
