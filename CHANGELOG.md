@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-06-18
+Minor release with new Time Series metrics, bug fixes, and extended documentation.
+
+### Added
+ - `SpectralCoherence` and `SpectralWassersteinDistance`frequency similarity metric for time-series synthetic data
+ - Tests for the new frequency similarity metrics
+ - "Practical Examples" section in the documentation
+ - "User Guides" section in the documentation
+ - "Performance" section in the documentation to report metric execution times and memory consumption
+ - Utility `pymdma.image.data.build_img_dataloader` function for batch loading raw image datasets
+ - "Implementing Metrics" step-by-step guide on how to add new metrics
+
+### Fixed
+ - Changed default embedding models in `FrechetDistance` and `MSID` to 'inception_fid'
+ - Importing sklearn chunking functions from private submodule
+ - Unrecognized extensions for time-series data will be ignored from now on
+ - Incorrectly calling get_env for batch size in API
+ - `EME` zero division error
+ - Uncap python major version in `pyproject.toml`
+
+## Changed
+ - Updated docker image version to python 3.11.11
+
+
 ## [0.1.9] - 2025-02-25
 Patch release with fixes for high memory consumption in k-nn manifold estimation metrics.
 
