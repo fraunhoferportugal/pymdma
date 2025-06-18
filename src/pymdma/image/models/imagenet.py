@@ -1,5 +1,4 @@
 import torch
-import torch.multiprocessing
 import torchvision.models as tvmodels
 from PIL import Image
 from piq.feature_extractors import InceptionV3
