@@ -205,7 +205,7 @@ class StatisticalSimScore(Metric):
         )
 
 
-class StatisiticalDivergenceScore(Metric):
+class StatisticalDivergenceScore(Metric):
     """Computes a statistical divergence score for each column, specifically
     the Jensen-Shannon (JS) and Kullback-Leibler (KL) divergence scores.
 
@@ -557,4 +557,4 @@ class CoherenceScore(Metric):
         )
 
 
-__all__ = ["StatisticalSimScore", "StatisiticalDivergenceScore", "CoherenceScore"]
+__all__ = ["StatisticalSimScore", "StatisticalDivergenceScore", "CoherenceScore"]
