@@ -639,8 +639,8 @@ class TabularDataset(Dataset):
         _ = self.meta_encode(
             data=data,
             column_names=cols,
-            with_fit=True,
-            with_onehot=True,
+            with_fit=meta_fit,
+            with_onehot=False,
         )
 
         # for imputation
@@ -665,6 +665,10 @@ class TabularDataset(Dataset):
             columns_names=cols, 
             with_onehot=False
         )
+
+        # reset metadata params
+        if meta_fit:
+            self.meta.reset_params()
 
         return data_dec
 
@@ -718,6 +722,7 @@ class TabularDataset(Dataset):
                 data=data_np,
                 cols=cols,
                 miss_inds=miss_inds,
+                meta_fit=meta_fit
             )
 
             # meta encoding
