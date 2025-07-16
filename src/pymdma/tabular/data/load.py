@@ -618,7 +618,7 @@ class TabularDataset(Dataset):
         if isinstance(data, (pd.DataFrame, np.ndarray)):
             data_r, tgt_r = data, None
 
-        elif isinstance(path, str):
+        elif isinstance(path, (str, Path)):
             fmt = Path(path).suffix[1:].lower()
             loader = self.LOAD_MAP.get(fmt)
 

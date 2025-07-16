@@ -37,17 +37,10 @@ def _custom_collate_fn(batch):
         An array containing the scaled data extracted from the batch.
     """
 
-    # Custom collate function to handle varying sizes
-    data_enc, data_s, column_names, col_map, qi_names, sens_names = zip(*batch)
-    # return {
-    #     "data": np.array(data),
-    #     # "emb": np.array(emb),
-    #     # "column_names": column_names[0],
-    #     # "qi_names": qi_names[0],
-    #     # "sens_names": sens_names[0],
-    #     # "col_map": col_map[0],
-    # }
-    return np.array(data_s)
+    # custom collate function to handle varying sizes
+    data_s = np.array(batch).astype(float)
+
+    return data_s
 
 
 def _get_data_files_path(data_src: Union[List[str], Path]) -> List[Path]:
@@ -167,7 +160,9 @@ class TabularInputLayer(InputLayer):
         # prepare reference dataloader (original/reference records)
         # will also be used for input validation
         if validation_domain == ValidationDomain.SYNTH:
+            print(reference_data)
             reference_file = _get_data_files_path(reference_data)
+            print(reference_file)
             reference_dataset = TabularDataset(
                 file_path=reference_file,
                 scaler=self.scaler,
