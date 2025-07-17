@@ -72,7 +72,7 @@ def build_img_dataloader(
     )
 
     def _custom_collate_fn(batch):
-        return tuple(zip(*batch))
+        return zip(*batch)
 
     return DataLoader(
         dataset=dataset,

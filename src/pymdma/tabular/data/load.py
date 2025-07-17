@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple, Callable
 
 import numpy as np
 import pandas as pd
@@ -8,6 +8,7 @@ from torch.utils.data import Dataset
 from ..data.harmonize import MetaEncoder
 from ..embeddings.embed import GlobalEmbedder
 from ..embeddings.scale import GlobalNorm
+from ..embeddings.impute import GlobalImputer
 
 
 def _read_xml(path: Path, **kwargs):
@@ -103,15 +104,17 @@ def _read_csv(path: Path, **kwargs):
 
 
 class TabularDataset(Dataset):
-    """A class for handling tabular datasets, including loading, encoding, and
-    scaling.
+    """
+    A class for handling tabular datasets, including loading, encoding, and scaling.
 
     Parameters
     ----------
-    file_path : Path
-        The path to the dataset file.
+    file_path : Path or Callable
+        The path to the dataset file or a callable for loading data.
     data : pd.DataFrame, optional
         A DataFrame containing the dataset. If provided, it bypasses loading from file.
+    tag_name : str, optional
+        A string to tag or label the dataset (e.g., 'real', 'synthetic').
     qi_names : list of str, optional
         List of quasi-identifier column names.
     sens_names : list of str, optional
@@ -120,18 +123,22 @@ class TabularDataset(Dataset):
         The scaling method or a scaler object to be used for data normalization.
     embed : str or object, optional
         The embedding method or an embedder object to be used for dimensionality reduction.
+    meta : object, optional
+        An instance of a meta encoder for variable type inference.
     scaler_kwargs : dict, optional
         Additional arguments for the scaler.
     embed_kwargs : dict, optional
         Additional arguments for the embedder.
-    meta : object, optional
-        An instance of a meta encoder for variable type inference.
+    meta_kwargs : dict, optional
+        Additional arguments for the meta encoder.
     with_onehot : bool, optional
         Whether to apply one-hot encoding to categorical variables.
+    init_proc : bool, optional
+        Whether to perform initial data processing.
     **kwargs : optional
         Additional arguments passed to the Dataset class.
     """
-
+    
     LOAD_MAP = {
         "xml": _read_xml,
         "json": _read_json,
@@ -156,20 +163,25 @@ class TabularDataset(Dataset):
 
     def __init__(
         self,
-        file_path: Path,
+        file_path: Optional[Union[Path, str]],
         data: Optional[pd.DataFrame] = None,
+        tag_name: Optional[str] = 'real',
         qi_names: Optional[str] = None,
         sens_names: Optional[str] = None,
         scaler: Optional[str] = None,
         embed: Optional[str] = None,
+        imputer: Optional[str] = None,
+        meta: Optional[object] = None,
         scaler_kwargs: Optional[dict] = {},
         embed_kwargs: Optional[dict] = {},
-        meta: Optional[object] = None,
+        imputer_kwargs: Optional[dict] = {},
+        meta_kwargs: Optional[dict] = {},
         with_onehot: Optional[bool] = False,
+        init_proc: Optional[bool] = True,
         **kwargs,
     ):
-        """Initializes the TabularDataset with data loading, encoding, and
-        scaling options.
+        """
+        Initializes the TabularDataset with data loading, encoding, and scaling options.
 
         Parameters
         ----------
@@ -185,28 +197,33 @@ class TabularDataset(Dataset):
             The scaling method or a scaler object to be used for data normalization.
         embed : str or object, optional
             The embedding method or an embedder object to be used for dimensionality reduction.
+        meta : object, optional
+            An instance of a meta encoder for variable type inference.
         scaler_kwargs : dict, optional
             Additional arguments for the scaler.
         embed_kwargs : dict, optional
             Additional arguments for the embedder.
-        meta : object, optional
-            An instance of a meta encoder for variable type inference.
+        meta_kwargs : dict, optional
+            Additional arguments for the meta encoder.
         with_onehot : bool, optional
             Whether to apply one-hot encoding to categorical variables.
         **kwargs : optional
             Additional arguments passed to the Dataset class.
         """
-
+        
         # file path
         self.fpath = file_path
 
         # one hot encoding option
         self.oh_flag = with_onehot
+        
+        # dataset tag name
+        self.tag = tag_name
 
-        # transform
+        # metadata encoder
         self.col_map = None
         if meta is None:
-            self.meta = MetaEncoder(**kwargs)
+            self.meta = MetaEncoder(**meta_kwargs)
             self.fit_meta = True
         else:
             self.meta = meta
@@ -232,6 +249,33 @@ class TabularDataset(Dataset):
         else:
             self.embed, self.fit_emb = None, None
 
+        # imputer
+        if isinstance(imputer, (type(None), str)):
+            self.imputer = GlobalImputer(n_type=imputer, **imputer_kwargs)
+            self.fit_imp = True
+        elif isinstance(imputer, object):
+            self.imputer = imputer
+            self.fit_imp = False
+        else:
+            self.imputer, self.fit_imp = None, None
+
+        # data
+        self.data = data
+        self.data_enc = None
+        self.data_s = None
+        self.data_emb = None
+        self.cols = None
+        self.col_inds = None
+
+        # special names
+        self.qi_names, self.qi_cols = qi_names, None
+        self.sens_names, self.sens_cols = sens_names, None
+
+        # include data processing in init
+        if init_proc:
+            self.setup(self.data)
+
+    def setup(self, data: Optional[pd.DataFrame] = None):
         # data transformations
         self.data, self.data_enc, self.data_s, self.cols = self.transform(
             path=self.fpath,
@@ -248,20 +292,21 @@ class TabularDataset(Dataset):
         )
 
         # special attributes
-        self.qi_cols = self.get_special_columns(qi_names)  # quasi-identifiers
-        self.sens_cols = self.get_special_columns(sens_names)  # sensitive attributes
+        self.qi_cols = self.get_special_columns(self.qi_names)  # quasi-identifiers
+        self.sens_cols = self.get_special_columns(self.sens_names)  # sensitive attributes
 
     @property
     def properties(self):
-        """Returns the properties of the dataset including column names, quasi-
-        identifiers, sensitive attributes, and column mappings.
+        """
+        Returns the properties of the dataset including column names,
+        quasi-identifiers, sensitive attributes, and column mappings.
 
         Returns
         -------
         dict
             A dictionary containing the dataset properties.
         """
-
+        
         return {
             "column_names": self.cols,
             "qi_names": self.qi_cols,
@@ -270,30 +315,32 @@ class TabularDataset(Dataset):
         }
 
     def __len__(self):
-        """Returns the number of rows in the dataset.
+        """
+        Returns the number of rows in the dataset.
 
         Returns
         -------
         int
             The number of rows in the dataset.
         """
-
+        
         return len(self.data)
 
     def __getcols__(self):
-        """Returns the column names of the dataset provided.
+        """
+        Returns the column names of the dataset provided.
 
         Returns
         -------
         list
             A list of column names in the dataset.
         """
-
+        
         return self.cols
 
     def __getitem__(self, idx):
-        """Returns the encoded data, scaled data, column names, and special
-        columns for a specific index.
+        """
+        Returns the target data to use at a specific index, whether it is encoded, scaled, or embedded.
 
         Parameters
         ----------
@@ -302,14 +349,34 @@ class TabularDataset(Dataset):
 
         Returns
         -------
-        tuple
-            A tuple containing the encoded data, scaled data, column names,
-            column map, quasi-identifier columns, and sensitive columns.
+        array
+            An array containing target data at the specified index.
         """
-        return self.data_enc[idx], self.data_s[idx], self.cols, self.col_map, self.qi_cols, self.sens_cols
+        return self.data_s[idx]
+
+    def __getdata__(self):
+        """
+        Returns the target data to use whether it is encoded, scaled, or embedded.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        array
+            An array containing the whole target dataset.
+        """
+        return self.data_s
+    
+    def get_data(self):
+        return self.__getdata__()
+    
+    def get_cols_inds(self):
+        return self.col_inds
 
     def get_special_columns(self, names: List[str] = None):
-        """Retrieves specified special columns based on provided names.
+        """
+        Retrieves specified special columns based on provided names.
 
         Parameters
         ----------
@@ -321,7 +388,7 @@ class TabularDataset(Dataset):
         list
             A list of special columns found in the dataset.
         """
-
+        
         # get special columns
         if names is not None:
             filt_names = []
@@ -344,7 +411,8 @@ class TabularDataset(Dataset):
         with_fit: bool = True,
         **kwargs,
     ):
-        """Encodes the dataset using the meta encoder.
+        """
+        Encodes the dataset using the meta encoder.
 
         Parameters
         ----------
@@ -360,7 +428,7 @@ class TabularDataset(Dataset):
         np.ndarray
             The encoded dataset.
         """
-
+        
         # infer variable dtypes from tabular data provided
         if with_fit:
             _ = self.meta.metadata(
@@ -384,7 +452,8 @@ class TabularDataset(Dataset):
         columns_names: list = None,
         **kwargs,
     ):
-        """Decodes the dataset using the meta encoder.
+        """
+        Decodes the dataset using the meta encoder.
 
         Parameters
         ----------
@@ -398,16 +467,18 @@ class TabularDataset(Dataset):
         np.ndarray
             The decoded dataset.
         """
-
-        return self.meta.decode(data, columns_names, **kwargs)
+        
+        return self.meta.decode(data=data, column_names=columns_names, **kwargs)
 
     def scale_encode(
         self,
         data: np.ndarray,
+        cols: List[int] = None,
         with_fit: bool = True,
         **kwargs,
     ):
-        """Normalizes the dataset using the specified scaler.
+        """
+        Normalizes the dataset using the specified scaler.
 
         Parameters
         ----------
@@ -421,21 +492,31 @@ class TabularDataset(Dataset):
         np.ndarray
             The normalized dataset.
         """
+        # copy of the data
+        data_s = np.copy(data)
 
         # normalize data provided
         if with_fit:
-            data_s = self.scaler.fit_transform(data, **kwargs)
+            if cols is not None:
+                data_s[:, cols] = self.scaler.fit_transform(data[:, cols], **kwargs)
+            else:
+                data_s = self.scaler.fit_transform(data, **kwargs)
         else:
-            data_s = self.scaler.transform(data, **kwargs)
+            if cols is not None:
+                data_s[:, cols] = self.scaler.transform(data[:, cols], **kwargs)
+            else:
+                data_s = self.scaler.transform(data, **kwargs)
 
         return data_s.astype(float)
 
     def scale_decode(
         self,
         data: np.ndarray,
+        cols: List[int] = None,
         **kwargs,
     ):
-        """Inverses the normalization on the dataset.
+        """
+        Inverses the normalization on the dataset.
 
         Parameters
         ----------
@@ -447,8 +528,16 @@ class TabularDataset(Dataset):
         np.ndarray
             The original dataset after inverse normalization.
         """
+        # copy of the data
+        data_cp = np.copy(data)
 
-        return self.scaler.inverse_transform(data)
+        # inverse transform
+        if cols is not None:
+            data_cp[:, cols] = self.scaler.inverse_transform(data[:, cols])
+        else:
+            data_cp = self.scaler.inverse_transform(data)
+
+        return data_cp
 
     def embed_encode(
         self,
@@ -456,7 +545,8 @@ class TabularDataset(Dataset):
         with_fit: bool = True,
         **kwargs,
     ):
-        """Transforms the dataset using the specified embedding method.
+        """
+        Transforms the dataset using the specified embedding method.
 
         Parameters
         ----------
@@ -470,11 +560,11 @@ class TabularDataset(Dataset):
         np.ndarray
             The embedded dataset.
         """
-
+        
         # if fit is needed before transforming
         if with_fit:
             data_emb = self.embed.fit_transform(data, **kwargs)
-
+        
         # otherwise
         else:
             data_emb = self.embed.transform(data, **kwargs)
@@ -486,7 +576,8 @@ class TabularDataset(Dataset):
         data: np.ndarray,
         **kwargs,
     ):
-        """Reverses the transformation on the dataset.
+        """
+        Reverses the transformation on the dataset.
 
         Parameters
         ----------
@@ -498,16 +589,17 @@ class TabularDataset(Dataset):
         np.ndarray
             The original dataset after inverse embedding.
         """
-
+        
         return self.embed.inverse_transform(data)
 
     def read_data(
         self,
-        path: Path = None,
+        path: Optional[Union[Path, str]] = None,
         data: pd.DataFrame = None,
         **kwargs,
     ):
-        """Reads the dataset from a file or returns the provided DataFrame.
+        """
+        Reads the dataset from a file or returns the provided DataFrame.
 
         Parameters
         ----------
@@ -521,26 +613,64 @@ class TabularDataset(Dataset):
         pd.DataFrame or np.ndarray
             The loaded dataset as a DataFrame or numpy array.
         """
-
+        
         # data reading
-        if not isinstance(data, (pd.DataFrame, np.ndarray)):
-            # path is given
-            if path is not None:
-                fmt = Path(path).suffix[1:].lower()
-                loader = self.LOAD_MAP.get(fmt, None)
+        if isinstance(data, (pd.DataFrame, np.ndarray)):
+            data_r, tgt_r = data, None
 
-                # get data
-                data_r = loader(path, **kwargs) if loader is not None else None
+        elif isinstance(path, (str, Path)):
+            fmt = Path(path).suffix[1:].lower()
+            loader = self.LOAD_MAP.get(fmt)
 
-            # none is given
-            else:
-                data_r = data
+            # get data
+            data_r = loader(path, **kwargs) if loader is not None else None
+            tgt_r = None
 
-        # data is given
+        elif isinstance(path, Callable):
+            data_r, tgt_r = path()
+
         else:
-            data_r = data
+            data_r, tgt_r = None, None
 
-        return data_r
+        return data_r, tgt_r
+    
+    def impute_missing(self, data: np.ndarray, cols: List[int] = None, miss_inds: List[Tuple[int, int]] = None, meta_fit: bool = True, **kwargs):
+        # meta encoding
+        _ = self.meta_encode(
+            data=data,
+            column_names=cols,
+            with_fit=meta_fit,
+            with_onehot=False,
+        )
+
+        # for imputation
+        data_ = self.meta_encode(
+            data=data,
+            column_names=cols,
+            with_fit=False,
+            with_onehot=False,
+        )
+
+        # replace back missing values
+        if miss_inds:
+            data_[tuple(zip(*miss_inds))] = np.nan
+        
+        # impute missing values
+        imp = GlobalImputer(n_type='knn', norm_type='stardard', **kwargs)
+        data_imp = imp.fit_transform(data_)
+
+        # decode back
+        data_dec = self.meta_decode(
+            data=data_imp, 
+            columns_names=cols, 
+            with_onehot=False
+        )
+
+        # reset metadata params
+        if meta_fit:
+            self.meta.reset_params()
+
+        return data_dec
 
     def transform(
         self,
@@ -550,7 +680,8 @@ class TabularDataset(Dataset):
         meta_fit: bool = True,
         **kwargs,
     ):
-        """Loads, encodes, and scales the dataset.
+        """
+        Loads, encodes, and scales the dataset.
 
         Parameters
         ----------
@@ -568,14 +699,16 @@ class TabularDataset(Dataset):
         tuple
             A tuple containing the original data, encoded data, scaled data, and column names.
         """
-
+        
         # data loader
-        data_r = self.read_data(path, data, **kwargs)
+        data_r, _ = self.read_data(path, data, **kwargs)
 
-        # reindex and drop NaN
-        data_r = data_r.reindex(sorted(data_r.columns), axis=1)  # resort columns
-        data_r = data_r.dropna().reset_index(drop=True)  # drop NaN
+        # get missing indices
+        miss_inds = list(zip(*np.where(data_r.isna().to_numpy())))
 
+        # replace missing values
+        data_r = data_r.fillna(data_r.mode().iloc[0])
+        
         # check if data was correctly loaded
         if data_r is not None:
             # get columns/attributes
@@ -584,9 +717,17 @@ class TabularDataset(Dataset):
             # numpy array
             data_np = data_r.to_numpy()
 
+            # impute missing values
+            data_imp = self.impute_missing(
+                data=data_np,
+                cols=cols,
+                miss_inds=miss_inds,
+                meta_fit=meta_fit
+            )
+
             # meta encoding
             data_enc = self.meta_encode(
-                data=data_np,
+                data=data_imp,
                 column_names=cols,
                 with_fit=meta_fit,
                 with_onehot=self.oh_flag,
@@ -595,8 +736,16 @@ class TabularDataset(Dataset):
             # column map
             self.col_map = self.meta.vtype_map
 
+            # column indices
+            or_inds = self.meta.or_inds
+            self.col_inds = self.meta.col_inds  # assign col indices
+
             # norm scaling
-            data_s = self.scale_encode(data_enc, scale_fit)
+            data_s = self.scale_encode(
+                data=data_enc, 
+                cols=or_inds, 
+                with_fit=scale_fit
+            )
 
         else:
             # default values
@@ -605,7 +754,8 @@ class TabularDataset(Dataset):
         return data_r, data_enc, data_s, cols
 
     def inverse_transform(self, data: np.ndarray, column_names: list = None):
-        """Applies the inverse transformations on the dataset.
+        """
+        Applies the inverse transformations on the dataset.
 
         Parameters
         ----------
@@ -619,9 +769,10 @@ class TabularDataset(Dataset):
         np.ndarray
             The dataset after applying inverse transformations.
         """
-
+        
         # inverse scaling
-        data = self.scale_decode(data)
+        col_inds = self.meta.or_inds
+        data = self.scale_decode(data, cols=col_inds)
 
         # meta decoding
         data = self.meta_decode(
@@ -631,3 +782,16 @@ class TabularDataset(Dataset):
         )
 
         return data
+    
+if __name__ == '__main__':
+    import pandas as pd
+    
+    # data
+    data = pd.DataFrame({'a': [1,2,3,4,5], 'b': [1,2,3,4,5], 'c': [0.2,0.3,0.5,0.6,5.4], 'd': ['a','b','c','d','e'], 'e': [0,1,0,1,0]})
+
+    # loader
+    loader = TabularDataset(data=data, init_proc=False)
+
+    # setup
+    data = loader.setup(data=data)
+

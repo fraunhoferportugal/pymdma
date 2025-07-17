@@ -464,16 +464,13 @@ class Authenticity(FeatureMetric):
 
     References
     ----------
-    Naeem et al., Reliable Fidelity and Diversity Metrics for Generative Models (2020).
-    https://arxiv.org/abs/2002.09797
-
-    Kynkaanniemi et al., Improved Precision and Recall Metric for Assessing Generative Models (2019).
-    https://arxiv.org/abs/1904.06991
+    Alaa et al., How Faithful Is Your Synthetic Data? Sample-Level Metrics for Evaluating and Auditing Generative Models. (2022)
+    https://doi.org/10.48550/arXiv.2102.08921.
 
     Hypersphere estimation code was adapted from:
     generative-evaluation-prdc, Reliable Fidelity and Diversity Metrics for Generative Models.
     https://github.com/clovaai/generative-evaluation-prdc
-
+    
     Examples
     --------
     >>> authenticity = Authenticity()

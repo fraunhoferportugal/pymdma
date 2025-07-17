@@ -9,7 +9,7 @@ For synthesis validation we have only feature based evaluation metrics. To acces
 ::: pymdma.tabular.measures.synthesis_val.Density
 ::: pymdma.tabular.measures.synthesis_val.Coverage
 ::: pymdma.tabular.measures.synthesis_val.StatisticalSimScore
-::: pymdma.tabular.measures.synthesis_val.StatisiticalDivergenceScore
+::: pymdma.tabular.measures.synthesis_val.StatisticalDivergenceScore
 ::: pymdma.tabular.measures.synthesis_val.CoherenceScore
 
 ### Privacy

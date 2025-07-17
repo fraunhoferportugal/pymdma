@@ -121,7 +121,7 @@ class CorrelationScore(Metric):
         )
 
         # global score
-        perc_corr = {col: round(100 * len(att) / (len(self.column_names) - 1), 1) for col, att in stats_d.items()}
+        perc_corr = {col: round(100 * len(att) / (len(cols) - 1), 1) for col, att in stats_d.items()}
 
         # stats
         perc_stats = {

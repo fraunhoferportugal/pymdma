@@ -37,17 +37,10 @@ def _custom_collate_fn(batch):
         An array containing the scaled data extracted from the batch.
     """
 
-    # Custom collate function to handle varying sizes
-    data_enc, data_s, column_names, col_map, qi_names, sens_names = zip(*batch)
-    # return {
-    #     "data": np.array(data),
-    #     # "emb": np.array(emb),
-    #     # "column_names": column_names[0],
-    #     # "qi_names": qi_names[0],
-    #     # "sens_names": sens_names[0],
-    #     # "col_map": col_map[0],
-    # }
-    return np.array(data_s)
+    # custom collate function to handle varying sizes
+    data_s = np.array(batch).astype(float)
+
+    return data_s
 
 
 def _get_data_files_path(data_src: Union[List[str], Path]) -> List[Path]:
@@ -267,28 +260,3 @@ class TabularInputLayer(InputLayer):
                 yield (sample,)
         else:
             yield from zip(self.reference_loader, self.target_loader)
-
-    # def get_batched_samples(self) -> Generator[Tuple[np.ndarray], None, None]:
-    #     # return all features for both reference and synthetic records as a single batch
-    #     if self.val_type in [ValidationDomain.SYNTH]:
-    #         # get reference and synthetic batches
-    #         reference_features = next(iter(self.reference_loader))
-    #         synth_features = next(iter(self.target_loader))
-
-    #         # rename col
-    #         reference_features["real_data"] = reference_features.pop("data")
-    #         reference_features["real_emb"] = reference_features.pop("emb")
-    #         synth_features["syn_data"] = synth_features.pop("data")
-    #         synth_features["syn_emb"] = synth_features.pop("emb")
-
-    #         # checkpoint
-    #         assert (
-    #             reference_features["column_names"] == synth_features["column_names"]
-    #         ), "Reference and Synthetic datasets have mismatched columns"
-
-    #         yield {**reference_features, **synth_features}
-
-    #     # return all records
-    #     if self.val_type in [ValidationDomain.INPUT]:
-    #         # only reference records for no reference metrics
-    #         yield from self.target_loader

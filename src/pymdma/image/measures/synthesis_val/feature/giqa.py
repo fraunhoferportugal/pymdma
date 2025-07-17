@@ -100,10 +100,10 @@ class GIQA(FeatureMetric):
         """
         # fit GMM model on real features
         if not self._fitted or (self._fitted and not self.cache_model):
-            self._mixture_model.fit(real_features)
+            self._mixture_model.fit(real_features.astype(np.float64))
             self._fitted = True
         # compute scores for fake features
-        scores = self._mixture_model.score_samples(fake_features)
+        scores = self._mixture_model.score_samples(fake_features.astype(np.float64))
         scores = min_max_scaling(scores)
 
         return MetricResult(

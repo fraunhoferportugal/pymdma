@@ -9,6 +9,7 @@
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/pytest-enabled-brightgreen)](https://github.com/pytest-dev/pytest)
 [![conventional-commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow)](https://github.com/commitizen-tools/commitizen)
+[![PyPI Downloads](https://static.pepy.tech/badge/pymdma)](https://pepy.tech/projects/pymdma)
 [![Read The Docs](https://readthedocs.org/projects/pymdma/badge/?version=latest)](https://pymdma.readthedocs.io/en/latest/installation/)
 
 <!-- [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fraunhoferportugal/pymdma.git/main?labpath=notebooks%2Fimage_examples.ipynb) -->

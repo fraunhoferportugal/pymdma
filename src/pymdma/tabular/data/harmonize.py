@@ -1,13 +1,17 @@
-from operator import itemgetter
-from typing import Optional
-
+import os
+import json
 import numpy as np
+
+from operator import itemgetter
+from itertools import chain
+from typing import Optional
 
 from ..data.utils import auto_metadata_generator, get_dtypes_from_type_map, is_float  # data_harmonizer
 
 
 class MetaEncoder:
-    """A class for encoding and decoding tabular data based on its metadata,
+    """
+    A class for encoding and decoding tabular data based on its metadata, 
     including one-hot encoding for categorical variables.
 
     Parameters
@@ -40,10 +44,10 @@ class MetaEncoder:
     onehot_inds : dict
         Mapping of original column names to their one-hot encoded indices.
     """
-
+    
     def __init__(self, col_enc: Optional[dict] = None, **kwargs) -> None:
-        """Initializes the MetaEncoder with optional column encoding
-        constraints.
+        """
+        Initializes the MetaEncoder with optional column encoding constraints.
 
         Parameters
         ----------
@@ -52,7 +56,7 @@ class MetaEncoder:
         **kwargs : optional
             Additional arguments for configuration.
         """
-
+        
         # categorical value constraints
         self.col_enc = col_enc if isinstance(col_enc, dict) else {}
 
@@ -69,15 +73,22 @@ class MetaEncoder:
         self.onehot_cols = None
         self.onehot_inds = None
 
+        # index columns
+        self.col_inds = None  # full column indices (list of lists)
+        self.ohe_inds = None  # one-hot encoded (list of lists)
+        self.or_inds = None  # non one-hot encoded (list of lists)
+
+
     def reset_params(self):
-        """Resets all internal parameters and mappings to their initial state.
+        """
+        Resets all internal parameters and mappings to their initial state.
 
         Returns
         -------
         MetaEncoder
             The instance of the MetaEncoder with reset parameters.
         """
-
+        
         # mappers
         self.dtype_map, self.vtype_map = None, None
         self.enc_map, self.dec_map = None, None
@@ -91,11 +102,85 @@ class MetaEncoder:
         self.onehot_cols = None
         self.onehot_inds = None
 
+        # index columns
+        self.ohe_inds = None  # one-hot encoded
+        self.or_inds = None   # non one-hot encoded
+
+        return self
+    
+    
+    @staticmethod
+    def is_num(x):
+        """
+        Checks if the input value is numerical or not.
+
+        Parameters
+        ----------
+        x : object
+            Input value to be checked.
+
+        Returns
+        -------
+        bool
+            True if the value is numerical, False otherwise.
+        """
+        
+        try:
+            float(x)
+            is_num = True
+        except (ValueError, TypeError):
+            is_num = False
+        return is_num
+    
+    def setup_inference(self, dtype_map: dict, onehot_inds: dict, onehot_cols: list, cols: list, enc_map: dict, dec_map: dict, **kwargs):
+        # assign parameters
+        self.dtype_map = dtype_map
+        
+        # one hot encoding
+        self.onehot_inds = onehot_inds
+        self.onehot_cols = np.array(onehot_cols)
+        
+        # mappers
+        self.dec_map = {
+            k1: {float(k2) if self.is_num(k2) else k2: v2 for k2, v2 in v1.items()} 
+            for k1, v1 in dec_map.items()
+        }
+        self.enc_map = {
+            k1: {float(k2) if self.is_num(k2) else k2: v2 for k2, v2 in v1.items()}
+            for k1, v1 in enc_map.items()
+        }
+
+        # columns
+        self.cols = cols
+
+        # categorical columns mapper
+        self.cg_map = {
+            col: idx for idx, (col, map) in enumerate(self.dec_map.items()) 
+            if len(map)
+        }
+
+        return self
+    
+    def save_params(self, dir_path: str):
+        # get metadata
+        meta = {
+            "dtype_map": self.dtype_map,
+            "onehot_inds": self.onehot_inds,
+            "onehot_cols": self.onehot_cols.tolist() if self.onehot_cols is not None else None,
+            "cols": self.cols,
+            "dec_map": self.dec_map,
+            "enc_map": self.enc_map
+        }
+
+        # save to json
+        path = os.path.join(dir_path, "meta.json")
+        json.dump(meta, open(path, "w"), indent=4)
+
         return self
 
     def metadata(self, data: np.ndarray, cols: Optional[list] = None, **kwargs):
-        """Generates metadata for the provided data, including variable type
-        mappings.
+        """
+        Generates metadata for the provided data, including variable type mappings.
 
         Parameters
         ----------
@@ -111,7 +196,7 @@ class MetaEncoder:
         dict
             A dictionary mapping column names to their inferred variable types.
         """
-
+        
         # columns
         if not isinstance(cols, (list, np.ndarray)):
             cols = [f"attr{idx}" for idx in range(data.shape[1])]
@@ -138,18 +223,21 @@ class MetaEncoder:
         }
 
         # decoder map
-        self.dec_map = {k: {vv: vk for vk, vv in v.items()} for k, v in self.enc_map.items()}
+        self.dec_map = {
+            k: {vv: vk for vk, vv in v.items()}
+              for k, v in self.enc_map.items()
+        }
 
         # categorical/numerical map
         num_map, cg_map = {}, {}
         for idx, (k, it) in enumerate(self.vtype_map.items()):
             # check whether it is quasi-ID
-            if it.get("dtype") == "unique":
+            if not it.get("type", {}).get('is_categ'):
                 num_map[k] = idx
                 continue
 
             # normal check otherwise
-            if it.get("dtype") == "categorical":
+            if "string" in it.get("dtype"):
                 cg_map[k] = idx
             elif it.get("type", {}).get("tag") == "discrete":
                 cg_map[k] = idx
@@ -169,8 +257,8 @@ class MetaEncoder:
         dtype_map: Optional[dict] = {},
         column_names: Optional[list] = None,
     ):
-        """Maps the values in the data array based on the provided value
-        mapping.
+        """
+        Maps the values in the data array based on the provided value mapping.
 
         Parameters
         ----------
@@ -188,7 +276,7 @@ class MetaEncoder:
         np.ndarray
             A new array with values mapped according to the provided mapping.
         """
-
+        
         # new data array decoded
         data_to_map = []
 
@@ -204,7 +292,7 @@ class MetaEncoder:
             map_ = val_map.get(col_, {})
 
             # variable type mapper
-            dtype = dtype_map.get(col_, float)
+            dtype = dtype_map.get(col_, "float")
 
             # auxiliary data
             aux_data = data[:, idx]
@@ -219,6 +307,7 @@ class MetaEncoder:
                             aux_data,
                         ),
                     )
+
                     # force float type
                     aux_val = np.array(aux_val, dtype=float)
                 else:
@@ -234,7 +323,7 @@ class MetaEncoder:
                 data_to_map.append(aux_ser)
 
             else:
-                data_to_map.append(data[:, idx])
+                data_to_map.append(data[:, idx].astype(dtype))
 
         # final data array
         data_to_map = np.array(data_to_map, dtype=object).swapaxes(0, 1)
@@ -247,7 +336,8 @@ class MetaEncoder:
         column_names: list = None,
         **kwargs,
     ):
-        """Applies one-hot encoding to the specified columns of the input data.
+        """
+        Applies one-hot encoding to the specified columns of the input data.
 
         Parameters
         ----------
@@ -261,7 +351,7 @@ class MetaEncoder:
         np.ndarray
             A new array with one-hot encoded columns.
         """
-
+        
         # full col ind map
         col_ind_map = {**self.num_map, **self.cg_map}
 
@@ -320,8 +410,14 @@ class MetaEncoder:
             data_onehot += aux_data  # data
 
         # assign
-        self.onehot_cols = np.array(onehot_cols)
-        self.onehot_inds = onehot_inds
+        if self.onehot_cols is None:
+            self.onehot_cols = np.array(onehot_cols)
+            self.onehot_inds = onehot_inds
+
+            # final column indices
+            self.col_inds = list(onehot_inds.values())
+            self.ohe_inds = list(chain(*[inds for _, inds in onehot_inds.items() if len(inds) > 1]))
+            self.or_inds = list(chain(*[inds for _, inds in onehot_inds.items() if len(inds) == 1]))
 
         # reshape data
         data_onehot = np.array(data_onehot).swapaxes(0, 1)
@@ -333,7 +429,8 @@ class MetaEncoder:
         data: np.ndarray,
         **kwargs,
     ):
-        """Decodes one-hot encoded data back to its original representation.
+        """
+        Decodes one-hot encoded data back to its original representation.
 
         Parameters
         ----------
@@ -345,7 +442,7 @@ class MetaEncoder:
         np.ndarray
             A new array with decoded values.
         """
-
+        
         # new column map
         data_inv = []
 
@@ -359,23 +456,34 @@ class MetaEncoder:
                 aux_cur = (data[:, inds] == data[:, inds].max(axis=1)[:, None]).astype(int)
 
                 # new onehot decoded data
-                aux_data = np.sum(aux_cur * values, 1, int)
+                aux_data = values[np.argmax(aux_cur, axis=1)].astype(int)
 
                 # append
                 data_inv.append(aux_data)
 
+            # column has not been onehor encoded
             else:
-                # checks
-                unq_col_check = (col not in self.cg_map) and bool(self.dec_map.get(col))
+                # decoding map
+                aux_dec_map = self.dec_map.get(col, {})
+                
+                # checks (binary and categorical)
+                bin_col_check = len(aux_dec_map) == 2
                 cg_col_check = col in self.cg_map
 
                 # original data (no decoding only if binary target)
-                if unq_col_check:  # quasi-unique column
+                if cg_col_check and not bin_col_check:  # quasi-unique column
                     aux_data = data[:, inds[0]].round(0).astype(int)
-                elif cg_col_check:  # binary categorical column
-                    aux_data = (data[:, inds[0]] > 0.5).astype(int)
+                elif bin_col_check:  # binary categorical column
+                    # bins
+                    bins = list(aux_dec_map.keys())
+
+                    # threshold
+                    thresh = bins[0] + abs(bins[1] - bins[0]) / 2
+                    
+                    # get data
+                    aux_data = np.where(data[:, inds[0]] > thresh, bins[1], bins[0])
                 else:  # continuous column
-                    aux_data = data[:, inds[0]]
+                    aux_data = data[:, inds[0]].astype(float)
 
                 # append
                 data_inv.append(aux_data)
@@ -392,8 +500,8 @@ class MetaEncoder:
         with_onehot: Optional[bool] = False,
         **kwargs,
     ):
-        """Encodes the input data using the defined mappings and optional one-
-        hot encoding.
+        """
+        Encodes the input data using the defined mappings and optional one-hot encoding.
 
         Parameters
         ----------
@@ -409,7 +517,7 @@ class MetaEncoder:
         np.ndarray
             The encoded data array.
         """
-
+        
         # encoded (string to num)
         new_data = self.map_with_dict(
             data=data,
@@ -428,11 +536,11 @@ class MetaEncoder:
         self,
         data: np.ndarray,
         column_names: Optional[list] = None,
-        with_onehot: Optional[bool] = False,
+        with_onehot: Optional[bool] = True,
         **kwargs,
     ):
-        """Decodes the input data back to its original representation using
-        defined mappings.
+        """
+        Decodes the input data back to its original representation using defined mappings.
 
         Parameters
         ----------
@@ -448,7 +556,7 @@ class MetaEncoder:
         np.ndarray
             The decoded data array.
         """
-
+        
         # one hot decoding
         new_data = self.onehot_decode(data) if with_onehot else data.copy()
 
@@ -456,6 +564,7 @@ class MetaEncoder:
         new_data = self.map_with_dict(
             data=new_data,
             val_map=self.dec_map,
+            dtype_map=self.dtype_map,
             column_names=column_names,
         )
 
