@@ -160,9 +160,7 @@ class TabularInputLayer(InputLayer):
         # prepare reference dataloader (original/reference records)
         # will also be used for input validation
         if validation_domain == ValidationDomain.SYNTH:
-            print(reference_data)
             reference_file = _get_data_files_path(reference_data)
-            print(reference_file)
             reference_dataset = TabularDataset(
                 file_path=reference_file,
                 scaler=self.scaler,
@@ -262,28 +260,3 @@ class TabularInputLayer(InputLayer):
                 yield (sample,)
         else:
             yield from zip(self.reference_loader, self.target_loader)
-
-    # def get_batched_samples(self) -> Generator[Tuple[np.ndarray], None, None]:
-    #     # return all features for both reference and synthetic records as a single batch
-    #     if self.val_type in [ValidationDomain.SYNTH]:
-    #         # get reference and synthetic batches
-    #         reference_features = next(iter(self.reference_loader))
-    #         synth_features = next(iter(self.target_loader))
-
-    #         # rename col
-    #         reference_features["real_data"] = reference_features.pop("data")
-    #         reference_features["real_emb"] = reference_features.pop("emb")
-    #         synth_features["syn_data"] = synth_features.pop("data")
-    #         synth_features["syn_emb"] = synth_features.pop("emb")
-
-    #         # checkpoint
-    #         assert (
-    #             reference_features["column_names"] == synth_features["column_names"]
-    #         ), "Reference and Synthetic datasets have mismatched columns"
-
-    #         yield {**reference_features, **synth_features}
-
-    #     # return all records
-    #     if self.val_type in [ValidationDomain.INPUT]:
-    #         # only reference records for no reference metrics
-    #         yield from self.target_loader
