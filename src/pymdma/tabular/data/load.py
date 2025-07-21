@@ -654,15 +654,10 @@ class TabularDataset(Dataset):
         # replace back missing values
         if miss_inds:
             data_[tuple(zip(*miss_inds))] = np.nan
-
-        print(miss_inds)
-        print(data_)
         
         # impute missing values
         imp = self.imputer
         data_imp = imp.fit_transform(data_)
-
-        print(data_imp)
 
         # decode back
         data_dec = self.meta_decode(
