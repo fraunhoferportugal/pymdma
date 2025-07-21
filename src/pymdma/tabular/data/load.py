@@ -654,10 +654,15 @@ class TabularDataset(Dataset):
         # replace back missing values
         if miss_inds:
             data_[tuple(zip(*miss_inds))] = np.nan
+
+        print(miss_inds)
+        print(data_)
         
         # impute missing values
-        imp = GlobalImputer(n_type='knn', norm_type='stardard', **kwargs)
+        imp = self.imputer
         data_imp = imp.fit_transform(data_)
+
+        print(data_imp)
 
         # decode back
         data_dec = self.meta_decode(
@@ -707,15 +712,15 @@ class TabularDataset(Dataset):
         miss_inds = list(zip(*np.where(data_r.isna().to_numpy())))
 
         # replace missing values
-        data_r = data_r.fillna(data_r.mode().iloc[0])
+        data_aux = data_r.fillna(data_r.mode().iloc[0])
         
         # check if data was correctly loaded
         if data_r is not None:
             # get columns/attributes
-            cols = list(data_r.columns)
+            cols = list(data_aux.columns)
 
             # numpy array
-            data_np = data_r.to_numpy()
+            data_np = data_aux.to_numpy()
 
             # impute missing values
             data_imp = self.impute_missing(

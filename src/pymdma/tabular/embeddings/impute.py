@@ -1,12 +1,14 @@
 import pandas as pd
 import numpy as np
 
+from typing import Optional
 from sklearn.impute import KNNImputer
 
 from ..embeddings.scale import GlobalNorm
+from ..embeddings import GenericImputer
 
 
-class NNImputer:
+class NNImputer(GenericImputer):
     def __init__(self, n_neighbors: int = 2, weights: str = "uniform"):
         # imputer
         self.imputer = KNNImputer(
@@ -26,7 +28,7 @@ class NNImputer:
         return self.imputer.fit_transform(X)
 
 
-class MeanImputer:
+class MeanImputer(GenericImputer):
     def __init__(self):
         self.col_means = None
         self.inds = None
@@ -71,7 +73,7 @@ class MeanImputer:
         return X_aux
 
 
-class MedianImputer:
+class MedianImputer(GenericImputer):
     def __init__(self):
         self.col_medians = None
         self.inds = None
@@ -117,27 +119,31 @@ class MedianImputer:
 
 
 class GlobalImputer:
-    def __init__(self, n_type: str = "knn", norm_type: str = "standard", **kwargs):
+    N_MAP = {
+        'knn': NNImputer,
+        'mean': MeanImputer,
+        'median': MedianImputer,
+        'identity': GenericImputer
+    }
+
+    def __init__(self, n_type: Optional[str] = "knn", norm_type: Optional[str] = "standard", **kwargs):
         # imputer tag
-        imp_type = (n_type or "knn").lower()
+        self.imp_type = (n_type or "knn").lower()
         # norm tag
         n_type = (norm_type or "standard").lower()
 
-        # KNN
-        if imp_type == "knn":
-            self.imputer = NNImputer(**kwargs)
-        # Mean
-        elif imp_type == "mean":
-            self.imputer = MeanImputer(**kwargs)
-        # Median
-        elif imp_type == "median":
-            self.imputer = MedianImputer(**kwargs)
-        # Error
+        # imputer
+        if isinstance(n_type, str) and n_type in self.N_MAP:
+            # impute class
+            cls_ = self.N_MAP.get(self.imp_type, GenericImputer)
+
+            # impute instance
+            self.imputer_obj = cls_(**kwargs)
         else:
-            raise ValueError("'imp_type' must be one of 'knn', 'mean', or 'median'")
-        
+            self.imputer_obj = NNImputer()
+
         # normalization
-        self.scaler = GlobalNorm(norm_type, **kwargs)
+        self.scaler = GlobalNorm(n_type, **kwargs)
 
     def _get_col_types(self, data):
         # copy data
@@ -157,16 +163,19 @@ class GlobalImputer:
         return col_inds
 
     def fit_transform(self, X):
-        # get column indices where data is integer
-        int_cols = self._get_col_types(X)
+        if self.imp_type not in ['identity']:
+            # get column indices where data is integer
+            int_cols = self._get_col_types(X)
 
-        # impute the data
-        X_imp = self.imputer.fit_transform(self.scaler.fit_transform(X))
+            # impute the data
+            X_imp = self.imputer_obj.fit_transform(self.scaler.fit_transform(X))
 
-        # inverse transform
-        X_inv = self.scaler.inverse_transform(X_imp)
+            # inverse transform
+            X_inv = self.scaler.inverse_transform(X_imp)
 
-        # round integer columns to nearest integer
-        X_inv[:, int_cols] = X_inv[:, int_cols].round(0)
+            # round integer columns to nearest integer
+            X_inv[:, int_cols] = X_inv[:, int_cols].round(0)
+        else:
+            X_inv = X
 
         return X_inv
