@@ -200,12 +200,26 @@ See [LICENSE](LICENSE) for more details.
 If you publish work that uses pyMDMA, please cite pyMDMA as follows:
 
 ```bibtex
+@article{softx2025pymdma,
+  title = {pyMDMA: Multimodal data metrics for auditing real and synthetic datasets},
+  journal = {SoftwareX},
+  volume = {31},
+  pages = {102256},
+  year = {2025},
+  issn = {2352-7110},
+  doi = {https://doi.org/10.1016/j.softx.2025.102256},
+  url = {https://www.sciencedirect.com/science/article/pii/S2352711025002237},
+  author = {Ivo S. Façoco and Joana Rebelo and Pedro Matias and Nuno Bento and Ana C. Morgado and Ana Sampaio and Luís Rosado and Marília Barandas},
+}
+```
+
+```bibtex
 @misc{pymdma,
-  title = {{pyMDMA}: Multimodal Data Metrics for Auditing real and synthetic datasets},
-  url = {https://github.com/fraunhoferportugal/pymdma},
-  author = {Fraunhofer AICOS},
-  license = {LGPL-3.0},
-  year = {2024},
+  title = {{pyMDMA}: Multimodal Data Metrics for Auditing real and synthetic datasets},
+  url = {https://github.com/fraunhoferportugal/pymdma},
+  author = {Fraunhofer AICOS},
+  license = {LGPL-3.0},
+  year = {2024},
 }
 ```
 

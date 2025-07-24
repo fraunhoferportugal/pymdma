@@ -26,7 +26,7 @@ Every metric is categorized with specific attributes that should be overriden in
 
 ### Metric Documentation
 
-In addition to a clear description, the class documentation include the following sections:
+In addition to a clear description, the class documentation must include the following sections:
 
 - **Objective**: Describe the objective of the metric, e.g., "Similarity", "Authenticity", etc.
 - **Parameters**: List the parameters of the metric `__init__` method, e.g., `fs: int, optional, default=2048`
