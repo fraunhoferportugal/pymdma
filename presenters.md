@@ -14,10 +14,10 @@ Senior Scientist (Fraunhofer Portugal AICOS)\
 Scientist (Fraunhofer Portugal AICOS)\
 **email:** [ivo.facoco@aicos.fraunhofer.pt](mailto:ivo.facoco@aicos.fraunhofer.pt)
 
-### Joana Rebelo
+### Maria Russo
 
 Scientist (Fraunhofer Portugal AICOS)\
-**email:** [joana.rebelo@aicos.fraunhofer.pt](mailto:joana.rebelo@aicos.fraunhofer.pt)
+**email:** [maria.russo@aicos.fraunhofer.pt](mailto:maria.russo@aicos.fraunhofer.pt)
 
 ### Pedro Matias
 

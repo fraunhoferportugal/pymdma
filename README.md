@@ -19,7 +19,7 @@ This tutorial is designed for a diverse audience across multiple domains, includ
 
 The tutorial will take about 4 hours, including 30 min break. The first part of the tutorial will be a presentation of the library and its metrics. The remaining time will be dedicated to hands-on sessions focused on each data modality. A detailed schedule is provided bellow.
 
-### pyMDMA presentation (15 mins) – Luís Rosado
+### pyMDMA presentation (30 mins) – Luís Rosado
 
 - Introduction
 - Target modalities
@@ -39,9 +39,7 @@ The tutorial will take about 4 hours, including 30 min break. The first part of 
   - Evaluation of fidelity and diversity concepts
   - Sample selection through quality-based ranking. Comparison of best/worst generated examples via metric outputs.
 
-### Short Break (30 mins)
-
-### Time-Series Tutorial (60 mins) – Joana Rebelo
+### Time-Series Tutorial (60 mins) – Maria Russo
 
 - Dataset Presentation
   - Overview of the ECG dataset and its characteristics
@@ -53,6 +51,9 @@ The tutorial will take about 4 hours, including 30 min break. The first part of 
   - Feature extraction using the Time Series Feature Extraction Library (TSFEL)
   - Evaluation of fidelity and diversity concepts
   - Selection of synthetic samples using metric outputs.
+
+### Short Break (30 mins)
+
 
 ### Tabular Tutorial (60 mins) – Pedro Matias
 
@@ -82,17 +83,16 @@ Senior Scientist (Fraunhofer Portugal AICOS)\
 ### Ivo Façoco
 
 Scientist (Fraunhofer Portugal AICOS)\
-**email:** ivo.facoco@fraunhofer.pt
+**email:** ivo.facoco@aicos.fraunhofer.pt
 
-### Joana Rebelo
-
+### Maria Russo
 Scientist (Fraunhofer Portugal AICOS)\
-**email:** joana.rebelo@fraunhofer.pt
+**email:** maria.russo@aicos.fraunhofer.pt
 
 ### Pedro Matias
 
 Scientist (Fraunhofer Portugal AICOS)\
-**email:** pedro.matias@fraunhofer.pt
+**email:** pedro.matias@aicos.fraunhofer.pt
 
 ## Citation
 
