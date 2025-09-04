@@ -52,7 +52,7 @@ The tutorial will take about 4 hours, including 30 min break. The first part of 
   - Evaluation of fidelity and diversity concepts
   - Selection of synthetic samples using metric outputs.
 
-### Short Break (30 mins)
+### Coffee Break (30 mins)
 
 
 ### Tabular Tutorial (60 mins) – Pedro Matias
@@ -97,6 +97,20 @@ Scientist (Fraunhofer Portugal AICOS)\
 ## Citation
 
 If you publish work that uses pyMDMA, please cite pyMDMA as follows:
+
+```bibtex
+@article{softx2025pymdma,
+  title = {pyMDMA: Multimodal data metrics for auditing real and synthetic datasets},
+  journal = {SoftwareX},
+  volume = {31},
+  pages = {102256},
+  year = {2025},
+  issn = {2352-7110},
+  doi = {https://doi.org/10.1016/j.softx.2025.102256},
+  url = {https://www.sciencedirect.com/science/article/pii/S2352711025002237},
+  author = {Ivo S. Façoco and Joana Rebelo and Pedro Matias and Nuno Bento and Ana C. Morgado and Ana Sampaio and Luís Rosado and Marília Barandas},
+}
+```
 
 ```bibtex
 @misc{pymdma,
