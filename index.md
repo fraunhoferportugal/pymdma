@@ -29,7 +29,7 @@ If you use pyMDMA in your research, please cite as follows:
 
 {% highlight bibtex %}
 @article{softx2025pymdma,
-  title = {{pyMDMA}: Multimodal data metrics for auditing real and synthetic datasets},
+  title = {pyMDMA: Multimodal data metrics for auditing real and synthetic datasets},
   journal = {SoftwareX},
   volume = {31},
   pages = {102256},
@@ -41,12 +41,13 @@ If you use pyMDMA in your research, please cite as follows:
 }
 {% endhighlight %}
 
+
 {% highlight bibtex %}
-@misc{pymdma,
-  title = {{pyMDMA}: Multimodal Data Metrics for Auditing real and synthetic datasets},
-  url = {https://github.com/fraunhoferportugal/pymdma},
-  author = {Fraunhofer AICOS},
-  license = {LGPL-3.0},
-  year = {2024},
+@misc{pyMDMA,
+  title = {pyMDMA: Multimodal Data Metrics for Auditing real and synthetic datasets},
+  url = {https://github.com/fraunhoferportugal/pymdma},
+  author = {Fraunhofer AICOS},
+  license = {LGPL-3.0},
+  year = {2024},
 }
 {% endhighlight %}
