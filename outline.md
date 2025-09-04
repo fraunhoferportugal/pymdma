@@ -29,7 +29,7 @@ This specific tutorial will take place at the **15th of September** at **14h00**
   - Evaluation of fidelity and diversity concepts
   - Sample selection through quality-based ranking. Comparison of best/worst generated examples via metric outputs.
 
-## Time-Series Tutorial (60 mins) – Joana Rebelo
+## Time-Series Tutorial (60 mins) – Maria Russo
 
 - Dataset Presentation
   - Overview of the ECG dataset and its characteristics
