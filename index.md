@@ -29,7 +29,7 @@ If you use pyMDMA in your research, please cite as follows:
 
 {% highlight bibtex %}
 @article{softx2025pymdma,
-  title = {pyMDMA: Multimodal data metrics for auditing real and synthetic datasets},
+  title = {{pyMDMA}: Multimodal data metrics for auditing real and synthetic datasets},
   journal = {SoftwareX},
   volume = {31},
   pages = {102256},
