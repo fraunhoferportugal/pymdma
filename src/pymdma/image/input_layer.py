@@ -138,7 +138,6 @@ class ImageInputLayer(InputLayer):
                 reference_dataset,
                 batch_size=self.batch_size if self.batch_size > 0 else len(reference_files),
                 shuffle=False,
-                num_workers=4,
                 collate_fn=collate_fn,  # no need to collate images
             )
 
@@ -152,7 +151,6 @@ class ImageInputLayer(InputLayer):
             target_dataset,
             batch_size=self.batch_size if self.batch_size > 0 else len(target_files),
             shuffle=False,
-            num_workers=4,
             collate_fn=collate_fn,  # no need to collate images
         )
 

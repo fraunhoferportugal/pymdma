@@ -131,7 +131,6 @@ class TimeSeriesInputLayer(InputLayer):
                 reference_dataset,
                 batch_size=self.batch_size if self.batch_size > 0 else len(reference_files),
                 shuffle=False,
-                num_workers=4,
                 collate_fn=collate_fn,
             )
 
@@ -142,7 +141,6 @@ class TimeSeriesInputLayer(InputLayer):
             target_dataset,
             batch_size=self.batch_size if self.batch_size > 0 else len(target_dataset),
             shuffle=False,
-            num_workers=4,
             collate_fn=collate_fn,
         )
 
@@ -207,15 +205,17 @@ class TimeSeriesInputLayer(InputLayer):
                 yield (no_ref_signals,)
         else:  # full reference
             # iterate through both dataloaders and yield batches of signals
-            ref_iter, sim_iter = iter(self.reference_loader), iter(self.target_loader)
-            for _ in range(len(self.reference_loader)):
-                ref_sigs, _, _ = next(ref_iter)
-                sim_sigs, _, _sig_ids = next(sim_iter)
-
-                # save signal ids for later
-                # self.instance_ids.extend(list(sig_ids))
-
-                yield ref_sigs, sim_sigs
+            ref_sigs = []
+            for ref_sig in self.reference_loader:
+                ref_sig, _, _sig_ids = ref_sig
+                ref_sigs.extend(ref_sig)
+            
+            sim_sigs = []
+            for sim_sig in self.target_loader:
+                sim_sig, _, _sig_ids = sim_sig
+                sim_sigs.extend(sim_sig)
+            yield (np.array(ref_sigs), np.array(sim_sigs))
+            
 
     def get_full_samples(self):
         # only reference signals for no reference metrics
