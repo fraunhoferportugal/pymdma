@@ -212,6 +212,7 @@ class SpectralWassersteinDistance(Metric):
         MetricResult
             Dataset-level results for the Spectral Coherence.
         """
+        
         real_psd = self._compute_power_spectral_density(real_data)
         syn_psd = self._compute_power_spectral_density(syn_data)
 
