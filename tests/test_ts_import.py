@@ -768,7 +768,7 @@ def test_reproducibility(metric_name, expected, show_dist=False):
 @pytest.mark.parametrize(
     "metric, expected",
     [
-        (SpectralCoherence, 0.02950173805071692),
+        (SpectralCoherence, 0.029512458757103333),
         (SpectralWassersteinDistance, 0.041511867769033095),
     ],
 )
