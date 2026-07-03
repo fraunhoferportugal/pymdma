@@ -1,9 +1,7 @@
-name: da_metrics
+name: python313
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.11
-  - virtualenv=20.25.0
-  - pip=24.0
-  - poetry<2.0.0
+  - python=3.13
+  - poetry>=2.0.0

@@ -102,16 +102,6 @@ setup-time_series:
 	echo -e "$(SUCCESS) Virtual environment created successfully!$(TERMINATOR)" && \
 	echo -e "$(HINT) Activate the virtual environment with: source .venv-time_series/bin/activate$(TERMINATOR)"
 
-## Build virtualenv for text data metrics development
-setup-text:
-	@echo -e "$(INFO) Creating text virtual environment...$(TERMINATOR)" && \
-	python3 -m venv .venv-text && \
-	source .venv-text/bin/activate && \
-	poetry run pip install --upgrade pip setuptools && \
-	poetry install --extras "text" && \
-	echo -e "$(SUCCESS) Virtual environment created successfully!$(TERMINATOR)" && \
-	echo -e "$(HINT) Activate the virtual environment with: source .venv-text/bin/activate$(TERMINATOR)"
-
 ## Build all virtual environments (production)
 setup-prod: # TODO - torch cpu install
 	@echo -e "$(INFO) Creating production virtual environment...$(TERMINATOR)" && \
@@ -127,7 +117,6 @@ setup-all:
 	@echo -e "$(INFO) Creating development virtual environment...$(TERMINATOR)" && \
 	python3 -m venv .venv-dev && \
 	source .venv-dev/bin/activate && \
-	pip install -U "poetry<2.0.0" && \
 	poetry run pip install --upgrade pip setuptools && \
 	poetry install --with dev --all-extras && \
 	echo -e "$(SUCCESS) Virtual environment created successfully!$(TERMINATOR)" && \
@@ -137,68 +126,12 @@ setup-all:
 #################################################################################
 # Update Dependencies															#
 #################################################################################
-.PHONY: update-requirements update-requirements-dev update-requirements-docs update-requirements-notebooks update-requirements-dempy update-requirements-all\
-		update-requirements-image update-requirements-tabular update-requirements-time_series update-requirements-text
-
-## Update project main requirements
-# update-requirements:
-# 	@echo -e "$(INFO) Updating requirements file...$(TERMINATOR)" && \
-# 	poetry export --only main --without-hashes -f requirements.txt -o requirements/requirements.txt && \
-# 	poetry export --only prod --without-hashes -f requirements.txt -o requirements/requirements-prod.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-# ## Update project development requirements
-# update-requirements-dev:
-# 	@echo -e "$(INFO) Updating development requirements file...$(TERMINATOR)" && \
-# 	poetry export --only dev --without-hashes -f requirements.txt -o requirements/requirements-dev.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-# ## Update project documentation requirements
-# update-requirements-docs:
-# 	@echo -e "$(INFO) Updating documentation requirements file...$(TERMINATOR)" && \
-# 	poetry export --only docs --without-hashes -f requirements.txt -o requirements/requirements-docs.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-# ## Update project notebooks requirements
-# update-requirements-notebooks:
-# 	@echo -e "$(INFO) Updating notebooks requirements file...$(TERMINATOR)" && \
-# 	poetry export --only notebook --without-hashes -f requirements.txt -o requirements/requirements-notebook.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-
-# ## Update image requirements
-# update-requirements-image:
-# 	@echo -e "$(INFO) Updating image requirements file...$(TERMINATOR)" && \
-# 	poetry export --only image --without-hashes -f requirements.txt -o requirements/requirements-image.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-
-# ## Update time_series requirements
-# update-requirements-time_series:
-# 	@echo -e "$(INFO) Updating time_series requirements file...$(TERMINATOR)" && \
-# 	poetry export --only time_series --without-hashes -f requirements.txt -o requirements/requirements-time_series.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-# ## Update tabular requirements
-# update-requirements-tabular:
-# 	@echo -e "$(INFO) Updating tabular requirements file...$(TERMINATOR)" && \
-# 	poetry export --only tabular --without-hashes -f requirements.txt -o requirements/requirements-tabular.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-# ## Update text requirements
-# update-requirements-text:
-# 	@echo -e "$(INFO) Updating text requirements file...$(TERMINATOR)" && \
-# 	poetry export --only text --without-hashes -f requirements.txt -o requirements/requirements-text.txt && \
-# 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
+.PHONY:	update-requirements-prod
 
 update-requirements-prod:
 	@echo -e "$(INFO) Updating prod requirements file...$(TERMINATOR)" && \
 	poetry export --all-extras --with prod --without-hashes -f requirements.txt -o requirements/requirements-prod.txt && \
 	echo -e "$(SUCCESS) Requirements updated successfully!$(TERMINATOR)"
-
-# ## Update all project requirements
-# update-requirements-all: update-requirements update-requirements-dev update-requirements-docs update-requirements-notebooks update-requirements-dempy \
-# 		update-requirements-image update-requirements-tabular update-requirements-time_series update-requirements-text
 
 
 #################################################################################
@@ -239,7 +172,7 @@ uninstall-pre-commit:
 #################################################################################
 # Cleanup																		#
 #################################################################################
-.PHONY: clean clean-test clean-hydra clean-all
+.PHONY: clean clean-test clean-all
 
 ## Remove build and Python artifacts
 clean:
@@ -260,15 +193,8 @@ clean-test:
 	rm -fr .pytest_cache
 	rm -fr .mypy_cache
 
-## Remove hydra outputs
-clean-hydra:
-	rm -rf outputs
-	rm -rf runs
-	rm -rf multirun
-	rm -rf mlruns
-
 ## Remove all artifacts
-clean-all: clean clean-test clean-hydra
+clean-all: clean clean-test
 
 # TODO
 #################################################################################
@@ -348,7 +274,7 @@ push:
 ## Bump semantic version based on the git log
 bump:
 	ifndef VIRTUAL_ENV
-			error "No virtual environment detected. Please activate a virtual environment before running this command."
+		error "No virtual environment detected. Please activate a virtual environment before running this command."
 	else
 		@echo -e "$(INFO) Bumping version...$(TERMINATOR)" && \
 		poetry run cz bump
@@ -378,7 +304,7 @@ jenkins_bump:
 ## Generate changelog
 changelog:
 	ifndef VIRTUAL_ENV
-			error "No virtual environment detected. Please activate a virtual environment before running this command."
+		error "No virtual environment detected. Please activate a virtual environment before running this command."
 	else
 		@echo -e "$(INFO) Generating changelog...$(TERMINATOR)" && \
 		poetry run cz changelog
@@ -395,16 +321,8 @@ change-version:
 	git checkout v$v && \
 	dvc checkout
 
-## Get data from DVC remote
-dvc-download:
-	dvc pull
-
-## Push data to DVC remote
-dvc-upload:
-	dvc push
-
 ## Push code and data
-push-all: push dvc-upload
+push-all: push
 
 
 #################################################################################
