@@ -33,7 +33,7 @@ exclude = ["tests/*", "notebooks/*", "docs/*", "src/**/main.py",
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9, <4.0"
+python = ">=3.10, <4.0"
 loguru = {version = ">=0.7.2, <0.8.0"}
 matplotlib = {version = ">=3.4.3, <4.0.0"}
 numpy = {version = ">=1.22.0, <3.0.0"}
@@ -45,9 +45,9 @@ torch = {version = ">=2.1.0, <3.0.0"}
 scikit-learn = {version = ">1.4.0"}
 
 # Image dependencies
-torchvision = {version = ">=0.15.2, <0.40.0", optional = true}
+torchvision = {version = ">=0.15.2, <0.50.0", optional = true}
 pycocotools = {version = ">=2.0.8", optional = true}
-opencv-python = {version = ">=4.10.0.84, <4.30.0.0", optional = true}
+opencv-python = {version = ">=4.10.0.84, <5.5.0.0", optional = true}
 
 # Time Series dependencies
 tsfel = {version = ">0.1.7", optional = true}
@@ -57,26 +57,27 @@ fastdtw = {version = "^0.3.4", optional = true}
 
 # Tabular Dependencies
 numba = {version = ">=0.60.0, <0.80.0", optional = true}
-pandas = {version = ">=2.0.0, <3.0.0", optional = true}
+pandas = {version = ">=2.0.0, <3.5.0", optional = true}
 pycanon = {version = ">=1.1.0, <2.0.0", optional = true}
-scipy = {version = ">=1.6.0, <2.0.0", optional = true}
-spacy = {version = ">=3.7.4, <4.0.0", optional = true}
+scipy = [
+  {version = ">=1.6.0, <2.0.0", optional = true, python = ">=3.10,<3.14"},
+  {version = ">=1.18.0, <2.0.0", optional = true, python = ">=3.14"},
+]
+spacy = {version = ">=3.7.4, <3.8.14", optional = true} # FIXME no python314 wheels available for version 3.8.14 (https://github.com/SamEdwardes/spacytextblob/issues/30)
 transformers = {version = ">=4.43.2, <5.0.0", optional = true}
 umap-learn = {version = ">=0.5.5, <0.6.0", optional = true}
 gudhi = {version = ">=3.9.0, <=4.0.0", optional = true}
-word2number = {version = ">=1.1.0, <1.5.0", optional = true}
+# word2number = {version = ">=1.1.0, <1.5.0", optional = true}
 
 
 [tool.poetry.extras]
 image = ["torchvision", "pycocotools", "opencv-python"]
-tabular = ["numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "gudhi", "umap-learn", "word2number", "statsmodels"]
+tabular = ["numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "gudhi", "umap-learn", "statsmodels"]
 time_series = ["tsfel", "wfdb", "statsmodels", "fastdtw"]
-# text = ["accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"]
 all = [
   "torchvision", "pycocotools", "opencv-python",
-  "numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "umap-learn", "gudhi", "word2number",
+  "numba", "pandas", "pycanon", "scipy", "spacy", "transformers", "umap-learn", "gudhi",
   "tsfel", "wfdb", "statsmodels", "fastdtw"
-  # "accelerate", "datasets", "nltk", "sentence-transformers", "transformers", "python-multipart"
 ]
 
 
