@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-07-03
+Minor release with python 3.14 support
+
+### Fixed
+ - removed unused `Makefile` hooks
+
+### Removed
+ - `word2number` dependency
+
+### Changed
+ - support for `opencv5`
+ - support for `pandas > 3.0.0`
+ - python minimal version set to `3.10` from `3.9` (end of life)
+ - increased cealing for other dependency versions
+
+
 ## [0.2.3] - 2026-06-01
 Patch release with bug fixes on API for time-series metrics.
 
