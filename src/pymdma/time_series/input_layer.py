@@ -20,7 +20,7 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-SUPPORTED_FILES = {".dat", ".mat", ".csv"}  # TODO might want to add others or change
+SUPPORTED_FILES = {".dat", ".mat", ".csv", ".vhdr", ".vmrk", ".eeg"}  # TODO might want to add others or change
 
 
 def _custom_collate_fn(batch):
@@ -52,23 +52,19 @@ def _get_data_files_path(data_src: Union[List[str], Path]) -> List[Path]:
         data_files_path = data_src
     else:
         data_files_path = []
-        for item in data_src.iterdir():
-            if item.is_file():
-                if item.suffix in SUPPORTED_FILES:
+        for item in data_src.glob("**/*"):  # Recursively search for data files():
+            if item.is_file() and item.suffix in SUPPORTED_FILES:
                     data_files_path.append(item)
-                else:
-                    logger.warning(f"Skipping unsupported file extension: {item.suffix} (file: {item})")
-            elif item.is_dir():
-                item = Path(item)
-                # Recursively search for data files in subdirectories
-                for sig_file in item.iterdir():
-                    if sig_file.is_file() and sig_file.suffix in SUPPORTED_FILES:
-                        data_files_path.append(sig_file)
-                    else:
-                        logger.warning(f"Skipping unsupported file extension: {sig_file.suffix} (file: {sig_file})")
             else:
-                raise AssertionError(f"Invalid item encountered: {item}")
-
+                logger.warning(f"Skipping unsupported file extension: {item.suffix} (file: {item})")
+            # elif item.is_dir():
+            #     item = Path(item)
+            #     # Recursively search for data files in subdirectories
+            #     for sig_file in item.glob("**/*"):
+            #         if sig_file.is_file() and sig_file.suffix in SUPPORTED_FILES:
+            #             data_files_path.append(sig_file)
+            #         else:
+            #             logger.warning(f"Skipping unsupported file extension: {sig_file.suffix} (file: {sig_file})")
     return data_files_path
 
 
@@ -110,7 +106,7 @@ class TimeSeriesInputLayer(InputLayer):
         self.reference_type = reference_type
         self.batch_size = batch_size
         self.device = device
-
+        
         # ids for the signals in instance analysis
         # used later for instance level metrics ids
         self.instance_ids = []
@@ -121,6 +117,11 @@ class TimeSeriesInputLayer(InputLayer):
         collate_fn = _custom_collate_fn
 
         target_files = _get_data_files_path(target_data)
+        
+        #FIXME
+        if any(f.suffix == ".vhdr" for f in target_files):
+            self.batch_size = 1
+            logger.warning("Only one signal will be used for input validation since the input is a vhdr file.")
 
         # prepare reference dataloader (original/reference signals)
         # will also be used for input validation

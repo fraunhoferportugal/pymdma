@@ -128,4 +128,5 @@ win32-setctime==1.2.0 ; python_version >= "3.9" and python_version < "3.13" and 
 word2number==1.1 ; python_version >= "3.9" and python_version < "3.13"
 wrapt==1.17.2 ; python_version >= "3.9" and python_version < "3.13"
 yarl==1.19.0 ; python_version >= "3.9" and python_version < "3.13"
-zipp==3.21.0 ; python_version == "3.9"
+zipp==3.21.0 ; python_version >= "3.9"
+mne==1.12.1 ; python_version >= "3.9"

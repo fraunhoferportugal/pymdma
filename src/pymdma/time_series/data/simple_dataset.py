@@ -3,10 +3,12 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 import wfdb
+import mne
 from torch.utils.data import Dataset
 
 # TODO support other formats?
-SUPPORTED_FILES = {".dat", ".mat", ".csv"}
+SUPPORTED_FILES = {".dat", ".mat", ".csv", ".vhdr", ".vmrk", ".eeg"}  # TODO might want to add others or change
+
 
 
 def _extract_diagnosis(file_path):
@@ -79,7 +81,11 @@ def _read_sig_file(file_path):
         directory_path, file_name = os.path.split(file_path)
         file_path = os.path.join(directory_path, file_name.split(".")[0])
         data = wfdb.rdsamp(file_path)[0]
-        return data
+        return data, None, None
+    elif file_path.suffix == ".vhdr": # brainvision header
+        data = mne.io.read_raw_brainvision(file_path, preload=True)
+        dims = data.ch_names
+        return data.get_data().T, dims, data.info["sfreq"] # FIXME
     else:
         # Raise a ValueError for files with unsupported extensions
         raise AssertionError(f"Unsupported file extension: {Path(file_path).suffix} (file: {file_path})")
@@ -96,25 +102,38 @@ class SimpleDataset(Dataset):
         self.sig_files = file_paths
         self.transform = transforms
         self.target_transform = target_transforms
+        
+        # parse brainvision format and filter  for only header files
+        if any(file.suffix in {".vhdr", ".vmrk", ".eeg"} for file in self.sig_files):
+            # filter to only include header files
+            self.sig_files = [file for file in self.sig_files if file.suffix == ".vhdr"]
+            data = mne.io.read_raw_brainvision(self.sig_files[0], preload=True)
+            self.fs = data.info["sfreq"]
+            self.dims = data.ch_names
+        elif any(file.suffix == ".mat" for file in self.sig_files):
+            # Define fs and dims of the dataset
+            ex_hea_path = os.path.splitext(self.sig_files[0])[0] + ".hea"
+            self.fs, self.dims = _extract_fs_dims(ex_hea_path)
+        else:
+            raise ValueError(f"Unsupported file extension: {Path(self.sig_files[0]).suffix} (file: {self.sig_files[0]})")
 
-        # Define fs and dims of the dataset
-        ex_hea_path = os.path.splitext(self.sig_files[0])[0] + ".hea"
-        self.fs, self.dims = _extract_fs_dims(ex_hea_path)
 
     def __len__(self):
         return len(self.sig_files)
 
     def __getitem__(self, idx):
         sig_path = Path(self.sig_files[idx])
-        signal = _read_sig_file(sig_path)
+        signal, dims, fs = _read_sig_file(sig_path) # FIXEM foe .hea
+        
+        # print("SHAPE ", signal.shape)
 
         # hea_path = os.path.splitext(sig_path)[0] + ".hea"
-        label = [None]  # TODO change latter if needed to: label = _extract_diagnosis(hea_path)
+        # label = [None]  # TODO change latter if needed to: label = _extract_diagnosis(hea_path)
 
         signal_id = sig_path.stem
 
         if self.transform:
             signal = self.transform(signal)
-        if self.target_transform:
-            label = self.target_transform(label)
-        return signal, label, signal_id
+        # if self.target_transform:
+        #     label = self.target_transform(label)
+        return signal, (fs, dims), signal_id

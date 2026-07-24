@@ -81,12 +81,18 @@ class BaseTSExtractor(nn.Module, EmbedderInterface):
         act_array = []
         labels_array = []
         ids_array = []
+        
 
-        for batch, labels, signal_ids in dataloader:
+        for batch, header, signal_ids in dataloader:
+            fs_, dims_ = header[0]
+            
+            fs = fs if fs_ is None else fs_
+            dims = dims if dims_ is None else dims_
+            
             batch_feat = self(batch, fs, dims)
             act_array.append(batch_feat)
-            labels_array.extend(labels)
+            # labels_array.extend(labels)
             ids_array.extend(signal_ids)
 
         features = np.concatenate(act_array, axis=0)
-        return features, labels_array, ids_array
+        return features, None, ids_array
