@@ -39,7 +39,7 @@ class Uniqueness(Metric):
 
     def __init__(
         self,
-        tolerance: float = 0.0001,
+        tolerance: float = 0.00001,
         **kwargs,
     ):
         super().__init__(**kwargs)

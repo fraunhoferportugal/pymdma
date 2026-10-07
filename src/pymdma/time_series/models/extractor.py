@@ -52,7 +52,7 @@ class BaseTSExtractor(nn.Module, EmbedderInterface):
         start, end = 0, 0
         for bsize in batch_sizes:
             end = start + bsize
-            signals = [_read_sig_file(f) for f in files[start:end]]
+            signals = [_read_sig_file(f)[0] for f in files[start:end]]
             batch = self(signals, fs, dims)
             act_array.append(batch)
             start += bsize

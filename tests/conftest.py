@@ -87,7 +87,7 @@ def image_transforms():
 @pytest.fixture(scope="module")
 def ts_dataset():
     file_paths = _get_data_files_path(Path(data_dir) / "test/time_series/input_val/dataset")
-    signals = [_read_sig_file(signal_path) for signal_path in file_paths]
+    signals = [_read_sig_file(signal_path)[0] for signal_path in file_paths]
     return signals
 
 
